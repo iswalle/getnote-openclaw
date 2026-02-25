@@ -27,7 +27,7 @@ curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/install
 
 | 功能 | 说明 |
 |------|------|
-| 📝 创建笔记 | 支持纯文本、图片、链接笔记 |
+| 📝 创建笔记 | 支持纯文本、链接笔记 |
 | 📋 查询笔记 | 获取笔记列表和详情 |
 | 🎙️ 录音笔记 | 获取 AI 总结和原始转写 |
 | 🏷️ 标签管理 | 添加、删除笔记标签 |
@@ -43,16 +43,6 @@ curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/install
 ## 📖 API 文档
 
 详见 [SKILL.md](./SKILL.md)
-
-## 📦 版本
-
-- **v1.1.1** (2026-02-25)
-  - 移除删除笔记接口（高风险操作）
-
-- **v1.1.0** (2026-02-25)
-  - 更新 API 域名为 `openapi.biji.com`
-  - 完善笔记列表/详情接口文档
-  - 新增录音笔记原始转写字段说明
 
 ## 📜 许可证
 
