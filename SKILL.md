@@ -1,11 +1,11 @@
 ---
 name: getnotes
-description: Create and manage notes via Get笔记 API. Use when user wants to save notes, create image notes from photos, save web links as notes, manage note tags, or query existing notes. Supports plain text, image, link, meeting, and audio note types.
+description: Create and manage notes via Get笔记 API. Use when user wants to save notes, save web links as notes, manage note tags, or query existing notes. Supports plain text, link, meeting, and audio note types.
 ---
 
 # Get笔记 API
 
-操作 Get笔记的 API 接口，支持查询笔记、创建笔记、图片笔记、链接笔记、管理标签。
+操作 Get笔记的 API 接口，支持查询笔记、创建笔记、链接笔记、管理标签。
 
 ## 认证
 
@@ -114,58 +114,7 @@ GET /open/api/v1/resource/note/detail?id=123456789
 - `ref_content`: 引用内容
 - `version`: 版本号
 
-### 3. 获取图片上传配置
-
-```
-GET /open/api/v1/resource/image/config
-```
-
-返回支持的图片格式和限制：
-```json
-{
-  "success": true,
-  "data": {
-    "support_extensions": ["jpg", "png", "gif", "webp"],
-    "max_size_bytes": 10485760,
-    "max_count": 10
-  }
-}
-```
-
-### 4. 获取图片上传 Token
-
-```
-GET /open/api/v1/resource/image/upload_token?mime_type=jpg&count=1
-```
-
-返回预签名 URL：
-```json
-{
-  "success": true,
-  "data": {
-    "tokens": [{
-      "sign_url": "https://oss.aliyuncs.com/xxx?signature=xxx",
-      "get_url": "https://cdn.example.com/xxx.jpg",
-      "object_key": "xxx/xxx.jpg",
-      "mime_type": "image/jpeg"
-    }]
-  }
-}
-```
-
-### 5. 上传图片到 OSS
-
-用 `sign_url` 直传图片：
-
-```bash
-curl -X PUT "${sign_url}" \
-  -H "Content-Type: image/jpeg" \
-  --data-binary @image.jpg
-```
-
-上传成功后，用 `get_url` 作为图片地址。
-
-### 6. 创建笔记
+### 3. 创建笔记
 
 ```
 POST /open/api/v1/resource/note/save
@@ -177,16 +126,6 @@ Content-Type: application/json
 {
   "title": "笔记标题",
   "content": "笔记内容"
-}
-```
-
-**图片笔记：**
-```json
-{
-  "title": "图片笔记",
-  "content": "图片说明",
-  "note_type": "img_text",
-  "image_urls": ["https://cdn.example.com/xxx.jpg"]
 }
 ```
 
@@ -216,7 +155,7 @@ Content-Type: application/json
 
 > ⚠️ **链接笔记说明**：链接笔记创建后，AI 会在后台异步处理网页内容。如需获取 AI 处理结果（摘要、正文提取等），请在约 **3 分钟后**通过笔记详情接口获取完整内容。
 
-### 7. 添加笔记标签
+### 4. 添加笔记标签
 
 ```
 POST /open/api/v1/resource/note/tags/add
@@ -232,7 +171,7 @@ Content-Type: application/json
 
 返回添加后的完整标签列表（包含 id 和 name）。
 
-### 8. 删除笔记标签
+### 5. 删除笔记标签
 
 ```
 POST /open/api/v1/resource/note/tags/delete
@@ -245,33 +184,6 @@ Content-Type: application/json
   "tag_id": 987654321
 }
 ```
-
-## 图片笔记完整流程
-
-创建图片笔记需要三步：
-
-1. **获取上传 Token**
-   ```
-   GET /open/api/v1/resource/image/upload_token?mime_type=jpg&count=1
-   ```
-
-2. **上传图片到 OSS**
-   ```bash
-   curl -X PUT "${sign_url}" \
-     -H "Content-Type: image/jpeg" \
-     --data-binary @photo.jpg
-   ```
-
-3. **创建图片笔记**
-   ```json
-   POST /open/api/v1/resource/note/save
-   {
-     "title": "我的照片",
-     "content": "照片说明",
-     "note_type": "img_text",
-     "image_urls": ["${get_url}"]
-   }
-   ```
 
 ## 笔记内容结构
 
