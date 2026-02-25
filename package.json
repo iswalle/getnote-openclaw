@@ -1,0 +1,12 @@
+{
+  "name": "getnotes",
+  "version": "1.1.0",
+  "description": "Create and manage notes via Get笔记 Open API. Supports text notes, image notes, link notes, and querying meeting/audio notes with AI summaries.",
+  "author": "Get笔记",
+  "homepage": "https://biji.com",
+  "keywords": ["notes", "get笔记", "录音", "会议纪要", "ai"],
+  "license": "MIT",
+  "openclaw": {
+    "minVersion": "0.1.0"
+  }
+}
