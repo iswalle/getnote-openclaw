@@ -186,7 +186,7 @@ Content-Type: application/json
 ```json
 {
   "note_id": 123456789,
-  "tag_id": 987654321
+  "tag_id": "987654321"
 }
 ```
 
