@@ -37,10 +37,9 @@ GET /open/api/v1/resource/note/list?limit=10&since_id=0
       "id": 1901297236063695760,
       "title": "笔记标题",
       "content": "完整 Markdown 内容，包含智能总结、章节概要、金句精选、待办事项等",
-      "summary": "HTML 格式摘要",
       "ref_content": "引用内容（链接笔记的原文/音频笔记的转写文本等）",
       "note_type": "meeting|recorder_audio|plain_text|img_text|link",
-      "source": "app|yoda|gethub",
+      "source": "app|yoda|openapi",
       "tags": [{"id": "123456", "name": "工作"}],
       "children_count": 0,
       "topics": [],
@@ -80,7 +79,6 @@ GET /open/api/v1/resource/note/detail?id=123456789
       "id": 1901297236063695760,
       "title": "笔记标题",
       "content": "完整 Markdown 内容",
-      "summary": "HTML 格式摘要",
       "ref_content": "引用内容",
       "note_type": "meeting",
       "source": "app",
@@ -147,11 +145,15 @@ Content-Type: application/json
   "data": {
     "id": 123456789,
     "title": "笔记标题",
+    "source": "openapi",
     "created_at": "2026-02-24 10:00:00",
     "updated_at": "2026-02-24 10:00:00",
     "message": "链接笔记创建成功，AI 正在后台处理..."
   }
 }
+```
+
+> 📝 **来源标识**：通过 API 创建的笔记，`source` 字段统一为 `openapi`。
 ```
 
 > ⚠️ **链接笔记说明**：链接笔记创建后，AI 会在后台异步处理网页内容。如需获取 AI 处理结果（摘要、正文提取等），请在约 **3 分钟后**通过笔记详情接口获取完整内容。
