@@ -38,6 +38,7 @@ GET /open/api/v1/resource/note/list?limit=10&since_id=0
       "title": "笔记标题",
       "content": "完整 Markdown 内容，包含智能总结、章节概要、金句精选、待办事项等",
       "summary": "HTML 格式摘要",
+      "ref_content": "引用内容（链接笔记的原文/音频笔记的转写文本等）",
       "note_type": "meeting|recorder_audio|plain_text|img_text|link",
       "source": "app|yoda|gethub",
       "tags": [{"id": "123456", "name": "工作"}],
