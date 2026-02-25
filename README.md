@@ -31,7 +31,6 @@ curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/install
 | 📋 查询笔记 | 获取笔记列表和详情 |
 | 🎙️ 录音笔记 | 获取 AI 总结和原始转写 |
 | 🏷️ 标签管理 | 添加、删除笔记标签 |
-| 🗑️ 删除笔记 | 删除指定笔记 |
 
 ## 💬 使用示例
 
@@ -39,7 +38,6 @@ curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/install
 「帮我查一下最近的笔记」
 「创建一个笔记，标题是今日待办，内容是...」
 「给笔记 xxx 添加标签：重要」
-「删除笔记 xxx」
 ```
 
 ## 📖 API 文档
@@ -47,6 +45,9 @@ curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/install
 详见 [SKILL.md](./SKILL.md)
 
 ## 📦 版本
+
+- **v1.1.1** (2026-02-25)
+  - 移除删除笔记接口（高风险操作）
 
 - **v1.1.0** (2026-02-25)
   - 更新 API 域名为 `openapi.biji.com`

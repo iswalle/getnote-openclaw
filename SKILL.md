@@ -1,11 +1,11 @@
 ---
 name: getnotes
-description: Create and manage notes via Get笔记 API. Use when user wants to save notes, create image notes from photos, save web links as notes, manage note tags, delete notes, or query existing notes. Supports plain text, image, link, meeting, and audio note types.
+description: Create and manage notes via Get笔记 API. Use when user wants to save notes, create image notes from photos, save web links as notes, manage note tags, or query existing notes. Supports plain text, image, link, meeting, and audio note types.
 ---
 
 # Get笔记 API
 
-操作 Get笔记的 API 接口，支持查询笔记、创建笔记、图片笔记、链接笔记、管理标签、删除笔记。
+操作 Get笔记的 API 接口，支持查询笔记、创建笔记、图片笔记、链接笔记、管理标签。
 
 ## 认证
 
@@ -243,19 +243,6 @@ Content-Type: application/json
 {
   "note_id": 123456789,
   "tag_id": 987654321
-}
-```
-
-### 9. 删除笔记
-
-```
-POST /open/api/v1/resource/note/delete
-Content-Type: application/json
-```
-
-```json
-{
-  "note_id": 123456789
 }
 ```
 
