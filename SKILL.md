@@ -1,240 +1,282 @@
 ---
 name: getnotes
-description: Create and manage notes via Get笔记 API. Use when user wants to save notes, save web links as notes, manage note tags, or query existing notes. Supports plain text, link, meeting, and audio note types.
+description: Get笔记 OpenAPI - 查询、创建、编辑、删除笔记，管理标签。支持纯文本、链接、图片笔记。
 ---
 
-# Get笔记 API
+# Get笔记 OpenAPI
 
-操作 Get笔记的 API 接口，支持查询笔记、创建笔记、链接笔记、管理标签。
+## 快速开始
 
-## 认证
+**Base URL**: `https://openapi.biji.com`
 
-所有请求需要 Header：
+**认证**: 所有请求需要 Header `Authorization: gk_live_<API_KEY>`
+
+## API 列表
+
+| 接口 | 方法 | 路径 | 说明 |
+|------|------|------|------|
+| 笔记列表 | GET | `/open/api/v1/resource/note/list` | 分页获取笔记 |
+| 笔记详情 | GET | `/open/api/v1/resource/note/detail` | 获取单条笔记完整信息 |
+| 创建/编辑笔记 | POST | `/open/api/v1/resource/note/save` | 新建或更新笔记 |
+| 删除笔记 | POST | `/open/api/v1/resource/note/delete` | 删除笔记 |
+| 添加标签 | POST | `/open/api/v1/resource/note/tags/add` | 给笔记添加标签 |
+| 删除标签 | POST | `/open/api/v1/resource/note/tags/delete` | 删除笔记的标签 |
+| 图片上传凭证 | GET | `/open/api/v1/resource/image/upload_token` | 获取图片上传 token |
+
+---
+
+## 1. 笔记列表
+
+```http
+GET /open/api/v1/resource/note/list?limit=20&since_id=0
 ```
-Authorization: gk_live_<API_KEY>
-```
 
-API 基础地址：`https://openapi.biji.com`
+**参数**:
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| limit | int | 否 | 每页数量，默认 20，最大 100 |
+| since_id | int64 | 否 | 游标，返回 ID 小于此值的笔记 |
 
-## API 接口
-
-### 1. 获取笔记列表
-
-```
-GET /open/api/v1/resource/note/list?limit=10&since_id=0
-```
-
-参数：
-- `limit`: 每页数量，默认 10，最大 100
-- `since_id`: 游标，返回 ID 大于此值的笔记（用于分页）
-
-返回：
+**响应**:
 ```json
 {
   "success": true,
   "data": {
-    "notes": [{
-      "id": 1901297236063695760,
-      "title": "笔记标题",
-      "content": "完整 Markdown 内容，包含智能总结、章节概要、金句精选、待办事项等",
-      "ref_content": "引用内容（链接笔记的原文/音频笔记的转写文本等）",
-      "note_type": "meeting|recorder_audio|plain_text|img_text|link",
-      "source": "app|yoda|openapi",
-      "tags": [{"id": "123456", "name": "工作"}],
-      "children_count": 0,
-      "topics": [],
-      "is_child_note": false,
-      "created_at": "2026-02-10 18:36:12",
-      "updated_at": "2026-02-10 18:36:12"
-    }],
+    "notes": [
+      {
+        "id": 1901297236063695760,
+        "title": "会议记录",
+        "content": "Markdown 正文...",
+        "ref_content": "引用/转写内容",
+        "note_type": "meeting",
+        "source": "app",
+        "tags": [
+          {"id": "123", "name": "工作", "type": "manual"}
+        ],
+        "parent_id": 0,
+        "children_count": 2,
+        "topics": [{"id": 1, "name": "工作笔记"}],
+        "is_child_note": false,
+        "created_at": "2026-02-25 10:00:00",
+        "updated_at": "2026-02-25 10:30:00"
+      }
+    ],
     "has_more": true,
-    "next_cursor": 1899321837796601704,
-    "total": 10
-  },
-  "error": null,
-  "meta": {"timestamp": 1772007500},
-  "request_id": "xxx"
+    "next_cursor": 1901297236063695759,
+    "total": 20
+  }
 }
 ```
 
-**笔记类型 (note_type)**：
-- `meeting`: 会议笔记（录音卡录制）
-- `recorder_audio`: 录音笔记（APP 录制）
-- `plain_text`: 纯文本笔记
-- `img_text`: 图片笔记
-- `link`: 链接笔记
+**笔记类型 (note_type)**:
+- `plain_text` - 纯文本笔记
+- `img_text` - 图片笔记
+- `link` - 链接笔记
+- `meeting` - 会议笔记（录音卡）
+- `recorder_audio` - 录音笔记（App 录制）
 
-### 2. 获取笔记详情
+---
 
+## 2. 笔记详情
+
+```http
+GET /open/api/v1/resource/note/detail?id=1901297236063695760
 ```
-GET /open/api/v1/resource/note/detail?id=123456789
-```
 
-返回比列表更详细的信息：
+**参数**:
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| id | int64 | ✅ | 笔记 ID |
+
+**响应** (比列表多以下字段):
 ```json
 {
   "success": true,
   "data": {
     "note": {
       "id": 1901297236063695760,
-      "title": "笔记标题",
-      "content": "完整 Markdown 内容",
+      "title": "会议记录",
+      "content": "Markdown 正文...",
       "ref_content": "引用内容",
       "note_type": "meeting",
       "source": "app",
       "entry_type": "ai",
-      "tags": [{"id": "123456", "name": "工作"}],
-      "children_count": 0,
-      "topics": null,
-      "is_child_note": false,
-      "attachments": [{
-        "type": "audio",
-        "url": "https://mediacdn.example.com/audio.mp3",
-        "title": "",
-        "duration": 1260720
-      }],
+      "tags": [{"id": "123", "name": "工作", "type": "manual"}],
+      "attachments": [
+        {"type": "audio", "url": "https://...", "duration": 1260000}
+      ],
       "audio": {
-        "transcript": "🟢 说话人1 [00:00:00]\n内容...\n\n🟣 说话人2 [00:00:24]\n内容..."
+        "play_url": "https://...",
+        "duration": 1260,
+        "transcript": "🟢 说话人1 [00:00:00]\n内容..."
       },
-      "version": 0,
-      "created_at": "2026-02-10 18:36:12",
-      "updated_at": "2026-02-10 18:58:49"
+      "web_page": {
+        "url": "https://原始链接",
+        "domain": "example.com",
+        "excerpt": "摘要",
+        "content": "链接原文"
+      },
+      "share_id": "abc123",
+      "version": 1,
+      "created_at": "2026-02-25 10:00:00",
+      "updated_at": "2026-02-25 10:30:00"
     }
   }
 }
 ```
 
-**额外字段**：
-- `attachments`: 附件列表（图片、音频、视频等）
-  - `type`: audio/image/video/file
-  - `url`: 资源地址
-  - `duration`: 音频/视频时长（毫秒）
-- `audio.transcript`: 原始转写文本（带时间戳和说话人标记）
-- `ref_content`: 引用内容
-- `version`: 版本号
+**附件类型 (attachments.type)**: `audio` | `image` | `link` | `pdf`
 
-### 3. 创建笔记
+---
 
-```
+## 3. 创建/编辑笔记
+
+```http
 POST /open/api/v1/resource/note/save
 Content-Type: application/json
 ```
 
-**纯文本笔记：**
+**请求体**:
 ```json
 {
+  "id": 0,                    // 编辑时必填，创建时不填或填 0
   "title": "笔记标题",
-  "content": "笔记内容",
-  "source": "openapi"
+  "content": "Markdown 内容",
+  "note_type": "plain_text",  // plain_text | img_text | link
+  "tags": ["工作", "重要"],
+  "parent_id": 0,             // 创建子笔记时填父笔记 ID
+  "link_url": "https://...",  // link 类型必填
+  "image_urls": ["https://..."] // img_text 类型必填
 }
 ```
 
-**链接笔记：**
-```json
-{
-  "title": "链接标题",
-  "content": "链接说明",
-  "note_type": "link",
-  "link_url": "https://example.com/article",
-  "source": "openapi"
-}
-```
-
-返回：
+**响应**:
 ```json
 {
   "success": true,
   "data": {
-    "id": 123456789,
+    "id": 1901297236063695760,
     "title": "笔记标题",
-    "source": "openapi",
-    "created_at": "2026-02-24 10:00:00",
-    "updated_at": "2026-02-24 10:00:00",
+    "created_at": "2026-02-25 10:00:00",
+    "updated_at": "2026-02-25 10:00:00",
     "message": "链接笔记创建成功，AI 正在后台处理..."
   }
 }
 ```
 
-> 📝 **来源标识**：创建笔记时 `source` 必须传 `openapi`。
+> ⚠️ 链接笔记创建后 AI 异步处理，约 3 分钟后可获取完整内容。
+
+---
+
+## 4. 删除笔记
+
+```http
+POST /open/api/v1/resource/note/delete
+Content-Type: application/json
 ```
 
-> ⚠️ **链接笔记说明**：链接笔记创建后，AI 会在后台异步处理网页内容。如需获取 AI 处理结果（摘要、正文提取等），请在约 **3 分钟后**通过笔记详情接口获取完整内容。
-
-### 4. 添加笔记标签
-
+**请求体**:
+```json
+{
+  "note_id": 1901297236063695760
+}
 ```
+
+**响应**:
+```json
+{
+  "success": true,
+  "data": {
+    "note_id": 1901297236063695760
+  }
+}
+```
+
+---
+
+## 5. 添加标签
+
+```http
 POST /open/api/v1/resource/note/tags/add
 Content-Type: application/json
 ```
 
+**请求体**:
 ```json
 {
-  "note_id": 123456789,
+  "note_id": 1901297236063695760,
   "tags": ["工作", "重要"]
 }
 ```
 
-返回添加后的完整标签列表（包含 id 和 name）。
-
-### 5. 删除笔记标签
-
+**响应**:
+```json
+{
+  "success": true,
+  "data": {
+    "note_id": 1901297236063695760,
+    "tags": [
+      {"id": "123", "name": "工作", "type": "manual"},
+      {"id": "124", "name": "重要", "type": "manual"}
+    ]
+  }
+}
 ```
+
+**标签类型 (type)**:
+- `ai` - AI 自动生成
+- `manual` - 用户手动添加
+- `system` - 系统标签（⚠️ 不可删除）
+
+---
+
+## 6. 删除标签
+
+```http
 POST /open/api/v1/resource/note/tags/delete
 Content-Type: application/json
 ```
 
+**请求体**:
 ```json
 {
-  "note_id": 123456789,
-  "tag_id": "987654321"
+  "note_id": 1901297236063695760,
+  "tag_id": "123"
 }
 ```
 
-## 笔记内容结构
-
-录音/会议笔记的 content 字段通常包含以下 Markdown 结构：
-
-```markdown
-### 📑 智能总结
-
-#### 录音信息
-- **录音时间**：2026-02-10 18:36:12 ~ 2026-02-10 18:57:12
-- **时长**：约 0小时21分钟
-- **参与人数**：约 6人
-- **内容类型**：工作会议
-
-#### 录音总结
-会议主题和核心内容...
-
-**主题一**
-* **要点1**：详细内容...
-* **要点2**：详细内容...
-
-### 📅 章节概要
-[00:00:00](https://getnotes.seek:0) **章节标题**
-章节内容摘要...
-
-### ✨ 金句精选
-- "金句内容" (分类标签)
-
-### 📋 待办事项
-- 负责人：具体任务
-```
-
-## 错误处理
-
-所有接口统一返回格式：
+**响应**:
 ```json
 {
   "success": true,
-  "data": {...},
-  "error": null,
-  "meta": {"timestamp": 1772007500},
-  "request_id": "xxx"
+  "data": {
+    "note_id": 1901297236063695760,
+    "tags": []
+  }
 }
 ```
 
-错误时：
+> ⚠️ 系统标签（`type: "system"`）不允许删除，会返回错误。
+
+---
+
+## 7. 图片上传凭证
+
+```http
+GET /open/api/v1/resource/image/upload_token?count=1
+```
+
+**参数**:
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| count | int | 否 | 需要的 token 数量，默认 1 |
+
+用于创建图片笔记前获取上传凭证。
+
+---
+
+## 错误响应
+
 ```json
 {
   "success": false,
@@ -247,24 +289,44 @@ Content-Type: application/json
 }
 ```
 
-## 常见用法
+---
 
-**查询最近笔记：**
+## 常见用法示例
+
+### 查询最近 10 条笔记
 ```bash
 curl -X GET 'https://openapi.biji.com/open/api/v1/resource/note/list?limit=10' \
   -H 'Authorization: gk_live_xxx'
 ```
 
-**获取笔记详情（含原始转写）：**
-```bash
-curl -X GET 'https://openapi.biji.com/open/api/v1/resource/note/detail?id=xxx' \
-  -H 'Authorization: gk_live_xxx'
-```
-
-**创建纯文本笔记：**
+### 创建纯文本笔记
 ```bash
 curl -X POST 'https://openapi.biji.com/open/api/v1/resource/note/save' \
   -H 'Authorization: gk_live_xxx' \
   -H 'Content-Type: application/json' \
-  -d '{"title":"标题","content":"内容","source":"openapi"}'
+  -d '{"title":"标题","content":"内容"}'
+```
+
+### 创建链接笔记
+```bash
+curl -X POST 'https://openapi.biji.com/open/api/v1/resource/note/save' \
+  -H 'Authorization: gk_live_xxx' \
+  -H 'Content-Type: application/json' \
+  -d '{"title":"文章标题","note_type":"link","link_url":"https://example.com/article"}'
+```
+
+### 给笔记添加标签
+```bash
+curl -X POST 'https://openapi.biji.com/open/api/v1/resource/note/tags/add' \
+  -H 'Authorization: gk_live_xxx' \
+  -H 'Content-Type: application/json' \
+  -d '{"note_id":123456789,"tags":["工作","重要"]}'
+```
+
+### 删除笔记
+```bash
+curl -X POST 'https://openapi.biji.com/open/api/v1/resource/note/delete' \
+  -H 'Authorization: gk_live_xxx' \
+  -H 'Content-Type: application/json' \
+  -d '{"note_id":123456789}'
 ```
