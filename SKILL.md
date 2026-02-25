@@ -124,7 +124,8 @@ Content-Type: application/json
 ```json
 {
   "title": "笔记标题",
-  "content": "笔记内容"
+  "content": "笔记内容",
+  "source": "openapi"
 }
 ```
 
@@ -134,7 +135,8 @@ Content-Type: application/json
   "title": "链接标题",
   "content": "链接说明",
   "note_type": "link",
-  "link_url": "https://example.com/article"
+  "link_url": "https://example.com/article",
+  "source": "openapi"
 }
 ```
 
@@ -153,7 +155,7 @@ Content-Type: application/json
 }
 ```
 
-> 📝 **来源标识**：通过 API 创建的笔记，`source` 字段统一为 `openapi`。
+> 📝 **来源标识**：创建笔记时 `source` 必须传 `openapi`。
 ```
 
 > ⚠️ **链接笔记说明**：链接笔记创建后，AI 会在后台异步处理网页内容。如需获取 AI 处理结果（摘要、正文提取等），请在约 **3 分钟后**通过笔记详情接口获取完整内容。
@@ -264,5 +266,5 @@ curl -X GET 'https://openapi.biji.com/open/api/v1/resource/note/detail?id=xxx' \
 curl -X POST 'https://openapi.biji.com/open/api/v1/resource/note/save' \
   -H 'Authorization: gk_live_xxx' \
   -H 'Content-Type: application/json' \
-  -d '{"title":"标题","content":"内容"}'
+  -d '{"title":"标题","content":"内容","source":"openapi"}'
 ```
