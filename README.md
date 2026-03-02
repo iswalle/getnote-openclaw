@@ -59,4 +59,4 @@ curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/install
 
 ## 📜 许可证
 
-MIT
+[MIT](./LICENSE) - 可自由使用、修改、分发，需保留版权声明。
