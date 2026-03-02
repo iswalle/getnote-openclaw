@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+
+# Editor
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# Config (may contain API keys)
+config.json

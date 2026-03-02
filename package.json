@@ -1,10 +1,27 @@
 {
   "name": "getnotes",
-  "version": "1.1.0",
-  "description": "Create and manage notes via Get笔记 Open API. Supports text notes, image notes, link notes, and querying meeting/audio notes with AI summaries.",
+  "version": "1.2.0",
+  "description": "Create and manage notes via Get笔记 Open API. Supports text notes, image notes, link notes, knowledge bases, and querying meeting/audio notes with AI summaries.",
   "author": "Get笔记",
   "homepage": "https://biji.com",
-  "keywords": ["notes", "get笔记", "录音", "会议纪要", "ai"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iswalle/getnote-openclaw.git"
+  },
+  "bugs": {
+    "url": "https://github.com/iswalle/getnote-openclaw/issues"
+  },
+  "keywords": [
+    "notes",
+    "get笔记",
+    "笔记",
+    "录音",
+    "会议纪要",
+    "知识库",
+    "ai",
+    "openclaw",
+    "skill"
+  ],
   "license": "MIT",
   "openclaw": {
     "minVersion": "0.1.0"
