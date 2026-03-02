@@ -377,7 +377,6 @@ GET /open/api/v1/resource/knowledge/notes?topic_id=abc123&page=1
 - `has_more`: 是否有下一页，`true` 表示还有更多数据
 - 翻页：当 `has_more` 为 `true` 时，将 `page` 加 1 继续请求
 - `total`: 该知识库内的笔记总数
-```
 
 ---
 
