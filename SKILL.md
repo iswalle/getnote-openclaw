@@ -151,16 +151,28 @@ Content-Type: application/json
 **请求体**:
 ```json
 {
-  "id": 0,                    // 编辑时必填，创建时不填或填 0
+  "id": 0,                    // 编辑时必填，创建时不填
   "title": "笔记标题",
   "content": "Markdown 内容",
-  "note_type": "plain_text",  // plain_text | img_text | link
+  "note_type": "plain_text",  // plain_text（默认，文本/图文笔记）| link（链接笔记）
   "tags": ["工作", "重要"],
   "parent_id": 0,             // 创建子笔记时填父笔记 ID
-  "link_url": "https://...",  // link 类型必填
-  "image_urls": ["https://..."] // img_text 类型必填
+  "link_url": "https://...",  // 链接笔记专用，链接地址
+  "image_urls": ["https://..."] // 图片笔记专用，图片地址列表（从 upload_token 上传后得到）
 }
 ```
+
+**参数说明**:
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| id | int64 | 否 | 笔记 ID，编辑时必填，创建时不填 |
+| title | string | 否 | 笔记标题 |
+| content | string | 否 | 正文内容 (Markdown)，链接笔记可为空 |
+| note_type | string | 否 | 笔记类型：`plain_text`（默认，文本/图文笔记）、`link`（链接笔记） |
+| tags | string[] | 否 | 标签列表，最多 5 个，每个标签不超过 20 字符。⚠️ 链接笔记不支持同时创建标签 |
+| parent_id | int64 | 否 | 父笔记 ID，创建子笔记时使用 |
+| image_urls | string[] | 否 | 图片笔记专用，图片地址列表（从 upload_token 上传后得到） |
+| link_url | string | 否 | 链接笔记专用，链接地址 |
 
 **响应**:
 ```json
@@ -177,6 +189,7 @@ Content-Type: application/json
 ```
 
 > ⚠️ 链接笔记创建后 AI 异步处理，约 3 分钟后可获取完整内容。
+> ⚠️ 链接笔记不支持同时创建标签，需要创建后再调用添加标签接口。
 
 ---
 
