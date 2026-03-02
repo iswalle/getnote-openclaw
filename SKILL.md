@@ -367,10 +367,16 @@ GET /open/api/v1/resource/knowledge/notes?topic_id=abc123&page=1
         "edit_time": "2026-02-25 10:30:00"
       }
     ],
-    "has_more": false,
-    "total": 10
+    "has_more": true,
+    "total": 50
   }
 }
+```
+
+**分页说明**:
+- `has_more`: 是否有下一页，`true` 表示还有更多数据
+- 翻页：当 `has_more` 为 `true` 时，将 `page` 加 1 继续请求
+- `total`: 该知识库内的笔记总数
 ```
 
 ---
@@ -517,7 +523,11 @@ curl -X POST 'https://openapi.biji.com/open/api/v1/resource/knowledge/note/batch
 
 ### 获取知识库内的笔记
 ```bash
-# 每页固定 20 条，用 page 参数翻页
+# 第一页
 curl -X GET 'https://openapi.biji.com/open/api/v1/resource/knowledge/notes?topic_id=abc123&page=1' \
+  -H 'Authorization: gk_live_xxx'
+
+# 如果响应 has_more=true，请求下一页
+curl -X GET 'https://openapi.biji.com/open/api/v1/resource/knowledge/notes?topic_id=abc123&page=2' \
   -H 'Authorization: gk_live_xxx'
 ```
