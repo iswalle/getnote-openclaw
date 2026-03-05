@@ -1,5 +1,5 @@
 ---
-name: getnotes
+name: Get笔记
 description: |
   Get笔记 - 个人笔记管理工具。
   
