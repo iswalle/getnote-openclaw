@@ -25,7 +25,7 @@
 
 直接告诉你的 AI 助手：
 
-> 「帮我安装 Get笔记 skill，地址是 https://github.com/iswalle/getnote-openclaw」
+> 帮我安装 Get笔记 skill，地址是 https://github.com/iswalle/getnote-openclaw
 
 ### 方式二：一键脚本安装
 
