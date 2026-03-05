@@ -111,13 +111,13 @@ curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/package
 
 ## 🛠 支持的笔记类型
 
-| 类型 | 说明 |
-|------|------|
-| `plain_text` | 纯文本 / 图文笔记 |
-| `link` | 链接笔记（自动抓取正文） |
-| `img_text` | 图片笔记 |
-| `meeting` | 会议笔记（含 AI 摘要） |
-| `recorder_audio` | 录音笔记 |
+| 类型 | 说明 | 写入支持 |
+|------|------|----------|
+| `plain_text` | 纯文本 / 图文笔记 | ✅ 支持读写 |
+| `link` | 链接笔记（自动抓取正文） | ✅ 支持读写 |
+| `img_text` | 图片笔记 | ⚠️ 仅支持读取（需在 App/Web 创建） |
+| `meeting` | 会议笔记（含 AI 摘要） | ⚠️ 仅支持读取（需在 App/Web 创建） |
+| `recorder_audio` | 录音笔记 | ⚠️ 仅支持读取（需在 App/Web 创建） |
 
 > 📖 完整 API 文档（含接口列表、参数、响应示例）见 [SKILL.md](./SKILL.md)
 
