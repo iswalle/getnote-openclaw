@@ -101,7 +101,7 @@ GET /open/api/v1/resource/note/list?limit=20&since_id=0
 ```
 
 **笔记类型 (note_type)**:
-- `plain_text` - 纯文本笔记
+- `plain_text` - 纯文本笔记（不支持图文）
 - `img_text` - 图片笔记
 - `link` - 链接笔记
 - `meeting` - 会议笔记（录音卡）

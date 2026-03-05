@@ -113,7 +113,7 @@ curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/package
 
 | 类型 | 说明 | 写入支持 |
 |------|------|----------|
-| `plain_text` | 纯文本 / 图文笔记 | ✅ 支持读写 |
+| `plain_text` | 纯文本笔记 | ✅ 支持读写 |
 | `link` | 链接笔记（自动抓取正文） | ✅ 支持读写 |
 | `img_text` | 图片笔记 | ⚠️ 仅支持读取（需在 App/Web 创建） |
 | `meeting` | 会议笔记（含 AI 摘要） | ⚠️ 仅支持读取（需在 App/Web 创建） |
