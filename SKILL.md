@@ -87,7 +87,7 @@ GET /open/api/v1/resource/note/list?limit=20&since_id=0
         ],
         "parent_id": 0,
         "children_count": 2,
-        "topics": [{"id": 1, "name": "工作笔记"}],
+        "topics": [{"id": "abc123", "name": "工作笔记"}],
         "is_child_note": false,
         "created_at": "2026-02-25 10:00:00",
         "updated_at": "2026-02-25 10:30:00"
@@ -106,6 +106,8 @@ GET /open/api/v1/resource/note/list?limit=20&since_id=0
 - `link` - 链接笔记
 - `meeting` - 会议笔记（录音卡）
 - `recorder_audio` - 录音笔记（App 录制）
+
+> 💡 **topics.id 说明**：笔记所属知识库列表中的 `id` 字段为 alias id（字符串类型），而非内部数字 ID。这样设计是为了方便开发者直接使用，可直接用于知识库相关接口的 `topic_id` 参数。
 
 ---
 
