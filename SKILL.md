@@ -412,7 +412,11 @@ Content-Type: application/json
 
 ---
 
-### 8. 图片上传凭证
+### 8. 图片上传（完整流程）
+
+图片笔记的创建需要 3 个步骤：
+
+#### 步骤 1：获取上传凭证
 
 ```http
 GET /open/api/v1/resource/image/upload_token?count=1
@@ -421,9 +425,79 @@ GET /open/api/v1/resource/image/upload_token?count=1
 **参数**:
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| count | int | 否 | 需要的 token 数量，默认 1 |
+| count | int | 否 | 需要的 token 数量，默认 1，最大 9 |
 
-用于创建图片笔记前获取上传凭证。
+**响应**:
+```json
+{
+  "success": true,
+  "data": {
+    "tokens": [
+      {
+        "sign_url": "https://oss-bucket.oss-cn-beijing.aliyuncs.com/path/to/image.jpg?Expires=xxx&OSSAccessKeyId=xxx&Signature=xxx",
+        "get_url": "https://cdn.example.com/path/to/image.jpg",
+        "object_key": "path/to/image.jpg",
+        "mime_type": "image/jpeg"
+      }
+    ]
+  }
+}
+```
+
+#### 步骤 2：上传图片到 OSS
+
+使用返回的 `sign_url` 直接 PUT 上传图片：
+
+```bash
+# 使用 curl 上传
+curl -X PUT \
+  -H "Content-Type: image/jpeg" \
+  --data-binary @/path/to/local/image.jpg \
+  "https://oss-bucket.oss-cn-beijing.aliyuncs.com/path/to/image.jpg?Expires=xxx&OSSAccessKeyId=xxx&Signature=xxx"
+```
+
+```python
+# Python 示例
+import requests
+
+with open('/path/to/local/image.jpg', 'rb') as f:
+    response = requests.put(
+        sign_url,
+        data=f,
+        headers={'Content-Type': 'image/jpeg'}
+    )
+    if response.status_code == 200:
+        print('上传成功')
+```
+
+```javascript
+// Node.js 示例
+const fs = require('fs');
+const https = require('https');
+const url = require('url');
+
+const fileBuffer = fs.readFileSync('/path/to/local/image.jpg');
+const parsedUrl = url.parse(signUrl);
+
+const options = {
+  hostname: parsedUrl.hostname,
+  path: parsedUrl.path,
+  method: 'PUT',
+  headers: { 'Content-Type': 'image/jpeg' }
+};
+
+const req = https.request(options, (res) => {
+  if (res.statusCode === 200) console.log('上传成功');
+});
+req.write(fileBuffer);
+req.end();
+```
+
+#### 步骤 3：创建图片笔记
+
+上传完成后，使用 `get_url` 创建图片笔记（注意：图片笔记目前暂不支持通过 OpenAPI 创建，仅支持纯文本和链接笔记）：
+
+> ⚠️ **当前限制**：图片笔记（img_text 类型）暂不支持通过 OpenAPI 创建。如需创建图片笔记，请使用 Get笔记 App。
 
 ---
 
