@@ -264,8 +264,7 @@ Content-Type: application/json
     "note_id": 1901297236063695760,
     "error_msg": "",
     "create_time": "2026-02-25 10:00:00",
-    "update_time": "2026-02-25 10:02:30",
-    "finish_time": "2026-02-25 10:03:00"
+    "update_time": "2026-02-25 10:02:30"
   }
 }
 ```
@@ -280,7 +279,6 @@ Content-Type: application/json
 | error_msg | string | 错误信息（status 为 failed 时返回） |
 | create_time | string | 任务创建时间 |
 | update_time | string | 任务最后更新时间 |
-| finish_time | string | 任务完成时间（成功或失败后填充） |
 
 > 💡 建议以 10~30 秒的间隔轮询此接口，直到 status 变为 `success` 或 `failed`。
 
