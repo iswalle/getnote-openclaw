@@ -109,6 +109,15 @@ curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/package
 
 ---
 
+## ⚠️ 使用限制
+
+| 限制项 | 说明 |
+|--------|------|
+| 每日知识库创建上限 | 每个账号每天最多创建 **50 个知识库** |
+| 重置时间 | 按 **Europe/Berlin 时区**自然日 00:00 重置 |
+
+---
+
 ## 🛠 支持的笔记类型
 
 | 类型 | 说明 | 写入支持 |

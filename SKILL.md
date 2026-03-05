@@ -360,6 +360,8 @@ POST /open/api/v1/resource/knowledge/create
 Content-Type: application/json
 ```
 
+> ⚠️ **创建限制**：每个账号每天最多创建 **50 个知识库**，按 Europe/Berlin 时区自然日 00:00 重置。
+
 **请求体**:
 ```json
 {
