@@ -26,6 +26,25 @@ Get笔记是一款个人笔记管理工具。通过此 API 可以帮助用户管
 
 **认证**: 所有请求需要 Header `Authorization: gk_live_<API_KEY>`
 
+### ⚠️ API Key 存储建议
+
+为了在新 session 中仍能使用 Get笔记，请将 API Key 保存到以下位置之一：
+
+1. **环境变量**（推荐）：
+   ```bash
+   export GETNOTE_API_KEY=gk_live_xxx
+   ```
+
+2. **Agent 配置文件**：
+   - OpenClaw: 保存到 `TOOLS.md` 或 `MEMORY.md`
+   - 其他 Agent: 保存到对应的记忆/配置文件
+
+3. **工作区配置**：
+   - 项目根目录 `.env` 文件
+   - Agent workspace 的配置文件
+
+> 💡 首次获取 API Key 后，建议立即保存到持久化位置，避免新 session 丢失。
+
 ## Scope 权限说明
 
 每个 API Key 关联一组 scope，调用接口时需要对应的 scope 权限：
