@@ -1,7 +1,7 @@
 {
   "name": "getnote",
-  "version": "1.0.7",
-  "description": "让 AI 帮你保存和管理 Get笔记。发个链接说「存一下」，发张图片说「记到笔记」，就这么简单。",
+  "version": "1.0.8",
+  "description": "让 AI 帮你保存和管理 Get笔记。有灵感，随时保存，发个链接说「存一下」，发张图片说「记到笔记」，就这么简单。",
   "author": "Get笔记 <dev@biji.com>",
   "homepage": "https://biji.com",
   "repository": {
