@@ -1,7 +1,7 @@
 {
   "name": "getnote",
-  "version": "1.0.5",
-  "description": "Create and manage notes via Get笔记 Open API. Supports text notes, image notes, link notes, knowledge bases, and querying meeting/audio notes with AI summaries.",
+  "version": "1.0.6",
+  "description": "Get笔记 - 用自然语言管理你的笔记。支持纯文本、链接、图片笔记，以及知识库和标签管理。还能读取会议录音和语音转写的 AI 总结。",
   "author": "Get笔记 <dev@biji.com>",
   "homepage": "https://biji.com",
   "repository": {
