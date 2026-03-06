@@ -62,8 +62,6 @@ Get笔记是一款个人笔记管理工具。通过此 API 可以帮助用户管
 | `note.topic.read` | 笔记所属知识库查询 |
 | `note.topic.write` | 笔记加入/移出知识库 |
 | `note.image.upload` | 获取上传图片签名 |
-| `note.recall.read` | 笔记内容召回 |
-| `note.topic.recall.read` | 知识库笔记召回 |
 
 ## API 列表
 
