@@ -28,15 +28,18 @@ Get笔记是一款个人笔记管理工具。通过此 API 可以帮助用户管
 
 **Base URL**: `https://openapi.biji.com`
 
-**认证**: 所有请求需要 Header `Authorization: gk_live_<API_KEY>`
+**认证**: 所有请求需要以下 Header：
+- `Authorization: gk_live_<API_KEY>` - API 密钥
+- `X-Client-ID: <CLIENT_ID>` - 客户端 ID（与 API Key 关联的 Client ID）
 
 ### ⚠️ API Key 存储建议
 
-为了在新 session 中仍能使用 Get笔记，请将 API Key 保存到以下位置之一：
+为了在新 session 中仍能使用 Get笔记，请将 API Key 和 Client ID 保存到以下位置之一：
 
 1. **环境变量**（推荐）：
    ```bash
    export GETNOTE_API_KEY=gk_live_xxx
+   export GETNOTE_CLIENT_ID=cli_xxx
    ```
 
 2. **Agent 配置文件**：
