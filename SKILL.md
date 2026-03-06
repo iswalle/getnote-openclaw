@@ -103,7 +103,7 @@ GET /open/api/v1/resource/note/list?since_id=0
 |------|------|------|------|
 | since_id | int64 | ✅ | 游标，返回 ID 小于此值的笔记。首次请求传 0 |
 
-> ⚠️ `since_id` 必传，不传会导致分页异常。首次请求用 `since_id=0`，后续用上一页最后一条笔记的 ID。
+> ⚠️ `since_id` 必传，不传会导致分页异常。首次请求用 `since_id=0`，后续用接口返回的 next_cursor。
 > 
 > 💡 接口固定每次返回 20 条笔记。
 
