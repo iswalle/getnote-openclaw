@@ -95,16 +95,17 @@ Get笔记是一款个人笔记管理工具。通过此 API 可以帮助用户管
 ### 1. 笔记列表
 
 ```http
-GET /open/api/v1/resource/note/list?limit=20&since_id=0
+GET /open/api/v1/resource/note/list?since_id=0
 ```
 
 **参数**:
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| limit | int | 否 | 每页数量，默认 20，最大 100 |
 | since_id | int64 | ✅ | 游标，返回 ID 小于此值的笔记。首次请求传 0 |
 
 > ⚠️ `since_id` 必传，不传会导致分页异常。首次请求用 `since_id=0`，后续用上一页最后一条笔记的 ID。
+> 
+> 💡 接口固定每次返回 20 条笔记。
 
 **响应**:
 ```json
@@ -767,9 +768,9 @@ Content-Type: application/json
 
 ## 常见用法示例
 
-### 查询最近 10 条笔记
+### 查询最近笔记
 ```bash
-curl -X GET 'https://openapi.biji.com/open/api/v1/resource/note/list?limit=10' \
+curl -X GET 'https://openapi.biji.com/open/api/v1/resource/note/list?since_id=0' \
   -H 'Authorization: gk_live_xxx'
 ```
 
