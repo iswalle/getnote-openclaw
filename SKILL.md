@@ -32,6 +32,8 @@ Get笔记是一款个人笔记管理工具。通过此 API 可以帮助用户管
 - `Authorization: gk_live_<API_KEY>` - API 密钥
 - `X-Client-ID: <CLIENT_ID>` - 客户端 ID（与 API Key 关联的 Client ID）
 
+获取 API Key 和 Client ID：https://www.biji.com/openapi
+
 ### ⚠️ API Key 存储建议
 
 为了在新 session 中仍能使用 Get笔记，请将 API Key 和 Client ID 保存到以下位置之一：
