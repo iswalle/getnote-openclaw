@@ -70,7 +70,7 @@ export GETNOTE_CLIENT_ID=cli_xxx
 | 笔记列表 | GET | `/open/api/v1/resource/note/list` | `note.content.read` |
 | 笔记详情 | GET | `/open/api/v1/resource/note/detail` | `note.content.read` |
 | 新建笔记（仅支持新建） | POST | `/open/api/v1/resource/note/save` | `note.content.write` |
-| 查询笔记任务进度 | POST | `/api/v1/resource/note/task/progress` | `note.content.read` |
+| 查询笔记任务进度 | POST | `/open/api/v1/resource/note/task/progress` | `note.content.read` |
 | 删除笔记 | POST | `/open/api/v1/resource/note/delete` | `note.content.trash` |
 | 添加标签 | POST | `/open/api/v1/resource/note/tags/add` | `note.tag.write` |
 | 删除标签 | POST | `/open/api/v1/resource/note/tags/delete` | `note.tag.write` |
@@ -273,7 +273,7 @@ Content-Type: application/json
 > 用于查询链接笔记和图片笔记异步创建任务的处理状态。
 
 ```http
-POST /api/v1/resource/note/task/progress
+POST /open/api/v1/resource/note/task/progress
 Content-Type: application/json
 ```
 
@@ -808,7 +808,7 @@ curl -X POST 'https://openapi.biji.com/open/api/v1/resource/note/save' \
 
 ### 查询链接笔记任务进度
 ```bash
-curl -X POST 'https://openapi.biji.com/api/v1/resource/note/task/progress' \
+curl -X POST 'https://openapi.biji.com/open/api/v1/resource/note/task/progress' \
   -H 'Authorization: gk_live_xxx' \
   -H 'X-Client-ID: cli_xxx' \
   -H 'Content-Type: application/json' \
