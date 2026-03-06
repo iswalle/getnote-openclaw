@@ -134,8 +134,11 @@ def main():
         print()
         print(f"访问 URL: {image_url}")
         print()
-        print("⚠️  注意: 图片笔记（img_text）暂不支持通过 OpenAPI 创建")
-        print("    如需创建图片笔记，请使用 Get笔记 App")
+        print("💡 创建图片笔记:")
+        print(f'   curl -X POST "https://openapi.biji.com/open/api/v1/note/save_note?task_id=..."')
+        print(f'     -H "Authorization: $GETNOTE_API_KEY"')
+        print(f'     -H "Content-Type: application/json"')
+        print(f'     -d \'{{"type":"img_text","image_urls":["{image_url}"]}}\'')
         
     except Exception as e:
         print(f"错误: {e}")

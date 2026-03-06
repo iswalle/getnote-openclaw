@@ -17,6 +17,8 @@
 
 > 💡 说人话就能记笔记，比打开 App 快多了。
 
+> 🔑 **获取 API Key**：https://www.biji.com/openapi
+
 ---
 
 ## 📦 安装
@@ -124,9 +126,9 @@ curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/package
 |------|------|----------|
 | `plain_text` | 纯文本笔记 | ✅ 支持读写 |
 | `link` | 链接笔记（自动抓取正文） | ✅ 支持读写 |
-| `img_text` | 图片笔记 | ⚠️ 仅支持读取（需在 App/Web 创建） |
-| `meeting` | 会议笔记（含 AI 摘要） | ⚠️ 仅支持读取（需在 App/Web 创建） |
-| `recorder_audio` | 录音笔记 | ⚠️ 仅支持读取（需在 App/Web 创建） |
+| `img_text` | 图片笔记 | ✅ 支持创建（需先上传图片获取 URL） |
+| `meeting` | 会议笔记（含 AI 摘要） | ⚠️ 仅支持读取 |
+| `recorder_audio` | 录音笔记 | ⚠️ 仅支持读取 |
 
 > 📖 完整 API 文档（含接口列表、参数、响应示例）见 [SKILL.md](./SKILL.md)
 
