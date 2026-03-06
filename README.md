@@ -39,8 +39,8 @@ clawhub install getnote
 
 ```bash
 # 进入 OpenClaw Skill 目录
-mkdir -p ~/.openclaw/workspace/skills/getnotes
-cd ~/.openclaw/workspace/skills/getnotes
+mkdir -p ~/.openclaw/workspace/skills/getnote
+cd ~/.openclaw/workspace/skills/getnote
 
 # 下载 Skill 文件
 curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/SKILL.md -o SKILL.md
@@ -117,7 +117,7 @@ export GETNOTE_CLIENT_ID=cli_xxx
 | 限制项 | 说明 |
 |--------|------|
 | 每日知识库创建上限 | 每个账号每天最多创建 **50 个知识库** |
-| 重置时间 | 按 **Europe/Berlin 时区**自然日 00:00 重置 |
+| 重置时间 | 按 **北京时间 (Asia/Shanghai)**自然日 00:00 重置 |
 
 ---
 
