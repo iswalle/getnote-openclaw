@@ -135,7 +135,7 @@ def main():
         print(f"访问 URL: {image_url}")
         print()
         print("💡 创建图片笔记:")
-        print(f'   curl -X POST "https://openapi.biji.com/open/api/v1/note/save_note?task_id=..."')
+        print(f'   curl -X POST "https://openapi.biji.com/open/api/v1/resource/note/save?task_id=..."')
         print(f'     -H "Authorization: $GETNOTE_API_KEY"')
         print(f'     -H "Content-Type: application/json"')
         print(f'     -d \'{{"type":"img_text","image_urls":["{image_url}"]}}\'')
