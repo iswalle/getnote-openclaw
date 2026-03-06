@@ -503,9 +503,21 @@ req.end();
 
 #### 步骤 3：创建图片笔记
 
-上传完成后，使用 `get_url` 创建图片笔记（注意：图片笔记目前暂不支持通过 OpenAPI 创建，仅支持纯文本和链接笔记）：
+上传完成后，使用 `access_url` 创建图片笔记：
 
-> ⚠️ **当前限制**：图片笔记（img_text 类型）暂不支持通过 OpenAPI 创建。如需创建图片笔记，请使用 Get笔记 App。
+```bash
+curl -X POST 'https://openapi.biji.com/open/api/v1/resource/note/save' \
+  -H 'Authorization: gk_live_xxx' \
+  -H 'X-Client-ID: cli_xxx' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "title": "我的图片笔记",
+    "note_type": "img_text",
+    "image_urls": ["<上一步获取的 access_url>"]
+  }'
+```
+
+> 💡 图片笔记创建后，Get笔记会自动对图片进行 AI 识别，生成标题、描述和标签。
 
 ---
 
@@ -776,13 +788,15 @@ Content-Type: application/json
 ### 查询最近笔记
 ```bash
 curl -X GET 'https://openapi.biji.com/open/api/v1/resource/note/list?since_id=0' \
-  -H 'Authorization: gk_live_xxx'
+  -H 'Authorization: gk_live_xxx' \
+  -H 'X-Client-ID: cli_xxx'
 ```
 
 ### 创建纯文本笔记
 ```bash
 curl -X POST 'https://openapi.biji.com/open/api/v1/resource/note/save' \
   -H 'Authorization: gk_live_xxx' \
+  -H 'X-Client-ID: cli_xxx' \
   -H 'Content-Type: application/json' \
   -d '{"title":"标题","content":"内容"}'
 ```
@@ -791,6 +805,7 @@ curl -X POST 'https://openapi.biji.com/open/api/v1/resource/note/save' \
 ```bash
 curl -X POST 'https://openapi.biji.com/open/api/v1/resource/note/save' \
   -H 'Authorization: gk_live_xxx' \
+  -H 'X-Client-ID: cli_xxx' \
   -H 'Content-Type: application/json' \
   -d '{"title":"文章标题","note_type":"link","link_url":"https://example.com/article"}'
 ```
@@ -799,6 +814,7 @@ curl -X POST 'https://openapi.biji.com/open/api/v1/resource/note/save' \
 ```bash
 curl -X POST 'https://openapi.biji.com/api/v1/resource/note/task/progress' \
   -H 'Authorization: gk_live_xxx' \
+  -H 'X-Client-ID: cli_xxx' \
   -H 'Content-Type: application/json' \
   -d '{"task_id":"task_abc123xyz"}'
 ```
@@ -807,6 +823,7 @@ curl -X POST 'https://openapi.biji.com/api/v1/resource/note/task/progress' \
 ```bash
 curl -X POST 'https://openapi.biji.com/open/api/v1/resource/note/tags/add' \
   -H 'Authorization: gk_live_xxx' \
+  -H 'X-Client-ID: cli_xxx' \
   -H 'Content-Type: application/json' \
   -d '{"note_id":123456789,"tags":["工作","重要"]}'
 ```
@@ -815,6 +832,7 @@ curl -X POST 'https://openapi.biji.com/open/api/v1/resource/note/tags/add' \
 ```bash
 curl -X POST 'https://openapi.biji.com/open/api/v1/resource/note/delete' \
   -H 'Authorization: gk_live_xxx' \
+  -H 'X-Client-ID: cli_xxx' \
   -H 'Content-Type: application/json' \
   -d '{"note_id":123456789}'
 ```
@@ -822,13 +840,15 @@ curl -X POST 'https://openapi.biji.com/open/api/v1/resource/note/delete' \
 ### 获取知识库列表
 ```bash
 curl -X GET 'https://openapi.biji.com/open/api/v1/resource/knowledge/list' \
-  -H 'Authorization: gk_live_xxx'
+  -H 'Authorization: gk_live_xxx' \
+  -H 'X-Client-ID: cli_xxx'
 ```
 
 ### 创建知识库
 ```bash
 curl -X POST 'https://openapi.biji.com/open/api/v1/resource/knowledge/create' \
   -H 'Authorization: gk_live_xxx' \
+  -H 'X-Client-ID: cli_xxx' \
   -H 'Content-Type: application/json' \
   -d '{"name":"我的知识库","description":"存放重要笔记"}'
 ```
@@ -837,6 +857,7 @@ curl -X POST 'https://openapi.biji.com/open/api/v1/resource/knowledge/create' \
 ```bash
 curl -X POST 'https://openapi.biji.com/open/api/v1/resource/knowledge/note/batch-add' \
   -H 'Authorization: gk_live_xxx' \
+  -H 'X-Client-ID: cli_xxx' \
   -H 'Content-Type: application/json' \
   -d '{"topic_id":"abc123","note_ids":[1901297236063695760]}'
 ```
@@ -845,9 +866,11 @@ curl -X POST 'https://openapi.biji.com/open/api/v1/resource/knowledge/note/batch
 ```bash
 # 第一页
 curl -X GET 'https://openapi.biji.com/open/api/v1/resource/knowledge/notes?topic_id=abc123&page=1' \
-  -H 'Authorization: gk_live_xxx'
+  -H 'Authorization: gk_live_xxx' \
+  -H 'X-Client-ID: cli_xxx'
 
 # 如果响应 has_more=true，请求下一页
 curl -X GET 'https://openapi.biji.com/open/api/v1/resource/knowledge/notes?topic_id=abc123&page=2' \
-  -H 'Authorization: gk_live_xxx'
+  -H 'Authorization: gk_live_xxx' \
+  -H 'X-Client-ID: cli_xxx'
 ```
