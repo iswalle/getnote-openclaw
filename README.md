@@ -53,20 +53,21 @@ curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/package
 
 安装后，还需要配置 Get笔记 API Key 才能使用。
 
-### 获取 API Key
+### 获取 API Key 和 Client ID
 
-1. 打开 **Get笔记 App**
-2. 进入 **设置 → 开发者选项**
-3. 点击 **创建 API Key**
-4. 复制生成的 Key（格式：`gk_live_xxx.xxx`）
+1. 访问 **https://www.biji.com/openapi**
+2. 登录后创建 API Key
+3. 复制 API Key（格式：`gk_live_xxx`）和 Client ID（格式：`cli_xxx`）
 
-### 配置到 OpenClaw
+### 配置到环境变量（推荐）
 
-告诉你的 AI 助手：
+```bash
+# 添加到 ~/.zshrc 或 ~/.bashrc
+export GETNOTE_API_KEY=gk_live_xxx
+export GETNOTE_CLIENT_ID=cli_xxx
+```
 
-> 「我的 Get笔记 API Key 是 `gk_live_xxx.xxx`」
-
-助手会将 Key 保存到配置中，之后自动使用。
+> ⚠️ **安全提示**：不要在群聊中发送 API Key。建议使用环境变量配置，避免密钥泄露。
 
 ---
 
