@@ -1,6 +1,6 @@
 {
   "name": "getnote",
-  "version": "1.2.0",
+  "version": "1.0.3",
   "description": "Create and manage notes via Get笔记 Open API. Supports text notes, image notes, link notes, knowledge bases, and querying meeting/audio notes with AI summaries.",
   "author": "Get笔记 <dev@biji.com>",
   "homepage": "https://biji.com",
