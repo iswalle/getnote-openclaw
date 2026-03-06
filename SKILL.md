@@ -423,78 +423,81 @@ Content-Type: application/json
 #### 步骤 1：获取上传凭证
 
 ```http
-GET /open/api/v1/resource/image/upload_token?count=1
+GET /open/api/v1/resource/image/upload_token?mime_type=jpg
 ```
 
 **参数**:
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
+| mime_type | string | 否 | 图片格式：`jpg`/`png`/`gif`/`webp`，默认 `png` |
 | count | int | 否 | 需要的 token 数量，默认 1，最大 9 |
+
+> ⚠️ **重要**：`mime_type` 参数决定了 OSS 签名的 Content-Type，必须与实际上传的图片格式一致，否则签名验证会失败。
 
 **响应**:
 ```json
 {
   "success": true,
   "data": {
-    "tokens": [
-      {
-        "sign_url": "https://oss-bucket.oss-cn-beijing.aliyuncs.com/path/to/image.jpg?Expires=xxx&OSSAccessKeyId=xxx&Signature=xxx",
-        "get_url": "https://cdn.example.com/path/to/image.jpg",
-        "object_key": "path/to/image.jpg",
-        "mime_type": "image/jpeg"
-      }
-    ]
+    "accessid": "LTAI5t7xxx",
+    "host": "https://ali-bj2-oss-get-notes-prod.oss-accelerate.aliyuncs.com",
+    "policy": "eyJleHBpcmF0aW9uIjo...",
+    "signature": "xxx=",
+    "expire": 1781443594,
+    "callback": "eyJjYWxsYmFja1VybCI6...",
+    "object_key": "get_notes_prod/202603062126/getnotes_img_xxx.jpg",
+    "access_url": "https://ali-bj2-oss-get-notes-prod.oss-accelerate.aliyuncs.com/get_notes_prod%2F...?Expires=xxx&Signature=xxx",
+    "oss_content_type": "image/jpeg"
   }
 }
 ```
 
 #### 步骤 2：上传图片到 OSS
 
-使用返回的 `sign_url` 直接 PUT 上传图片：
+使用 POST 表单方式上传图片到 `host`：
 
 ```bash
 # 使用 curl 上传
-curl -X PUT \
-  -H "Content-Type: image/jpeg" \
-  --data-binary @/path/to/local/image.jpg \
-  "https://oss-bucket.oss-cn-beijing.aliyuncs.com/path/to/image.jpg?Expires=xxx&OSSAccessKeyId=xxx&Signature=xxx"
+curl -X POST 'https://ali-bj2-oss-get-notes-prod.oss-accelerate.aliyuncs.com' \
+  -F 'key=<object_key>' \
+  -F 'OSSAccessKeyId=<accessid>' \
+  -F 'policy=<policy>' \
+  -F 'signature=<signature>' \
+  -F 'callback=<callback>' \
+  -F 'Content-Type=<oss_content_type>' \
+  -F 'file=@/path/to/local/image.jpg'
 ```
 
 ```python
 # Python 示例
 import requests
 
-with open('/path/to/local/image.jpg', 'rb') as f:
-    response = requests.put(
-        sign_url,
-        data=f,
-        headers={'Content-Type': 'image/jpeg'}
-    )
-    if response.status_code == 200:
-        print('上传成功')
+data = {
+    'key': object_key,
+    'OSSAccessKeyId': accessid,
+    'policy': policy,
+    'signature': signature,
+    'callback': callback,
+    'Content-Type': oss_content_type,
+}
+files = {'file': open('/path/to/local/image.jpg', 'rb')}
+response = requests.post(host, data=data, files=files)
+if response.status_code == 200:
+    print('上传成功')
 ```
 
-```javascript
-// Node.js 示例
-const fs = require('fs');
-const https = require('https');
-const url = require('url');
-
-const fileBuffer = fs.readFileSync('/path/to/local/image.jpg');
-const parsedUrl = url.parse(signUrl);
-
-const options = {
-  hostname: parsedUrl.hostname,
-  path: parsedUrl.path,
-  method: 'PUT',
-  headers: { 'Content-Type': 'image/jpeg' }
-};
-
-const req = https.request(options, (res) => {
-  if (res.statusCode === 200) console.log('上传成功');
-});
-req.write(fileBuffer);
-req.end();
+**上传成功响应**:
+```json
+{
+  "h": {"c": 0, "s": 1772803609},
+  "c": {
+    "image": {
+      "id": "1903533380721638032",
+      "status": 1,
+      "upload_at": 1772803609
+    }
+  }
+}
 ```
 
 #### 步骤 3：创建图片笔记
@@ -509,9 +512,29 @@ curl -X POST 'https://openapi.biji.com/open/api/v1/resource/note/save' \
   -d '{
     "title": "我的图片笔记",
     "note_type": "img_text",
-    "image_urls": ["<上一步获取的 access_url>"]
+    "image_urls": ["<步骤1获取的 access_url>"]
   }'
 ```
+
+**响应**:
+```json
+{
+  "success": true,
+  "data": {
+    "created_at": "2026-03-06 21:26:58",
+    "message": "图文笔记任务已创建，请通过 /note/task/progress 接口查询处理状态",
+    "created_count": 1,
+    "tasks": [
+      {
+        "task_id": "69aad622a20963789d7b2a0b",
+        "image_url": "https://..."
+      }
+    ]
+  }
+}
+```
+
+> ⚠️ **重要**：图片笔记是异步创建的，需要用 `task_id` 调用「查询任务进度」接口确认最终状态。
 
 > 💡 图片笔记创建后，Get笔记会自动对图片进行 AI 识别，生成标题、描述和标签。
 
