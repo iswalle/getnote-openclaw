@@ -1,8 +1,8 @@
 {
-  "name": "getnotes",
+  "name": "getnote",
   "version": "1.2.0",
   "description": "Create and manage notes via Get笔记 Open API. Supports text notes, image notes, link notes, knowledge bases, and querying meeting/audio notes with AI summaries.",
-  "author": "Get笔记",
+  "author": "Get笔记 <dev@biji.com>",
   "homepage": "https://biji.com",
   "repository": {
     "type": "git",
@@ -24,6 +24,20 @@
   ],
   "license": "MIT",
   "openclaw": {
-    "minVersion": "0.1.0"
+    "minVersion": "0.1.0",
+    "requires": {
+      "env": [
+        {
+          "name": "GETNOTE_API_KEY",
+          "description": "Get笔记 API Key (格式: gk_live_xxx)",
+          "required": true
+        },
+        {
+          "name": "GETNOTE_CLIENT_ID",
+          "description": "Get笔记 Client ID (格式: cli_xxx)",
+          "required": true
+        }
+      ]
+    }
   }
 }

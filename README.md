@@ -23,17 +23,17 @@
 
 ## 📦 安装
 
-### 方式一：在 OpenClaw 中安装（推荐）
+### 方式一：通过 ClawHub 安装（推荐）
+
+```bash
+clawhub install getnote
+```
+
+### 方式二：在 OpenClaw 中安装
 
 直接告诉你的 AI 助手：
 
 > 帮我安装 Get笔记 skill，地址是 https://github.com/iswalle/getnote-openclaw
-
-### 方式二：一键脚本安装
-
-```bash
-curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/install.sh | bash
-```
 
 ### 方式三：手动安装
 
