@@ -17,6 +17,12 @@ Get笔记是一款个人笔记管理工具。通过此 API 可以帮助用户管
 
 > 💡 **调用建议**：创建笔记建议间隔 1 分钟以上，避免触发限流。
 
+> 📝 **重要说明**：
+> 1. **语音笔记和链接笔记的原文内容**（如录音转写文本、网页原文）需要单独调用**笔记详情接口**获取，**笔记列表接口不返回原文**。
+> 2. **非会员错误处理**：如果 API 返回 `error.reason: "not_member"` 或错误码 `10201`，请引导用户开通会员：
+>    - 开通链接：https://www.biji.com/checkout?product_alias=6AydVpYeKl
+>    - 或提示用户使用微信扫码开通
+
 ## 使用场景
 
 - 用户说「帮我记一下」「保存到笔记」「记录下来」→ 调用新建笔记接口
@@ -138,9 +144,16 @@ GET /open/api/v1/resource/note/list?since_id=0
 **笔记类型 (note_type)**:
 - `plain_text` - 纯文本笔记（不支持图文）
 - `img_text` - 图片笔记
-- `link` - 链接笔记
-- `meeting` - 会议笔记（录音卡）
-- `recorder_audio` - 录音笔记（App 录制）
+- `link` - 链接笔记（详情接口有 `web_page.content` 原文）
+
+**语音笔记类型**（详情接口有 `audio.original` 转写原文）:
+- `audio` - 即时录制音频
+- `meeting` - 会议录音
+- `local_audio` - 本地文件音频
+- `internal_record` - 内录音频
+- `class_audio` - 课堂录音
+- `recorder_audio` - 录音卡长录
+- `recorder_flash_audio` - 录音卡闪念
 
 > 💡 **topics.id 说明**：笔记所属知识库列表中的 `id` 字段为 alias id（字符串类型），而非内部数字 ID。这样设计是为了方便开发者直接使用，可直接用于知识库相关接口的 `topic_id` 参数。
 
@@ -177,13 +190,13 @@ GET /open/api/v1/resource/note/detail?id=1901297236063695760
       "audio": {
         "play_url": "https://...",
         "duration": 1260,
-        "transcript": "🟢 说话人1 [00:00:00]\n内容..."
+        "original": "录音转写原文（未经 AI 润色的原始转写文本）"
       },
       "web_page": {
         "url": "https://原始链接",
         "domain": "example.com",
         "excerpt": "摘要",
-        "content": "链接原文"
+        "content": "链接原文（网页正文内容）"
       },
       "share_id": "abc123",
       "version": 1,
@@ -193,6 +206,23 @@ GET /open/api/v1/resource/note/detail?id=1901297236063695760
   }
 }
 ```
+
+> ⚠️ **重要**：`audio.original`（语音转写原文）和 `web_page.content`（链接原文）**仅在笔记详情接口返回**，笔记列表接口不返回这些字段。
+
+**audio 字段说明**（语音笔记专有）:
+| 字段 | 说明 |
+|------|------|
+| `play_url` | 音频播放地址 |
+| `duration` | 音频时长（秒） |
+| `original` | 录音转写原文（未经 AI 润色的原始转写文本） |
+
+**web_page 字段说明**（链接笔记专有）:
+| 字段 | 说明 |
+|------|------|
+| `url` | 原始链接地址 |
+| `domain` | 链接域名 |
+| `excerpt` | 网页摘要 |
+| `content` | 网页原文内容（完整正文） |
 
 **附件类型 (attachments.type)**: `audio` | `image` | `link` | `pdf`
 
