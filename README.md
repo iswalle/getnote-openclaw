@@ -189,8 +189,15 @@ export GETNOTE_OWNER_ID=ou_xxx  # 你的用户 ID，用于安全校验
 | `plain_text` | 纯文本笔记 | ✅ 读写 |
 | `link` | 链接笔记（自动抓取正文） | ✅ 读写 |
 | `img_text` | 图片笔记 | ✅ 读写 |
-| `meeting` | 会议笔记（含 AI 摘要） | ⚠️ 仅读取 |
-| `recorder_audio` | 录音笔记 | ⚠️ 仅读取 |
+| `audio` | 即时录音 | 📖 仅读取 |
+| `meeting` | 会议录音 | 📖 仅读取 |
+| `local_audio` | 本地音频 | 📖 仅读取 |
+| `internal_record` | 内录音频 | 📖 仅读取 |
+| `class_audio` | 课堂录音 | 📖 仅读取 |
+| `recorder_audio` | 录音卡长录 | 📖 仅读取 |
+| `recorder_flash_audio` | 录音卡闪念 | 📖 仅读取 |
+
+> 💡 语音类笔记可读取 AI 摘要和转写原文，需调用详情接口获取。
 
 ---
 
