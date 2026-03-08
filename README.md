@@ -2,8 +2,6 @@
 
 让 AI 成为你的第二大脑。随时记录，需要时召回。
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
 ---
 
 ## 💡 使用场景
@@ -204,7 +202,3 @@ export GETNOTE_OWNER_ID=ou_xxx  # 你的用户 ID，用于安全校验
 - [Get笔记官网](https://biji.com)
 - [开放平台](https://www.biji.com/openapi)
 - [开通会员](https://www.biji.com/checkout?product_alias=6AydVpYeKl)
-
----
-
-MIT © [Get笔记](https://biji.com)
