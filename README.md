@@ -4,8 +4,6 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> 🔑 **获取 API Key**：https://www.biji.com/openapi
-
 ---
 
 ## 💡 使用场景
