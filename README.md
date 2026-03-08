@@ -121,7 +121,7 @@
 ### 方式一：通过 ClawHub 安装（推荐）
 
 ```bash
-clawhub install iswalle/getnote
+clawhub install getnote
 ```
 
 ### 方式二：让 AI 助手安装
