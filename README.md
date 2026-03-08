@@ -2,112 +2,204 @@
 
 让 AI 成为你的第二大脑。随时记录，需要时召回。
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+> 🔑 **获取 API Key**：https://www.biji.com/openapi
+
 ---
 
-## 能帮你做什么
+## 💡 使用场景
 
-### 🎯 场景1：随手记
+### ✏️ 场景一：随手记录
+
+<table>
+<tr>
+<td width="33%">
 
 **通勤路上想到一个点子**
 
-> 👤 "小龙虾，记一下：支付流程可以加一个进度条，用户等待时不焦虑"
-> 
-> 🦞 自动存入 Get笔记，打上「产品想法」标签。
+> 👤 记一下笔记：支付流程可以加一个进度条，用户等待时不焦虑
+
+> 🤖 已记录，自动打上「产品优化」标签。
+
+</td>
+<td width="33%">
 
 **听播客时有感触**
 
-> 👤 "小龙虾，刚听到一个观点挺好的，记一下：好的产品是让用户少做选择，不是多做选择"
+> 👤 刚听到一个观点挺好的，记一下笔记：好的产品是让用户少做选择，不是多做选择
+
+> 🤖 已记录。
+
+</td>
+<td width="33%">
 
 **开完会**
 
-> 👤 "小龙虾，帮我记下刚才会上定的几件事：1. xxx 2. xxx 3. xxx"
+> 👤 帮我记下刚才会上定的几件事：1. 下周三前完成设计稿 2. 找小王对接接口 3. 周五前给老板汇报进度
 
----
+> 🤖 已记录。
 
-### 🔍 场景2：要用时召回
+</td>
+</tr>
+</table>
+
+### 🔍 场景二：要用时召回
+
+<table>
+<tr>
+<td width="33%">
 
 **写周报时**
 
-> 👤 "小龙虾，帮我找找这周我记过的工作相关的东西"
-> 
-> 🦞 "找到 5 条相关笔记：周一你记了客户反馈的问题、周三记了技术方案讨论、周四..."
+> 👤 帮我找找这周我记过的工作相关的东西
+
+> 🤖 找到 5 条相关笔记：周一你记了客户反馈的问题、周三记了技术方案讨论、周四......
+
+</td>
+<td width="33%">
 
 **被领导问到**
 
-> 👤 "小龙虾，上次我们讨论过用户分层的事，当时怎么说的来着？"
-> 
-> 🦞 "11月8号你记过：高价值用户定义为月消费超过500元，占比约12%..."
+> 👤 上次我们讨论过用户分层的事，当时怎么说的来着？
+
+> 🤖 11月8号你记过：高价值用户定义为月消费超过500元，占比约12%......
+
+</td>
+<td width="33%">
 
 **写文章找素材**
 
-> 👤 "小龙虾，我想写篇关于做产品的文章，帮我找找我之前的相关想法"
+> 👤 我想写篇关于做产品的文章，帮我找找我之前的相关想法
+
+> 🤖 找到 8 条相关笔记，已按时间排序整理给你。
+
+</td>
+</tr>
+</table>
+
+### 🔗 场景三：保存链接和图片
+
+<table>
+<tr>
+<td width="33%">
+
+**看到好文章**
+
+> 👤 存到笔记 https://example.com/article
+
+> 🤖 链接已提交，正在抓取分析中......
 > 
-> 🦞 "找到 8 条相关笔记，按时间排序：..."
+> 🤖 搞定 ✓ 已保存：《如何做好产品设计》
+
+</td>
+<td width="33%">
+
+**拍到有用的东西**
+
+> 👤 [发送图片]
+
+> 🤖 存到笔记？
+
+> 👤 对
+
+> 🤖 搞定 ✓ 图片已保存。
+
+</td>
+<td width="33%">
+
+**探店记录**
+
+> 👤 记一下，这家店叫船歌鱼水饺，招牌是鲅鱼饺子，人均80
+
+> 🤖 已记录，打上「美食」标签。
+
+</td>
+</tr>
+</table>
 
 ---
 
-### 🍜 场景3：生活中也好用
+## 📦 安装
 
-**探店后**
-
-> 👤 "小龙虾，记一下，这家店叫船歌鱼水饺，招牌是鲅鱼饺子，人均80"
-
-**下次请客吃饭时**
-
-> 👤 "小龙虾，我之前记过一些不错的餐厅，有啥推荐？"
-> 
-> 🦞 "你记过 3 家：船歌鱼水饺（鲅鱼饺子）、大董（烤鸭）、..."
-
-**想不起来的时候**
-
-> 👤 "小龙虾，我之前好像记过一个治嗓子疼的土方子"
-> 
-> 🦞 "10月15号你记的：金银花 + 胖大海泡水，连喝三天"
-
----
-
-## 开始使用
-
-### 1. 获取 API Key
-
-前往 [Get笔记开放平台](https://www.biji.com/openapi) 获取 API Key 和 Client ID。
-
-> 💡 需要 Get笔记会员才能使用 API
-
-### 2. 配置环境变量
-
-```bash
-# 添加到 ~/.zshrc 或 ~/.bashrc
-export GETNOTE_API_KEY=gk_live_xxx
-export GETNOTE_CLIENT_ID=cli_xxx
-export GETNOTE_OWNER_ID=ou_xxx  # 你的 sender_id，用于安全校验
-```
-
-> 💡 `GETNOTE_OWNER_ID` 是你在聊天平台的用户 ID（如飞书的 open_id），配置后只有你能操作笔记。
-
-### 3. 安装 Skill
+### 方式一：通过 ClawHub 安装（推荐）
 
 ```bash
 clawhub install getnotes
 ```
 
-或手动复制 Skill 到你的 OpenClaw workspace/skills 目录。
+### 方式二：让 AI 助手安装
+
+> 帮我安装 Get笔记 skill，地址是 https://github.com/iswalle/getnote-openclaw
+
+### 方式三：手动安装
+
+```bash
+mkdir -p ~/.openclaw/workspace/skills/getnotes
+cd ~/.openclaw/workspace/skills/getnotes
+curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/SKILL.md -o SKILL.md
+curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/package.json -o package.json
+```
 
 ---
 
-## 注意事项
+## 🔑 配置 API Key
 
-⚠️ **隐私安全**：
-- 笔记是你的私密数据，AI 会严格校验身份
+### 1. 获取凭证
+
+前往 **[Get笔记开放平台](https://www.biji.com/openapi)** 获取：
+- **API Key**（格式：`gk_live_xxx`）
+- **Client ID**（格式：`cli_xxx`）
+
+> 💡 需要 [Get笔记会员](https://www.biji.com/checkout?product_alias=6AydVpYeKl) 才能使用 API
+
+### 2. 首次使用自动配置
+
+第一次使用时，AI 会引导你完成配置：
+
+> 🤖 首次使用 Get笔记需要配置凭证。请前往开放平台获取 API Key 和 Client ID，发给我，我会自动保存。
+
+把凭证发给 AI，它会自动保存到环境变量，以后就不用再配置了。
+
+### 3. 手动配置（可选）
+
+```bash
+# 添加到 ~/.zshrc 或 ~/.bashrc
+export GETNOTE_API_KEY=gk_live_xxx
+export GETNOTE_CLIENT_ID=cli_xxx
+export GETNOTE_OWNER_ID=ou_xxx  # 你的用户 ID，用于安全校验
+```
+
+---
+
+## 🔐 安全说明
+
+> ⚠️ **隐私保护**：笔记是你的私密数据，AI 会严格校验身份。
+
 - 配置 `GETNOTE_OWNER_ID` 后，只有你能操作笔记
 - 群聊中其他人无法通过 AI 读取你的笔记
-
-📝 需要 [Get笔记会员](https://www.biji.com/checkout?product_alias=6AydVpYeKl) 才能使用 API。
+- 不要在群聊中发送 API Key
 
 ---
 
-## 相关链接
+## 🛠 支持的笔记类型
+
+| 类型 | 说明 | 支持 |
+|------|------|------|
+| `plain_text` | 纯文本笔记 | ✅ 读写 |
+| `link` | 链接笔记（自动抓取正文） | ✅ 读写 |
+| `img_text` | 图片笔记 | ✅ 读写 |
+| `meeting` | 会议笔记（含 AI 摘要） | ⚠️ 仅读取 |
+| `recorder_audio` | 录音笔记 | ⚠️ 仅读取 |
+
+---
+
+## 📜 相关链接
 
 - [Get笔记官网](https://biji.com)
 - [开放平台](https://www.biji.com/openapi)
 - [开通会员](https://www.biji.com/checkout?product_alias=6AydVpYeKl)
+
+---
+
+MIT © [Get笔记](https://biji.com)
