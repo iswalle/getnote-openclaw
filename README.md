@@ -149,22 +149,17 @@ curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/package
 
 > 💡 需要 [Get笔记会员](https://www.biji.com/checkout?product_alias=6AydVpYeKl) 才能使用 API
 
-### 2. 首次使用自动配置
+### 2. 配置环境变量
 
-第一次使用时，AI 会引导你完成配置：
-
-> 🤖 首次使用 Get笔记需要配置凭证。请前往开放平台获取 API Key 和 Client ID，发给我，我会自动保存。
-
-把凭证发给 AI，它会自动保存到环境变量，以后就不用再配置了。
-
-### 3. 手动配置（可选）
+将凭证添加到 `~/.zshrc` 或 `~/.bashrc`：
 
 ```bash
-# 添加到 ~/.zshrc 或 ~/.bashrc
-export GETNOTE_API_KEY=gk_live_xxx
-export GETNOTE_CLIENT_ID=cli_xxx
-export GETNOTE_OWNER_ID=ou_xxx  # 你的用户 ID，用于安全校验
+export GETNOTE_API_KEY="gk_live_xxx"
+export GETNOTE_CLIENT_ID="cli_xxx"
+export GETNOTE_OWNER_ID="ou_xxx"  # 可选，你的用户 ID，用于安全校验
 ```
+
+然后运行 `source ~/.zshrc` 或重启终端使配置生效。
 
 ---
 
@@ -174,7 +169,7 @@ export GETNOTE_OWNER_ID=ou_xxx  # 你的用户 ID，用于安全校验
 
 - 配置 `GETNOTE_OWNER_ID` 后，只有你能操作笔记
 - 群聊中其他人无法通过 AI 读取你的笔记
-- 不要在群聊中发送 API Key
+- **不要在聊天中发送 API Key**，请手动配置到环境变量
 
 ---
 
