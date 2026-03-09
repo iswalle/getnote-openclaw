@@ -219,23 +219,56 @@ Content-Type: application/json
 
 ## 异步任务流程
 
-> 💡 **体验优化**：链接笔记和图片笔记需要后台处理。任务提交成功后，**先单独发一条消息**告诉用户「你的链接/图片已经提交，正在抓紧分析中，过会儿来告诉你笔记最终生成结果」，然后后台轮询，完成后**再发一条消息**通知结果。
+> ⚠️ **必须遵循的体验流程**：链接笔记和图片笔记是异步生成的，必须按以下方式与用户沟通。
 
-### 链接笔记（2 步）
+### 链接笔记完整流程
 
+**步骤 1**：提交任务
 ```
-1. POST /note/save {note_type:"link", link_url:"https://..."} → 返回 task_id
-2. 轮询 POST /task/progress {task_id} → 直到 status=success/failed
+POST /note/save {note_type:"link", link_url:"https://..."}
+```
+返回 task_id 后，**立即发消息给用户**：
+> ✅ 链接已保存，正在抓取原文和生成总结，稍后告诉你结果...
+
+**步骤 2**：后台轮询（10-30 秒间隔）
+```
+POST /task/progress {task_id} → 直到 status=success/failed
 ```
 
-### 图片笔记（4 步）
+**步骤 3**：任务完成后，**调详情接口展示价值**
+```
+GET /note/detail?id={note_id}
+```
+然后发第二条消息，包含具体内容：
+> ✅ 笔记生成完成！
+> - 📄 **原文**：已保存 {web_page.content 字数} 字
+> - 📝 **总结**：{content 内容，即 AI 生成的摘要}
+> - 🔗 **来源**：{web_page.url}
 
+### 图片笔记完整流程
+
+**步骤 1-3**：获取凭证 → 上传 OSS → 提交任务
 ```
 1. GET /image/upload_token?mime_type=jpg → 获取上传凭证
 2. POST {host} 上传文件到 OSS
 3. POST /note/save {note_type:"img_text", image_urls:[access_url]} → 返回 task_id
-4. 轮询 POST /task/progress {task_id} → 直到 status=success/failed
 ```
+拿到 task_id 后，**立即发消息给用户**：
+> ✅ 图片已保存，正在识别内容，稍后告诉你结果...
+
+**步骤 4**：后台轮询
+```
+POST /task/progress {task_id} → 直到 status=success/failed
+```
+
+**步骤 5**：任务完成后，**调详情接口展示价值**
+```
+GET /note/detail?id={note_id}
+```
+然后发第二条消息：
+> ✅ 图片笔记生成完成！
+> - 📝 **识别内容**：{content 内容}
+> - 🏷️ **标签**：{tags}
 
 ### 图片上传凭证
 
