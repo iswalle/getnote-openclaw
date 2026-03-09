@@ -22,21 +22,20 @@ echo "API_KEY: $GETNOTE_API_KEY | CLIENT_ID: $GETNOTE_CLIENT_ID | OWNER_ID: $GET
 
 **如果 API_KEY 或 CLIENT_ID 为空**，告诉用户：
 
-> 使用 Get笔记需要先配置凭证。请按以下步骤操作：
+> 使用 Get笔记需要先配置凭证：
 > 
 > 1. 前往 [Get笔记开放平台](https://www.biji.com/openapi) 获取 API Key 和 Client ID
-> 2. 将以下内容添加到你的 `~/.zshrc` 或 `~/.bashrc`：
-> 
-> ```bash
-> export GETNOTE_API_KEY="你的API Key"
-> export GETNOTE_CLIENT_ID="你的Client ID"
-> export GETNOTE_OWNER_ID="你的用户ID"  # 可选，用于安全校验
-> ```
-> 
-> 3. 运行 `source ~/.zshrc` 或重启终端
-> 4. 配置完成后再来找我
+> 2. **推荐**：自己添加到 `~/.zshrc`，然后 `source ~/.zshrc`
+> 3. **或者**：直接把凭证发给我，我帮你配置
 
-**注意**：不要在聊天中发送凭证，请手动配置到环境变量。
+**如果用户直接在对话中发送了凭证**（API Key、Client ID），主动帮用户保存：
+```bash
+# 追加到 ~/.zshrc
+echo 'export GETNOTE_API_KEY="用户提供的key"' >> ~/.zshrc
+echo 'export GETNOTE_CLIENT_ID="用户提供的id"' >> ~/.zshrc
+source ~/.zshrc
+```
+保存后告诉用户：「已帮你配置好环境变量，后续新会话也可以直接使用。」
 
 ---
 
