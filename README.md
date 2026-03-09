@@ -126,7 +126,7 @@ clawhub install getnote
 
 ### 方式二：让 AI 助手安装
 
-> 帮我安装 Get笔记 skill，地址是 https://github.com/iswalle/getnote-openclaw
+> 帮我安装 Get笔记 skill，地址是 https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/SKILL.md
 
 ### 方式三：手动安装
 
