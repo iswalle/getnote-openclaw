@@ -17,6 +17,9 @@ description: |
 
 **每次收到笔记请求，先检查环境变量**：
 ```bash
+# 自动检测并加载用户 shell 配置
+[ -f ~/.zshrc ] && source ~/.zshrc 2>/dev/null
+[ -f ~/.bashrc ] && source ~/.bashrc 2>/dev/null
 echo "API_KEY: $GETNOTE_API_KEY | CLIENT_ID: $GETNOTE_CLIENT_ID | OWNER_ID: $GETNOTE_OWNER_ID"
 ```
 
@@ -30,12 +33,21 @@ echo "API_KEY: $GETNOTE_API_KEY | CLIENT_ID: $GETNOTE_CLIENT_ID | OWNER_ID: $GET
 
 **如果用户直接在对话中发送了凭证**（API Key、Client ID），主动帮用户保存：
 ```bash
-# 追加到 ~/.zshrc
-echo 'export GETNOTE_API_KEY="用户提供的key"' >> ~/.zshrc
-echo 'export GETNOTE_CLIENT_ID="用户提供的id"' >> ~/.zshrc
-source ~/.zshrc
+# 检测用户 shell 配置文件
+if [ -f ~/.zshrc ]; then
+  RC_FILE=~/.zshrc
+elif [ -f ~/.bashrc ]; then
+  RC_FILE=~/.bashrc
+else
+  RC_FILE=~/.profile
+fi
+
+# 追加环境变量
+echo 'export GETNOTE_API_KEY="用户提供的key"' >> $RC_FILE
+echo 'export GETNOTE_CLIENT_ID="用户提供的id"' >> $RC_FILE
+source $RC_FILE
 ```
-保存后告诉用户：「已帮你配置好环境变量，后续新会话也可以直接使用。」
+保存后告诉用户：「已帮你配置好环境变量（保存到 {RC_FILE}），后续新会话也可以直接使用。」
 
 ---
 
