@@ -17,37 +17,24 @@ description: |
 
 **每次收到笔记请求，先检查环境变量**：
 ```bash
-# 自动检测并加载用户 shell 配置
-[ -f ~/.zshrc ] && source ~/.zshrc 2>/dev/null
-[ -f ~/.bashrc ] && source ~/.bashrc 2>/dev/null
-echo "API_KEY: $GETNOTE_API_KEY | CLIENT_ID: $GETNOTE_CLIENT_ID | OWNER_ID: $GETNOTE_OWNER_ID"
+source ~/.zshrc 2>/dev/null || source ~/.bashrc 2>/dev/null
+[ -n "$GETNOTE_API_KEY" ] && echo "✓ 已配置" || echo "✗ 未配置"
 ```
 
-**如果 API_KEY 或 CLIENT_ID 为空**，告诉用户：
+**如果未配置**，引导用户自行配置：
 
 > 使用 Get笔记需要先配置凭证：
 > 
 > 1. 前往 [Get笔记开放平台](https://www.biji.com/openapi) 获取 API Key 和 Client ID
-> 2. **推荐**：自己添加到 `~/.zshrc`，然后 `source ~/.zshrc`
-> 3. **或者**：直接把凭证发给我，我帮你配置
+> 2. 在终端执行以下命令（替换为你的实际值）：
+> ```bash
+> echo 'export GETNOTE_API_KEY="gk_live_你的key"' >> ~/.zshrc
+> echo 'export GETNOTE_CLIENT_ID="cli_你的id"' >> ~/.zshrc
+> source ~/.zshrc
+> ```
+> 3. 配置完成后再试一次
 
-**如果用户直接在对话中发送了凭证**（API Key、Client ID），主动帮用户保存：
-```bash
-# 检测用户 shell 配置文件
-if [ -f ~/.zshrc ]; then
-  RC_FILE=~/.zshrc
-elif [ -f ~/.bashrc ]; then
-  RC_FILE=~/.bashrc
-else
-  RC_FILE=~/.profile
-fi
-
-# 追加环境变量
-echo 'export GETNOTE_API_KEY="用户提供的key"' >> $RC_FILE
-echo 'export GETNOTE_CLIENT_ID="用户提供的id"' >> $RC_FILE
-source $RC_FILE
-```
-保存后告诉用户：「已帮你配置好环境变量（保存到 {RC_FILE}），后续新会话也可以直接使用。」
+⚠️ **不要在对话中发送凭证**，请按上述步骤自行配置。
 
 ---
 
