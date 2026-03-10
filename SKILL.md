@@ -25,38 +25,17 @@ https://openapi.biji.com
 
 ### 🔑 首次使用配置
 
-**每次收到笔记请求，先检查环境变量**：
-```bash
-source ~/.zshrc 2>/dev/null || source ~/.bashrc 2>/dev/null
-[ -n "$GETNOTE_API_KEY" ] && echo "✓ 已配置" || echo "✗ 未配置"
-```
+**每次收到笔记请求，先检查环境变量 `GETNOTE_API_KEY` 和 `GETNOTE_CLIENT_ID` 是否已配置。**
 
 **如果未配置**，引导用户自行配置：
 
 > 使用 Get笔记需要先配置凭证：
 > 
 > 1. 前往 [Get笔记开放平台](https://www.biji.com/openapi) 获取 API Key 和 Client ID
-> 2. 在终端执行以下命令（替换为你的实际值）：
-> ```bash
-> echo 'export GETNOTE_API_KEY="gk_live_你的key"' >> ~/.zshrc
-> echo 'export GETNOTE_CLIENT_ID="cli_你的id"' >> ~/.zshrc
-> source ~/.zshrc
-> ```
+> 2. 将凭证添加到 shell 配置文件（如 `~/.zshrc` 或 `~/.bashrc`）
 > 3. 配置完成后再试一次
 
-**如果用户主动提供了凭证**（API Key、Client ID），帮用户保存到环境变量：
-```bash
-# 检测 shell 配置文件
-RC_FILE="${HOME}/.zshrc"
-[ ! -f "$RC_FILE" ] && RC_FILE="${HOME}/.bashrc"
-[ ! -f "$RC_FILE" ] && RC_FILE="${HOME}/.profile"
-
-# 追加环境变量（替换为用户提供的实际值）
-echo 'export GETNOTE_API_KEY="用户提供的key"' >> "$RC_FILE"
-echo 'export GETNOTE_CLIENT_ID="用户提供的id"' >> "$RC_FILE"
-source "$RC_FILE"
-```
-保存后告知用户：「已配置到 {RC_FILE}，后续可直接使用。」
+**如果用户主动提供了凭证**（API Key、Client ID），自动检测用户 shell 配置文件并保存环境变量，保存后告知用户配置完成。
 
 ---
 
