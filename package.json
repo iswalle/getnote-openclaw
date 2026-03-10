@@ -1,6 +1,6 @@
 {
   "name": "getnote",
-  "version": "1.2.8",
+  "version": "1.2.9",
   "description": "让 AI 帮你保存和管理 Get笔记。有灵感，随时保存，发个链接说「存一下」，发张图片说「记到笔记」，就这么简单。",
   "license": "MIT-0",
   "author": "get-notes@luojilab.com",
@@ -29,6 +29,7 @@
   "openclaw": {
     "minVersion": "0.1.0",
     "primaryEnv": "GETNOTE_API_KEY",
+    "baseUrl": "https://openapi.biji.com",
     "requires": {
       "env": ["GETNOTE_API_KEY", "GETNOTE_CLIENT_ID"]
     },

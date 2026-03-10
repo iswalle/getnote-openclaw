@@ -7,7 +7,7 @@ description: |
   
   功能：新建笔记、查询笔记、删除笔记、管理标签和知识库。
   支持类型：纯文本笔记、链接笔记（自动抓取网页内容）、图片笔记。
-metadata: {"openclaw": {"requires": {"env": ["GETNOTE_API_KEY", "GETNOTE_CLIENT_ID"]}, "optionalEnv": ["GETNOTE_OWNER_ID"], "primaryEnv": "GETNOTE_API_KEY", "homepage": "https://biji.com"}}
+metadata: {"openclaw": {"requires": {"env": ["GETNOTE_API_KEY", "GETNOTE_CLIENT_ID"]}, "optionalEnv": ["GETNOTE_OWNER_ID"], "primaryEnv": "GETNOTE_API_KEY", "baseUrl": "https://openapi.biji.com", "homepage": "https://biji.com"}}
 ---
 
 # Get笔记 API
