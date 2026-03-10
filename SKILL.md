@@ -100,20 +100,23 @@ source "$RC_FILE"
 
 ## 快速决策
 
+Base URL: `https://openapi.biji.com`
+
 | 用户意图 | 接口 | 关键点 |
 |---------|------|--------|
-| 「记一下」「保存笔记」 | POST /note/save | 同步返回 |
-| 「保存这个链接」 | POST /note/save | note_type:"link" → **必须轮询** /task/progress |
+| 「记一下」「保存笔记」 | POST /open/api/v1/resource/note/save | 同步返回 |
+| 「保存这个链接」 | POST /open/api/v1/resource/note/save | note_type:"link" → **必须轮询** |
 | 「保存这张图」 | 见「图片笔记流程」 | **4 步流程，必须轮询** |
-| 「查我的笔记」 | GET /note/list | since_id=0 起始，每次 20 条 |
-| 「看原文/转写内容」 | GET /note/detail | audio.original / web_page.content **仅详情接口返回** |
-| 「加标签」 | POST /note/tags/add | |
-| 「删标签」 | POST /note/tags/delete | system 类型不可删 |
-| 「删笔记」 | POST /note/delete | 移入回收站 |
-| 「查知识库」 | GET /knowledge/list | |
-| 「建知识库」 | POST /knowledge/create | 每天限 50 个 |
-| 「笔记加入知识库」 | POST /knowledge/note/batch-add | 每批最多 20 条 |
-| 「从知识库移除」 | POST /knowledge/note/remove | |
+| 「查我的笔记」 | GET /open/api/v1/resource/note/list | since_id=0 起始 |
+| 「看原文/转写内容」 | GET /open/api/v1/resource/note/detail | audio.original / web_page.content |
+| 「加标签」 | POST /open/api/v1/resource/note/tags/add | |
+| 「删标签」 | POST /open/api/v1/resource/note/tags/delete | system 类型不可删 |
+| 「删笔记」 | POST /open/api/v1/resource/note/delete | 移入回收站 |
+| 「查知识库」 | GET /open/api/v1/resource/knowledge/list | |
+| 「建知识库」 | POST /open/api/v1/resource/knowledge/create | 每天限 50 个 |
+| 「笔记加入知识库」 | POST /open/api/v1/resource/knowledge/note/batch-add | 每批最多 20 条 |
+| 「从知识库移除」 | POST /open/api/v1/resource/knowledge/note/remove | |
+| 「查任务进度」 | POST /open/api/v1/resource/note/task/progress | 链接/图片笔记轮询用 |
 
 ---
 
