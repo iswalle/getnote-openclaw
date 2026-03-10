@@ -23,8 +23,10 @@
     "openclaw",
     "skill"
   ],
+  "clawhub": {
+    "acceptLicenseTerms": true
+  },
   "openclaw": {
-    "acceptLicenseTerms": true,
     "minVersion": "0.1.0",
     "requires": {
       "env": [
