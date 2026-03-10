@@ -7,7 +7,7 @@ description: |
   
   功能：新建笔记、查询笔记、删除笔记、管理标签和知识库。
   支持类型：纯文本笔记、链接笔记（自动抓取网页内容）、图片笔记。
-metadata: {"openclaw": {"requires": {"env": ["GETNOTE_API_KEY", "GETNOTE_CLIENT_ID"]}, "primaryEnv": "GETNOTE_API_KEY", "homepage": "https://biji.com"}}
+metadata: {"openclaw": {"requires": {"env": ["GETNOTE_API_KEY", "GETNOTE_CLIENT_ID"]}, "optionalEnv": ["GETNOTE_OWNER_ID"], "primaryEnv": "GETNOTE_API_KEY", "homepage": "https://biji.com"}}
 ---
 
 # Get笔记 API
@@ -38,7 +38,8 @@ https://openapi.biji.com
          "getnote": {
            "apiKey": "gk_live_你的key",
            "env": {
-             "GETNOTE_CLIENT_ID": "cli_你的id"
+             "GETNOTE_CLIENT_ID": "cli_你的id",
+             "GETNOTE_OWNER_ID": "ou_你的飞书ID（可选，用于权限控制）"
            }
          }
        }
@@ -50,6 +51,7 @@ https://openapi.biji.com
    ```bash
    export GETNOTE_API_KEY="gk_live_你的key"
    export GETNOTE_CLIENT_ID="cli_你的id"
+   export GETNOTE_OWNER_ID="ou_你的飞书ID（可选）"
    ```
 
 **获取凭证**：前往 [Get笔记开放平台](https://www.biji.com/openapi) 创建应用获取。
@@ -59,8 +61,10 @@ https://openapi.biji.com
 ### 🔒 安全规则
 
 - 笔记数据属于 API Key 对应的 Get笔记账号，属于**用户隐私**
-- 收到笔记请求时，检查 sender_id 是否与 `GETNOTE_OWNER_ID` 匹配
-- 若 sender_id 不匹配，回复「抱歉，笔记是私密的，我无法操作」
+- **可选配置**：设置 `GETNOTE_OWNER_ID` 环境变量来限制访问权限
+  - 收到笔记请求时，检查 sender_id 是否与 `GETNOTE_OWNER_ID` 匹配
+  - 若 sender_id 不匹配，回复「抱歉，笔记是私密的，我无法操作」
+  - 若未配置 `GETNOTE_OWNER_ID`，则不进行权限检查
 - 不要在群聊中主动展示笔记内容
 
 **非会员处理**：API 返回 `error.reason: "not_member"` 或错误码 `10201` 时，引导用户开通会员：
