@@ -7,6 +7,7 @@ description: |
   
   功能：新建笔记、查询笔记、删除笔记、管理标签和知识库。
   支持类型：纯文本笔记、链接笔记（自动抓取网页内容）、图片笔记。
+metadata: {"openclaw": {"requires": {"env": ["GETNOTE_API_KEY", "GETNOTE_CLIENT_ID"]}, "primaryEnv": "GETNOTE_API_KEY", "homepage": "https://biji.com"}}
 ---
 
 # Get笔记 API
@@ -23,19 +24,35 @@ https://openapi.biji.com
 
 ---
 
-### 🔑 首次使用配置
+### 🔑 首次安装配置
 
-**每次收到笔记请求，先检查环境变量 `GETNOTE_API_KEY` 和 `GETNOTE_CLIENT_ID` 是否已配置。**
+安装此技能后，需要配置 API 凭证才能使用。
 
-**如果未配置**，引导用户自行配置：
+**配置方式**（二选一）：
 
-> 使用 Get笔记需要先配置凭证：
-> 
-> 1. 前往 [Get笔记开放平台](https://www.biji.com/openapi) 获取 API Key 和 Client ID
-> 2. 将凭证添加到 shell 配置文件（如 `~/.zshrc` 或 `~/.bashrc`）
-> 3. 配置完成后再试一次
+1. **通过 OpenClaw 配置**（推荐）：在 `~/.openclaw/openclaw.json` 中添加：
+   ```json
+   {
+     "skills": {
+       "entries": {
+         "getnote": {
+           "apiKey": "gk_live_你的key",
+           "env": {
+             "GETNOTE_CLIENT_ID": "cli_你的id"
+           }
+         }
+       }
+     }
+   }
+   ```
 
-**如果用户主动提供了凭证**（API Key、Client ID），自动检测用户 shell 配置文件并保存环境变量，保存后告知用户配置完成。
+2. **通过环境变量**：在 shell 配置文件（`~/.zshrc` 或 `~/.bashrc`）中添加：
+   ```bash
+   export GETNOTE_API_KEY="gk_live_你的key"
+   export GETNOTE_CLIENT_ID="cli_你的id"
+   ```
+
+**获取凭证**：前往 [Get笔记开放平台](https://www.biji.com/openapi) 创建应用获取。
 
 ---
 
