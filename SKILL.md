@@ -1,12 +1,15 @@
 ---
 name: Get笔记
 description: |
-  Get笔记 - 个人笔记管理工具。
-  
-  **当用户想要「保存到Get笔记」「记录到Get笔记」「记下来」「存到笔记」「添加到笔记」时，使用此技能。**
-  
-  功能：新建笔记、查询笔记、删除笔记、管理标签和知识库。
-  支持类型：纯文本笔记、链接笔记（自动抓取网页内容）、图片笔记。
+  Get笔记 - 个人笔记和知识库管理工具。
+
+  当用户提到以下意图时使用此技能：
+  「记一下」「存到笔记」「保存到Get笔记」「记录到Get笔记」
+  「保存这个链接」「保存这张图」「查我的笔记」「找一下笔记」
+  「加标签」「删标签」「删笔记」
+  「查知识库」「建知识库」「把笔记加到知识库」「从知识库移除」
+
+  支持：纯文本笔记、链接笔记（自动抓取网页内容并生成摘要）、图片笔记（OCR识别）、知识库管理。
 metadata: {"openclaw": {"requires": {"env": ["GETNOTE_API_KEY", "GETNOTE_CLIENT_ID"]}, "optionalEnv": ["GETNOTE_OWNER_ID"], "primaryEnv": "GETNOTE_API_KEY", "baseUrl": "https://openapi.biji.com", "homepage": "https://biji.com"}}
 ---
 
@@ -26,33 +29,13 @@ https://openapi.biji.com
 
 ### 🔑 首次安装配置
 
-安装此技能后，需要配置 API 凭证才能使用。
+安装此技能后，需配置 API 凭证才能使用。在 shell 配置文件（`~/.zshrc` 或 `~/.bashrc`）中添加：
 
-**配置方式**（二选一）：
-
-1. **通过 OpenClaw 配置**（推荐）：在 `~/.openclaw/openclaw.json` 中添加：
-   ```json
-   {
-     "skills": {
-       "entries": {
-         "getnote": {
-           "apiKey": "gk_live_你的key",
-           "env": {
-             "GETNOTE_CLIENT_ID": "cli_你的id",
-             "GETNOTE_OWNER_ID": "ou_你的飞书ID（可选，用于权限控制）"
-           }
-         }
-       }
-     }
-   }
-   ```
-
-2. **通过环境变量**：在 shell 配置文件（`~/.zshrc` 或 `~/.bashrc`）中添加：
-   ```bash
-   export GETNOTE_API_KEY="gk_live_你的key"
-   export GETNOTE_CLIENT_ID="cli_你的id"
-   export GETNOTE_OWNER_ID="ou_你的飞书ID（可选）"
-   ```
+```bash
+export GETNOTE_API_KEY="gk_live_你的key"
+export GETNOTE_CLIENT_ID="cli_你的id"
+export GETNOTE_OWNER_ID="ou_你的飞书ID（可选，用于权限控制）"
+```
 
 **获取凭证**：前往 [Get笔记开放平台](https://www.biji.com/openapi) 创建应用获取。
 
@@ -60,23 +43,14 @@ https://openapi.biji.com
 
 ### 🔒 安全规则
 
-- 笔记数据属于 API Key 对应的 Get笔记账号，属于**用户隐私**
-- **可选配置**：设置 `GETNOTE_OWNER_ID` 环境变量来限制访问权限
-  - 收到笔记请求时，检查 sender_id 是否与 `GETNOTE_OWNER_ID` 匹配
-  - 若 sender_id 不匹配，回复「抱歉，笔记是私密的，我无法操作」
-  - 若未配置 `GETNOTE_OWNER_ID`，则不进行权限检查
-- 不要在群聊中主动展示笔记内容
-
-**非会员处理**：API 返回 `error.reason: "not_member"` 或错误码 `10201` 时，引导用户开通会员：
-- 开通链接：https://www.biji.com/checkout?product_alias=6AydVpYeKl
-
-**限流**：创建笔记建议间隔 1 分钟以上，避免触发限流。
+- 笔记数据属于用户隐私，不在群聊中主动展示笔记内容
+- 若配置了 `GETNOTE_OWNER_ID`，检查 sender_id 是否匹配；不匹配时回复「抱歉，笔记是私密的，我无法操作」；未配置则不检查
+- API 返回 `error.reason: "not_member"` 或错误码 `10201` 时，引导开通会员：https://www.biji.com/checkout?product_alias=6AydVpYeKl
+- 创建笔记建议间隔 1 分钟以上，避免触发限流
 
 ---
 
 ## 认证
-
-**所有请求的 Base URL**：`https://openapi.biji.com`（见上方重要提示）
 
 请求头：
 - `Authorization: $GETNOTE_API_KEY`（格式：`gk_live_xxx`）
@@ -155,14 +129,7 @@ GET /open/api/v1/resource/note/detail?id={note_id}
 
 参数：id (int64, 必填) - 笔记 ID
 
-**详情独有字段**（列表不返回）：
-- `audio.original` - 语音转写原文
-- `audio.play_url` - 音频播放地址
-- `audio.duration` - 音频时长（秒）
-- `web_page.content` - 链接网页原文
-- `web_page.url` - 原始链接
-- `web_page.excerpt` - 摘要
-- `attachments[]` - 附件列表，type: audio | image | link | pdf
+**详情独有字段**（列表不返回）：`audio.original`、`audio.play_url`、`audio.duration`、`web_page.content`、`web_page.url`、`web_page.excerpt`、`attachments[]`。详见 [references/api-details.md](references/api-details.md)。
 
 ---
 
@@ -188,18 +155,10 @@ Content-Type: application/json
 }
 ```
 
-字段说明：
-- title (string) - 标题
-- content (string) - Markdown 内容
-- note_type (string) - plain_text | link | img_text，默认 plain_text
-- tags (string[]) - 标签列表
-- parent_id (int64) - 父笔记 ID，创建子笔记时填
-- link_url (string) - 链接笔记必填
-- image_urls (string[]) - 图片笔记必填，用 access_url
+- `plain_text`：同步返回，立即完成
+- `link` / `img_text`：返回 task_id，**必须轮询** /task/progress
 
-**纯文本笔记**：同步返回，立即完成
-
-**链接笔记/图片笔记**：返回 task_id，必须轮询 /task/progress
+详细字段说明见 [references/api-details.md](references/api-details.md)。
 
 ---
 
@@ -305,12 +264,7 @@ GET /open/api/v1/resource/image/upload_token?mime_type=jpg&count=1
 
 ⚠️ **mime_type 必须与实际文件格式一致**，否则 OSS 签名失败。
 
-返回字段：
-- host - OSS 上传地址
-- object_key - 文件路径
-- accessid, policy, signature, callback - 签名参数
-- access_url - 上传后的访问地址（用于创建笔记）
-- oss_content_type - Content-Type
+返回字段说明见 [references/api-details.md](references/api-details.md)。
 
 ### OSS 上传示例
 
@@ -456,6 +410,8 @@ Content-Type: application/json
 
 ## 错误处理
 
+> 详细错误码和限流结构见 [references/api-details.md](references/api-details.md)
+
 ### 响应结构
 
 ```json
@@ -470,47 +426,12 @@ Content-Type: application/json
 }
 ```
 
-### 错误码
+### 常见错误码
 
-| 错误码 | 说明 |
-|--------|------|
-| 10000 | 参数错误 |
-| 10001 | 鉴权失败 |
-| 10201 | 非会员 |
-| 20001 | 笔记不存在 |
-| 30000 | 服务调用失败 |
-| 42900 | 限流 |
-| 50000 | 系统错误 |
-
-### error.reason 取值
-
-| reason | 说明 |
-|--------|------|
-| not_member | 非会员，引导开通 |
-| qps_global | 全局 QPS 超限 |
-| qps_bucket | 桶级 QPS 超限 |
-| quota_day | 当日配额用尽 |
-| quota_month | 当月配额用尽 |
-
-### 限流响应
-
-429 错误时，error 包含 rate_limit 字段：
-
-```json
-{
-  "rate_limit": {
-    "read": {
-      "daily": {"limit": 1000, "used": 1000, "remaining": 0, "reset_at": 1741190400},
-      "monthly": {"limit": 10000, "used": 3000, "remaining": 7000, "reset_at": 1743811200}
-    },
-    "write": {
-      "daily": {"limit": 200, "used": 200, "remaining": 0, "reset_at": 1741190400},
-      "monthly": {"limit": 2000, "used": 600, "remaining": 1400, "reset_at": 1743811200}
-    },
-    "write_note": {
-      "daily": {"limit": 50, "used": 50, "remaining": 0, "reset_at": 1741190400},
-      "monthly": {"limit": 500, "used": 150, "remaining": 350, "reset_at": 1743811200}
-    }
-  }
-}
-```
+| 错误码 | 说明 | 处理方式 |
+|--------|------|---------|
+| 10001 | 鉴权失败 | 检查 API Key 和 Client ID |
+| 10201 | 非会员 | 引导开通：https://www.biji.com/checkout?product_alias=6AydVpYeKl |
+| 20001 | 笔记不存在 | 确认笔记 ID 正确 |
+| 42900 | 限流 | 降低频率，查看 rate_limit 字段 |
+| 50000 | 系统错误 | 稍后重试 |
