@@ -117,6 +117,8 @@ GET /open/api/v1/resource/note/list?since_id=0
 
 返回：notes[], has_more, next_cursor, total（每次固定 20 条）
 
+> ⚠️ **响应 JSON 可能包含未转义的控制字符**（笔记 content 中的原始换行符），Python `json.load` 和 `jq` 可能报错。建议使用 Node.js 处理响应，或对 content 字段单独处理。
+
 **笔记类型 note_type**：
 - `plain_text` - 纯文本
 - `img_text` - 图片笔记
@@ -189,6 +191,11 @@ Content-Type: application/json
 - note_id: 成功时返回笔记 ID
 - error_msg: 失败时返回错误信息
 
+> ⚠️ **note_id 是 64 位整数，不能用 JSON.parse 解析**（JS 会丢失精度，如 `1903984155792937544` → `1903984155792937500`）。必须用正则从原始字符串提取：
+> ```bash
+> note_id=$(echo "$response" | grep -o '"note_id":[0-9]*' | grep -o '[0-9]*$')
+> ```
+
 **建议 10-30 秒间隔轮询，直到 success 或 failed**。
 
 ---
@@ -221,6 +228,8 @@ POST /open/api/v1/resource/note/save {note_type:"link", link_url:"https://..."}
 ```
 返回 task_id 后，**立即发消息给用户**：
 > ✅ 链接已保存，正在抓取原文和生成总结，稍后告诉你结果...
+
+> ⚠️ **重复链接处理**：若响应中包含 `duplicate_count > 0` 且没有 `task_id`，说明该链接已存在于你的笔记中，无需轮询，直接告知用户「该链接已存在于你的笔记中」。
 
 **步骤 2**：后台轮询（10-30 秒间隔）
 ```
@@ -277,6 +286,8 @@ GET /open/api/v1/resource/image/upload_token?mime_type=jpg&count=1
 返回字段说明见 [references/api-details.md](references/api-details.md)。
 
 ### OSS 上传示例
+
+> ⚠️ **字段顺序必须严格遵守**，否则 OSS 签名验证失败。正确顺序：`key → OSSAccessKeyId → policy → signature → callback → Content-Type → file`
 
 ```bash
 curl -X POST "$host" \
@@ -379,6 +390,17 @@ GET /open/api/v1/resource/knowledge/notes?topic_id=abc123&page=1
 - page: 页码，从 1 开始
 
 每页固定 20 条，用 has_more 判断是否有下一页。
+
+---
+
+### 知识库选择逻辑
+
+当用户说「存到对应的知识库」或「存到相关知识库」时：
+1. 先调用 GET /knowledge/list 获取所有知识库列表
+2. 根据笔记标题、内容、标签，与知识库名称和描述做模糊匹配
+3. 匹配置信度高时直接执行，并告知用户存入了哪个知识库
+4. 置信度低或有歧义时，列出候选知识库让用户选择
+5. 用户未提及知识库时，**不要擅自存入**任何知识库
 
 ---
 
