@@ -29,12 +29,22 @@ https://openapi.biji.com
 
 ### 🔑 首次安装配置
 
-安装此技能后，需配置 API 凭证才能使用。在 shell 配置文件（`~/.zshrc` 或 `~/.bashrc`）中添加：
+在 `~/.openclaw/openclaw.json` 中添加：
 
-```bash
-export GETNOTE_API_KEY="gk_live_你的key"
-export GETNOTE_CLIENT_ID="cli_你的id"
-export GETNOTE_OWNER_ID="ou_你的飞书ID（可选，用于权限控制）"
+```json
+{
+  "skills": {
+    "entries": {
+      "getnote": {
+        "apiKey": "gk_live_你的key",
+        "env": {
+          "GETNOTE_CLIENT_ID": "cli_你的id",
+          "GETNOTE_OWNER_ID": "ou_你的飞书ID（可选，用于权限控制）"
+        }
+      }
+    }
+  }
+}
 ```
 
 **获取凭证**：前往 [Get笔记开放平台](https://www.biji.com/openapi) 创建应用获取。
