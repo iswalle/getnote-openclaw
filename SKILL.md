@@ -80,6 +80,8 @@ https://openapi.biji.com
 | note.topic.read | 笔记所属知识库查询 |
 | note.topic.write | 笔记加入/移出知识库 |
 | note.image.upload | 获取上传图片签名 |
+| topic.blogger.read | 读取知识库订阅博主列表和博主内容 |
+| topic.live.read | 读取知识库已完成直播列表和直播详情 |
 
 ---
 
@@ -103,7 +105,8 @@ Base URL: `https://openapi.biji.com`
 | 「从知识库移除」 | POST /open/api/v1/resource/knowledge/note/remove | |
 | 「查任务进度」 | POST /open/api/v1/resource/note/task/progress | 链接/图片笔记轮询用 |
 | 「订阅了哪些博主」 | GET /open/api/v1/resource/knowledge/bloggers | 按 topic_id 查 |
-| 「博主发了什么内容」 | GET /open/api/v1/resource/knowledge/blogger/contents | 需要 follow_id |
+| 「博主发了什么内容」 | GET /open/api/v1/resource/knowledge/blogger/contents | 需要 follow_id，列表只含摘要 |
+| 「博主内容原文/详情」 | GET /open/api/v1/resource/knowledge/blogger/content/detail | 需要 post_id，含原文 |
 | 「有哪些已完成直播」 | GET /open/api/v1/resource/knowledge/lives | 按 topic_id 查 |
 | 「直播总结/直播原文」 | GET /open/api/v1/resource/knowledge/live/detail | 需要 live_id |
 
@@ -495,7 +498,7 @@ GET /open/api/v1/resource/knowledge/blogger/contents?topic_id={alias_id}&follow_
 
 | 字段 | 说明 |
 |------|------|
-| post_id_alias | 内容 ID |
+| post_id_alias | 内容 ID，**查详情/原文时必用** |
 | post_name | 内容名称（原标题）|
 | post_type | 类型：video / audio / article / live |
 | post_cover | 封面图 |
@@ -504,11 +507,38 @@ GET /open/api/v1/resource/knowledge/blogger/contents?topic_id={alias_id}&follow_
 | post_url | 原文链接 |
 | post_icon | 博主头像 |
 | post_subtitle | 副标题 |
-| post_media_text | 原文内容（全文转写/文章正文）|
 | post_create_time | 创建时间（YYYY-MM-DD HH:MM:SS）|
 | post_publish_time | 发布时间（YYYY-MM-DD HH:MM:SS）|
 
-> `post_summary` 是 AI 摘要（Markdown），`post_media_text` 是原始全文。
+> 列表不含原文（`post_media_text`），需要原文请调 `/blogger/content/detail`。
+
+---
+
+### 博主内容详情（含原文）
+
+```
+GET /open/api/v1/resource/knowledge/blogger/content/detail?topic_id={alias_id}&post_id={post_id_alias}
+```
+
+参数：
+- topic_id (string, 必填) - 知识库 AliasID
+- post_id (string, 必填) - 内容 ID（来自 /blogger/contents 的 post_id_alias）
+
+返回字段：
+
+| 字段 | 说明 |
+|------|------|
+| post_id_alias | 内容 ID |
+| post_name | 内容名称（原标题）|
+| post_type | 类型：video / audio / article / live |
+| post_cover | 封面图 |
+| post_subtitle | 副标题 |
+| post_url | 原文链接 |
+| post_title | AI 生成标题 |
+| post_summary | AI 摘要（Markdown）|
+| post_media_text | 原文内容（全文转写/文章正文）|
+| post_create_time | 创建时间（YYYY-MM-DD HH:MM:SS）|
+| post_publish_time | 发布时间（YYYY-MM-DD HH:MM:SS）|
 
 ---
 
