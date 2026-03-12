@@ -117,7 +117,7 @@ GET /open/api/v1/resource/note/list?since_id=0
 
 返回：notes[], has_more, next_cursor, total（每次固定 20 条）
 
-> ⚠️ **响应 JSON 可能包含未转义的控制字符**（笔记 content 中的原始换行符），Python `json.load` 和 `jq` 可能报错。建议使用 Node.js 处理响应，或对 content 字段单独处理。
+> ⚠️ **响应 JSON 可能包含未转义的控制字符**（笔记 content 中的原始换行符），建议用支持容错解析的 JSON 库处理，或在解析前对 content 字段做预处理。
 
 **笔记类型 note_type**：
 - `plain_text` - 纯文本
@@ -191,10 +191,7 @@ Content-Type: application/json
 - note_id: 成功时返回笔记 ID
 - error_msg: 失败时返回错误信息
 
-> ⚠️ **note_id 是 64 位整数，不能用 JSON.parse 解析**（JS 会丢失精度，如 `1903984155792937544` → `1903984155792937500`）。必须用正则从原始字符串提取：
-> ```bash
-> note_id=$(echo "$response" | grep -o '"note_id":[0-9]*' | grep -o '[0-9]*$')
-> ```
+> ⚠️ **note_id 是 64 位整数**，在 JavaScript 中直接用 `JSON.parse` 会丢失精度。建议在服务端语言（Python、Go 等）中处理，或使用支持大整数的 JSON 库。
 
 **建议 10-30 秒间隔轮询，直到 success 或 failed**。
 

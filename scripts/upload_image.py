@@ -74,30 +74,39 @@ def upload_image(image_path: str, api_key: str) -> str:
         raise Exception("获取凭证失败: tokens 为空")
     
     token = tokens[0]
-    sign_url = token["sign_url"]
-    get_url = token["get_url"]
+    host = token["host"]
+    object_key = token["object_key"]
+    policy = token.get("policy", "")
+    signature = token.get("signature", "")
+    callback = token.get("callback", "")
+    access_url = token["access_url"]
     
     print("✓ 凭证获取成功")
     
-    # 步骤 2: 上传到 OSS
+    # 步骤 2: 上传到 OSS（multipart form）
     print("[2/3] 上传图片到 OSS...")
     
+    file_name = os.path.basename(image_path)
     with open(image_path, "rb") as f:
-        resp = requests.put(
-            sign_url,
-            data=f,
-            headers={"Content-Type": mime_type}
-        )
+        form_data = {
+            "key": object_key,
+            "policy": policy,
+            "signature": signature,
+            "callback": callback,
+            "Content-Type": mime_type,
+        }
+        files = {"file": (file_name, f, mime_type)}
+        resp = requests.post(host, data=form_data, files=files)
     
-    if resp.status_code != 200:
+    if resp.status_code not in (200, 204):
         raise Exception(f"上传失败: HTTP {resp.status_code}")
     
     print("✓ 上传成功")
     
-    # 步骤 3: 返回 URL
+    # 步骤 3: 返回访问 URL
     print("[3/3] 完成")
     
-    return get_url
+    return access_url
 
 
 def main():
