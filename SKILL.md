@@ -8,8 +8,9 @@ description: |
   「保存这个链接」「保存这张图」「查我的笔记」「找一下笔记」
   「加标签」「删标签」「删笔记」
   「查知识库」「建知识库」「把笔记加到知识库」「从知识库移除」
+  「知识库里订阅了哪些博主」「博主发了什么内容」「直播总结」「直播原文」
 
-  支持：纯文本笔记、链接笔记（自动抓取网页内容并生成摘要）、图片笔记（OCR识别）、知识库管理。
+  支持：纯文本笔记、链接笔记（自动抓取网页内容并生成摘要）、图片笔记（OCR识别）、知识库管理（含博主订阅列表、直播总结）。
 metadata: {"openclaw": {"requires": {"env": ["GETNOTE_API_KEY", "GETNOTE_CLIENT_ID"]}, "optionalEnv": ["GETNOTE_OWNER_ID"], "primaryEnv": "GETNOTE_API_KEY", "baseUrl": "https://openapi.biji.com", "homepage": "https://biji.com"}}
 ---
 
@@ -96,11 +97,15 @@ Base URL: `https://openapi.biji.com`
 | 「加标签」 | POST /open/api/v1/resource/note/tags/add | |
 | 「删标签」 | POST /open/api/v1/resource/note/tags/delete | system 类型不可删 |
 | 「删笔记」 | POST /open/api/v1/resource/note/delete | 移入回收站 |
-| 「查知识库」 | GET /open/api/v1/resource/knowledge/list | |
+| 「查知识库」 | GET /open/api/v1/resource/knowledge/list | 含统计数据（笔记数、文件数、博主数、直播数）|
 | 「建知识库」 | POST /open/api/v1/resource/knowledge/create | 每天限 50 个 |
 | 「笔记加入知识库」 | POST /open/api/v1/resource/knowledge/note/batch-add | 每批最多 20 条 |
 | 「从知识库移除」 | POST /open/api/v1/resource/knowledge/note/remove | |
 | 「查任务进度」 | POST /open/api/v1/resource/note/task/progress | 链接/图片笔记轮询用 |
+| 「订阅了哪些博主」 | GET /open/api/v1/resource/knowledge/bloggers | 按 topic_id 查 |
+| 「博主发了什么内容」 | GET /open/api/v1/resource/knowledge/blogger/contents | 需要 follow_id |
+| 「有哪些已完成直播」 | GET /open/api/v1/resource/knowledge/lives | 按 topic_id 查 |
+| 「直播总结/直播原文」 | GET /open/api/v1/resource/knowledge/live/detail | 需要 live_id |
 
 ---
 
@@ -345,14 +350,23 @@ Content-Type: application/json
 ### 知识库列表
 
 ```
-GET /open/api/v1/resource/knowledge/list?page=1&size=20
+GET /open/api/v1/resource/knowledge/list?page=1
 ```
 
 参数：
-- page: 页码，从 1 开始，默认 1
-- size: 每页数量，默认 20，最大 100
+- page: 页码，从 1 开始，默认 1（固定每页 20 条）
 
 返回：topics[], has_more, total
+
+每个 topic 包含：
+- `topic_id` / `topic_id_alias`：知识库 ID
+- `name`、`description`、`cover`
+- `created_at` / `updated_at`：时间字符串（YYYY-MM-DD HH:MM:SS）
+- `stats`：统计数据
+  - `note_count`：笔记数
+  - `file_count`：文件数
+  - `blogger_count`：订阅博主数
+  - `live_count`：已完成直播数
 
 ---
 
@@ -434,6 +448,124 @@ Content-Type: application/json
   "note_ids": [123456789]
 }
 ```
+
+---
+
+## 知识库：博主订阅
+
+### 博主列表
+
+```
+GET /open/api/v1/resource/knowledge/bloggers?topic_id={alias_id}&page=1
+```
+
+参数：
+- topic_id (string, 必填) - 知识库 AliasID（来自 /knowledge/list 的 topic_id_alias）
+- page: 页码，从 1 开始
+
+每页固定 20 条，用 has_more 判断。
+
+返回 bloggers[]，每项字段：
+
+| 字段 | 说明 |
+|------|------|
+| follow_id | 订阅关系 ID，**查博主内容时必用** |
+| account_name | 博主名称 |
+| account_icon | 博主头像 |
+| platform | 平台（如 DEDAO）|
+| account_url | 博主主页链接 |
+| follow_time | 订阅时间（YYYY-MM-DD HH:MM:SS）|
+
+---
+
+### 博主内容列表
+
+```
+GET /open/api/v1/resource/knowledge/blogger/contents?topic_id={alias_id}&follow_id={follow_id}&page=1
+```
+
+参数：
+- topic_id (string, 必填) - 知识库 AliasID
+- follow_id (int64, 必填) - 博主订阅 ID（来自 /bloggers 的 follow_id）
+- page: 页码，从 1 开始
+
+每页固定 20 条，用 has_more 判断。
+
+返回 contents[]，每项字段：
+
+| 字段 | 说明 |
+|------|------|
+| post_id_alias | 内容 ID |
+| post_name | 内容名称（原标题）|
+| post_type | 类型：video / audio / article / live |
+| post_cover | 封面图 |
+| post_title | AI 生成标题 |
+| post_summary | AI 摘要（Markdown）|
+| post_url | 原文链接 |
+| post_icon | 博主头像 |
+| post_subtitle | 副标题 |
+| post_media_text | 原文内容（全文转写/文章正文）|
+| post_create_time | 创建时间（YYYY-MM-DD HH:MM:SS）|
+| post_publish_time | 发布时间（YYYY-MM-DD HH:MM:SS）|
+
+> `post_summary` 是 AI 摘要（Markdown），`post_media_text` 是原始全文。
+
+---
+
+## 知识库：直播订阅
+
+### 已完成直播列表
+
+```
+GET /open/api/v1/resource/knowledge/lives?topic_id={alias_id}&page=1
+```
+
+参数：
+- topic_id (string, 必填) - 知识库 AliasID
+- page: 页码，从 1 开始
+
+每页固定 20 条，用 has_more 判断。**只返回已结束且 AI 已处理完的直播。**
+
+返回 lives[]，每项字段：
+
+| 字段 | 说明 |
+|------|------|
+| live_id | 直播 ID，**查直播详情时必用** |
+| follow_id | 订阅关系 ID |
+| name | 直播名称 |
+| cover | 封面图 |
+| sub_title | 副标题 |
+| link | 直播链接 |
+| platform | 平台（如 DEDAO）|
+| status | 直播状态（已结束为 FINISHED）|
+| follow_time | 订阅时间（YYYY-MM-DD HH:MM:SS）|
+
+---
+
+### 直播详情（总结 + 原文）
+
+```
+GET /open/api/v1/resource/knowledge/live/detail?topic_id={alias_id}&live_id={live_id}
+```
+
+参数：
+- topic_id (string, 必填) - 知识库 AliasID
+- live_id (int64, 必填) - 直播 ID（来自 /lives 的 live_id）
+
+返回字段：
+
+| 字段 | 说明 |
+|------|------|
+| post_id_alias | 内容 ID |
+| post_name | 直播名称（原标题）|
+| post_cover | 封面图 |
+| post_subtitle | 副标题（如开播时间）|
+| post_url | 直播原始链接 |
+| post_title | AI 生成标题 |
+| post_summary | AI 摘要（Markdown，含章节纪要、金句）|
+| post_media_text | 直播原文转写文本 |
+| post_create_time | 创建时间（YYYY-MM-DD HH:MM:SS）|
+| post_publish_time | 直播时间（YYYY-MM-DD HH:MM:SS）|
 
 ---
 
