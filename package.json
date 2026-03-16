@@ -31,7 +31,7 @@
     "primaryEnv": "GETNOTE_API_KEY",
     "baseUrl": "https://openapi.biji.com",
     "requires": {
-      "env": ["GETNOTE_API_KEY", "GETNOTE_CLIENT_ID"]
+      "env": ["GETNOTE_CLIENT_ID"]
     },
     "optionalEnv": ["GETNOTE_OWNER_ID"]
   }
