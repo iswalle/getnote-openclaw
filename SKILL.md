@@ -53,6 +53,25 @@ https://openapi.biji.com
 
 ---
 
+### 🔢 笔记 ID 处理规则（重要！）
+
+笔记 ID（`id`、`note_id`、`next_cursor` 等）是 **64 位整数（int64）**，超出 JavaScript `Number.MAX_SAFE_INTEGER`（2^53-1）范围，直接用 `JSON.parse` 会**静默丢失精度**，导致 ID 错误，后续操作（加入知识库、删除等）会报「笔记不存在」。
+
+**正确做法**：
+- **始终把 ID 当字符串处理**，不要做数值运算
+- 代码中使用 `JSON.parse` 时，**先把响应文本中的 ID 数字替换为字符串**：
+  ```javascript
+  // 替换顶层数字型 ID 字段为字符串（在 JSON.parse 之前）
+  const safe = text.replace(/"(id|note_id|next_cursor|parent_id|follow_id|live_id)"\s*:\s*(\d+)/g, '"$1":"$2"');
+  const data = JSON.parse(safe);
+  ```
+- Python / Go 等语言原生支持大整数，无此问题
+- **发请求时**：`note_id` 字段传字符串或数字均可，服务端兼容两种格式
+
+**验证方法**：取到 ID 后，检查 `String(id).length >= 16`，若满足说明是 int64，必须用字符串保存。
+
+---
+
 ### 🔒 安全规则
 
 - 笔记数据属于用户隐私，不在群聊中主动展示笔记内容
@@ -132,6 +151,8 @@ GET /open/api/v1/resource/note/list?since_id=0
 
 > ⚠️ **响应 JSON 可能包含未转义的控制字符**（笔记 content 中的原始换行符），建议用支持容错解析的 JSON 库处理，或在解析前对 content 字段做预处理。
 
+> ⚠️ **`id`、`next_cursor`、`parent_id` 均为 int64**，JavaScript 环境必须在 `JSON.parse` 前做字符串化处理（见「笔记 ID 处理规则」）。**务必用字符串保存这些值**，不要做数值运算，后续调详情、加知识库等操作直接透传字符串即可。
+
 **笔记类型 note_type**：
 - `plain_text` - 纯文本
 - `img_text` - 图片笔记
@@ -204,7 +225,7 @@ Content-Type: application/json
 - note_id: 成功时返回笔记 ID
 - error_msg: 失败时返回错误信息
 
-> ⚠️ **note_id 是 64 位整数**，在 JavaScript 中直接用 `JSON.parse` 会丢失精度。建议在服务端语言（Python、Go 等）中处理，或使用支持大整数的 JSON 库。
+> ⚠️ **note_id 是 int64**，JavaScript 环境须按「笔记 ID 处理规则」做字符串化，拿到后直接当字符串透传。
 
 **建议 10-30 秒间隔轮询，直到 success 或 failed**。
 
