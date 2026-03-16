@@ -12,7 +12,7 @@ description: |
   「搜一下」「找找我哪些笔记提到了 XX」「在我的 XX 知识库搜一下 XX」
 
   支持：纯文本笔记、链接笔记（自动抓取网页内容并生成摘要）、图片笔记（OCR识别）、知识库管理（含博主订阅列表、直播总结）、语义搜索召回（全局或指定知识库范围）。
-metadata: {"openclaw": {"requires": {"env": ["GETNOTE_CLIENT_ID"]}, "optionalEnv": ["GETNOTE_OWNER_ID"], "primaryEnv": "GETNOTE_API_KEY", "baseUrl": "https://openapi.biji.com", "homepage": "https://biji.com"}}
+metadata: {"openclaw": {"requires": {}, "optionalEnv": ["GETNOTE_CLIENT_ID", "GETNOTE_OWNER_ID"], "primaryEnv": "GETNOTE_API_KEY", "baseUrl": "https://openapi.biji.com", "homepage": "https://biji.com"}}
 ---
 
 # Get笔记 API
