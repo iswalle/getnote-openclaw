@@ -409,7 +409,7 @@ Content-Type: application/json
 
 | 字段 | 说明 |
 |------|------|
-| note_id | 笔记 ID（string）；`BLOGGER` / `LIVE` 类型时为空，其余类型有值 |
+| note_id | 笔记 ID（string）；**仅 `NOTE` 类型有值**，其余类型均为空 |
 | note_type | 内容类型，见下表 |
 | title | 笔记/文档标题 |
 | content | 相关内容片段 |
@@ -421,17 +421,16 @@ Content-Type: application/json
 | note_type | 说明 | note_id |
 |-----------|------|---------|
 | NOTE | 笔记（含知识库笔记） | ✅ 有值 |
-| FILE | 知识库文件 | ✅ 有值 |
+| FILE | 知识库文件 | ❌ 无值 |
 | BLOGGER | 博主内容 | ❌ 无值 |
 | LIVE | 直播 | ❌ 无值 |
-| URL | 全网内容 | ✅ 有值 |
-| DEDAO | 得到内容 | ✅ 有值 |
+| URL | 全网内容 | ❌ 无值 |
+| DEDAO | 得到内容 | ❌ 无值 |
 
 ### 后续操作
 
 - **`NOTE` 类型**：可调 `GET /open/api/v1/resource/note/detail?id={note_id}` 获取笔记全文
-- **`FILE` 类型**：可结合 `page_no` 展示文件页内容
-- **`BLOGGER` / `LIVE` 类型**：无 `note_id`，只能展示召回内容片段
+- **其余类型**：无 `note_id`，只能展示召回的内容片段（`content`）；`FILE` 类型可额外展示页码（`page_no`）
 
 ### 示例对话
 
