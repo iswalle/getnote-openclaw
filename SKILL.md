@@ -9,8 +9,9 @@ description: |
   「加标签」「删标签」「删笔记」
   「查知识库」「建知识库」「把笔记加到知识库」「从知识库移除」
   「知识库里订阅了哪些博主」「博主发了什么内容」「直播总结」「直播原文」
+  「搜一下」「找找我哪些笔记提到了 XX」「在我的 XX 知识库搜一下 XX」
 
-  支持：纯文本笔记、链接笔记（自动抓取网页内容并生成摘要）、图片笔记（OCR识别）、知识库管理（含博主订阅列表、直播总结）。
+  支持：纯文本笔记、链接笔记（自动抓取网页内容并生成摘要）、图片笔记（OCR识别）、知识库管理（含博主订阅列表、直播总结）、语义搜索召回（全局或指定知识库范围）。
 metadata: {"openclaw": {"requires": {"env": ["GETNOTE_API_KEY", "GETNOTE_CLIENT_ID"]}, "optionalEnv": ["GETNOTE_OWNER_ID"], "primaryEnv": "GETNOTE_API_KEY", "baseUrl": "https://openapi.biji.com", "homepage": "https://biji.com"}}
 ---
 
@@ -82,6 +83,7 @@ https://openapi.biji.com
 | note.image.upload | 获取上传图片签名 |
 | topic.blogger.read | 读取知识库订阅博主列表和博主内容 |
 | topic.live.read | 读取知识库已完成直播列表和直播详情 |
+| note.recall.read | 语义搜索召回笔记 |
 
 ---
 
@@ -109,6 +111,7 @@ Base URL: `https://openapi.biji.com`
 | 「博主内容原文/详情」 | GET /open/api/v1/resource/knowledge/blogger/content/detail | 需要 post_id，含原文 |
 | 「有哪些已完成直播」 | GET /open/api/v1/resource/knowledge/lives | 按 topic_id 查 |
 | 「直播总结/直播原文」 | GET /open/api/v1/resource/knowledge/live/detail | 需要 live_id |
+| 「搜一下」「找找笔记里提到 XX 的」「在 XX 知识库搜 XX」 | POST /open/api/v1/resource/recall | 语义召回，见「笔记召回」章节 |
 
 ---
 
@@ -304,6 +307,71 @@ curl -X POST "$host" \
   -F "Content-Type=$oss_content_type" \
   -F "file=@/path/to/image.jpg"
 ```
+
+---
+
+## 笔记召回（语义搜索）
+
+> 适用场景：「搜一下」「找找我哪些笔记提到了 XX」「在我的 XX 知识库搜一下 XX」
+
+```
+POST /open/api/v1/resource/recall
+Content-Type: application/json
+```
+
+请求体：
+```json
+{
+  "query": "搜索关键词",
+  "top_k": 3,
+  "topic_id": ""
+}
+```
+
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| query | string, 必填 | 搜索关键词或语义描述 |
+| top_k | int, 可选 | 返回数量，默认 **3**，最大 **10** |
+| topic_id | string, 可选 | 知识库 ID（alias id）；**不传 = 全局召回**，传入 = 限定知识库范围 |
+
+返回结构（结果已按相关度**从高到低**排序）：
+
+```json
+{
+  "results": [
+    {
+      "note_id": "1896830231705320746",
+      "note_type": "NOTE",
+      "title": "笔记标题",
+      "content": "笔记内容片段",
+      "created_at": "2025-12-24 15:20:15",
+      "page_no": 0
+    }
+  ]
+}
+```
+
+| 字段 | 说明 |
+|------|------|
+| note_id | 笔记 ID（string）；`NOTE` 类型时有值，`FILE` 类型时为空 |
+| note_type | `NOTE`（笔记）或 `FILE`（文件/知识库文档） |
+| title | 笔记/文档标题 |
+| content | 相关内容片段 |
+| created_at | 创建/发布时间（YYYY-MM-DD HH:MM:SS）|
+| page_no | `FILE` 类型时表示页码；`NOTE` 类型时省略 |
+
+### 后续操作
+
+- **`NOTE` 类型**：拿到 `note_id` 后可调用 `GET /open/api/v1/resource/note/detail?id={note_id}` 获取笔记全文、标签、原文链接等完整内容
+- **`FILE` 类型**：无 `note_id`，只能展示召回的内容片段（`content`）和页码（`page_no`）
+
+### 示例对话
+
+> 用户：「找找我哪些笔记提到了大模型 API」
+> → `{ "query": "大模型 API", "top_k": 3 }`
+
+> 用户：「在我的 AI 学习知识库里搜一下 RAG」
+> → 先调 `/knowledge/list` 找到 `topic_id`，再 `{ "query": "RAG", "topic_id": "xxx", "top_k": 3 }`
 
 ---
 
