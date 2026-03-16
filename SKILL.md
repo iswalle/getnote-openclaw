@@ -83,7 +83,8 @@ https://openapi.biji.com
 | note.image.upload | 获取上传图片签名 |
 | topic.blogger.read | 读取知识库订阅博主列表和博主内容 |
 | topic.live.read | 读取知识库已完成直播列表和直播详情 |
-| note.recall.read | 语义搜索召回笔记 |
+| note.recall.read | 语义召回笔记（全局） |
+| note.topic.recall.read | 语义召回知识库内容 |
 
 ---
 
@@ -111,7 +112,8 @@ Base URL: `https://openapi.biji.com`
 | 「博主内容原文/详情」 | GET /open/api/v1/resource/knowledge/blogger/content/detail | 需要 post_id，含原文 |
 | 「有哪些已完成直播」 | GET /open/api/v1/resource/knowledge/lives | 按 topic_id 查 |
 | 「直播总结/直播原文」 | GET /open/api/v1/resource/knowledge/live/detail | 需要 live_id |
-| 「搜一下」「找找笔记里提到 XX 的」「在 XX 知识库搜 XX」 | POST /open/api/v1/resource/recall | 语义召回，见「笔记召回」章节 |
+| 「搜一下」「找找笔记里提到 XX 的」 | POST /open/api/v1/resource/recall | 全局语义召回，见「笔记召回」章节 |
+| 「在 XX 知识库搜 XX」 | POST /open/api/v1/resource/recall/knowledge | 知识库语义召回，见「知识库召回」章节 |
 
 ---
 
@@ -310,9 +312,11 @@ curl -X POST "$host" \
 
 ---
 
-## 笔记召回（语义搜索）
+## 笔记召回（全局语义搜索）
 
-> 适用场景：「搜一下」「找找我哪些笔记提到了 XX」「在我的 XX 知识库搜一下 XX」
+> 适用场景：「搜一下」「找找我哪些笔记提到了 XX」
+
+**所需 scope**: `note.recall.read`
 
 ```
 POST /open/api/v1/resource/recall
@@ -323,8 +327,7 @@ Content-Type: application/json
 ```json
 {
   "query": "搜索关键词",
-  "top_k": 3,
-  "topic_id": ""
+  "top_k": 3
 }
 ```
 
@@ -332,7 +335,6 @@ Content-Type: application/json
 |------|------|------|
 | query | string, 必填 | 搜索关键词或语义描述 |
 | top_k | int, 可选 | 返回数量，默认 **3**，最大 **10** |
-| topic_id | string, 可选 | 知识库 ID（alias id）；**不传 = 全局召回**，传入 = 限定知识库范围 |
 
 返回结构（结果已按相关度**从高到低**排序）：
 
@@ -344,34 +346,79 @@ Content-Type: application/json
       "note_type": "NOTE",
       "title": "笔记标题",
       "content": "笔记内容片段",
-      "created_at": "2025-12-24 15:20:15",
-      "page_no": 0
+      "created_at": "2025-12-24 15:20:15"
     }
   ]
 }
 ```
 
+---
+
+## 知识库召回（指定知识库语义搜索）
+
+> 适用场景：「在我的 XX 知识库搜一下 XX」
+
+**所需 scope**: `note.topic.recall.read`
+
+```
+POST /open/api/v1/resource/recall/knowledge
+Content-Type: application/json
+```
+
+请求体：
+```json
+{
+  "topic_id": "知识库 alias id",
+  "query": "搜索关键词",
+  "top_k": 3
+}
+```
+
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| topic_id | string, 必填 | 知识库 ID（alias id，来自 /knowledge/list 的 topic_id_alias） |
+| query | string, 必填 | 搜索关键词或语义描述 |
+| top_k | int, 可选 | 返回数量，默认 **3**，最大 **10** |
+
+返回结构同笔记召回。
+
+---
+
+## 召回结果说明
+
 | 字段 | 说明 |
 |------|------|
-| note_id | 笔记 ID（string）；`NOTE` 类型时有值，`FILE` 类型时为空 |
-| note_type | `NOTE`（笔记）或 `FILE`（文件/知识库文档） |
+| note_id | 笔记 ID（string）；`BLOGGER` / `LIVE` 类型时为空，其余类型有值 |
+| note_type | 内容类型，见下表 |
 | title | 笔记/文档标题 |
 | content | 相关内容片段 |
 | created_at | 创建/发布时间（YYYY-MM-DD HH:MM:SS）|
-| page_no | `FILE` 类型时表示页码；`NOTE` 类型时省略 |
+| page_no | `FILE` 类型时表示文件页码，其余类型省略 |
+
+**note_type 类型**：
+
+| note_type | 说明 | note_id |
+|-----------|------|---------|
+| NOTE | 笔记（含知识库笔记） | ✅ 有值 |
+| FILE | 知识库文件 | ✅ 有值 |
+| BLOGGER | 博主内容 | ❌ 无值 |
+| LIVE | 直播 | ❌ 无值 |
+| URL | 全网内容 | ✅ 有值 |
+| DEDAO | 得到内容 | ✅ 有值 |
 
 ### 后续操作
 
-- **`NOTE` 类型**：拿到 `note_id` 后可调用 `GET /open/api/v1/resource/note/detail?id={note_id}` 获取笔记全文、标签、原文链接等完整内容
-- **`FILE` 类型**：无 `note_id`，只能展示召回的内容片段（`content`）和页码（`page_no`）
+- **`NOTE` 类型**：可调 `GET /open/api/v1/resource/note/detail?id={note_id}` 获取笔记全文
+- **`FILE` 类型**：可结合 `page_no` 展示文件页内容
+- **`BLOGGER` / `LIVE` 类型**：无 `note_id`，只能展示召回内容片段
 
 ### 示例对话
 
 > 用户：「找找我哪些笔记提到了大模型 API」
-> → `{ "query": "大模型 API", "top_k": 3 }`
+> → `POST /recall` `{ "query": "大模型 API", "top_k": 3 }`
 
 > 用户：「在我的 AI 学习知识库里搜一下 RAG」
-> → 先调 `/knowledge/list` 找到 `topic_id`，再 `{ "query": "RAG", "topic_id": "xxx", "top_k": 3 }`
+> → 先调 `/knowledge/list` 找到 `topic_id_alias`，再 `POST /recall/knowledge` `{ "topic_id": "xxx", "query": "RAG", "top_k": 3 }`
 
 ---
 
