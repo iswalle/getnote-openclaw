@@ -28,6 +28,7 @@ description: |
   - 触发词：「搜一下」「找找我哪些笔记提到了 XX」「在 XX 知识库搜 XX」
 
   ## 触发场景
+  - 用户要求「配置 Get笔记」「连接 Get笔记」「帮我设置笔记」时（OAuth 授权流程）
   - 用户发送任意 URL 链接时（自动识别为保存链接笔记）
   - 用户发送图片时（自动识别为保存图片笔记）
   - 用户提到「笔记」「记一下」「保存」「收藏」「存起来」等关键词
@@ -51,7 +52,24 @@ https://openapi.biji.com
 
 ### 🔑 首次安装配置
 
-在 `~/.openclaw/openclaw.json` 中添加：
+有两种方式获取凭证：
+
+#### 方式一：OAuth 授权（推荐）
+
+让 AI Agent 为你自动完成授权：
+
+1. 告诉 Agent：「帮我配置 Get笔记」或「连接 Get笔记」
+2. Agent 会生成授权链接和二维码，打开链接或扫码
+3. 在 Get笔记 页面点击「授权」
+4. 授权成功后 Agent 自动完成配置，无需手动填写任何凭证
+
+> OAuth 授权会自动获取 API Key 和 Client ID，并写入配置文件。
+
+#### 方式二：手动配置
+
+1. 前往 [Get笔记开放平台](https://www.biji.com/openapi) 创建应用
+2. 获取 Client ID 和 API Key
+3. 在 `~/.openclaw/openclaw.json` 中添加：
 
 ```json
 {
@@ -68,8 +86,6 @@ https://openapi.biji.com
   }
 }
 ```
-
-**获取凭证**：前往 [Get笔记开放平台](https://www.biji.com/openapi) 创建应用获取。
 
 ---
 
@@ -133,6 +149,7 @@ Base URL: `https://openapi.biji.com`
 
 | 用户意图 | 接口 | 关键点 |
 |---------|------|--------|
+| 「配置 Get笔记」「连接笔记」 | OAuth Device Flow | 见「OAuth Device Flow」章节 |
 | 「记一下」「保存笔记」 | POST /open/api/v1/resource/note/save | 同步返回 |
 | 「改笔记」「更新笔记」 | POST /open/api/v1/resource/note/update | note_id 必填，内容部分更新 |
 | 「保存这个链接」 | POST /open/api/v1/resource/note/save | note_type:"link" → **必须轮询** |
@@ -199,6 +216,10 @@ GET /open/api/v1/resource/note/detail?id={note_id}
 **新增字段**：
 - `note_id` (string) - 笔记 ID 的字符串格式，便于 AI Agent 解析，避免 int64 精度问题
 - `children_ids` (string[]) - 子笔记 ID 列表（字符串格式），仅当有子笔记时返回
+
+**图片附件**：`attachments[]` 中每个图片包含：
+- `url` - 缩略图 URL（720px 压缩）
+- `original_url` - 原图 URL（无压缩，适合需要高清图的场景）
 
 **详情独有字段**（列表不返回）：`audio.original`、`audio.play_url`、`audio.duration`、`web_page.content`、`web_page.url`、`web_page.excerpt`、`attachments[]`、`children_ids`。详见 [references/api-details.md](references/api-details.md)。
 
@@ -815,3 +836,165 @@ GET /open/api/v1/resource/knowledge/live/detail?topic_id={alias_id}&live_id={liv
 | 20001 | 笔记不存在 | 确认笔记 ID 正确 |
 | 42900 | 限流 | 降低频率，查看 rate_limit 字段 |
 | 50000 | 系统错误 | 稍后重试 |
+
+---
+
+## OAuth Device Flow（自动配置）
+
+当用户要求「配置 Get笔记」「连接 Get笔记」时，使用此流程自动获取凭证。
+
+### 流程概述
+
+1. **申请授权码** → 获取 `user_code` 和 `verification_uri`
+2. **展示给用户** → 发送授权链接和二维码
+3. **轮询等待** → 用户授权后获取 `api_key` 和 `client_id`
+4. **写入配置** → 自动配置完成
+
+### 步骤 1：申请授权码
+
+```
+POST https://openapi.biji.com/open/api/v1/oauth/device/code
+Content-Type: application/json
+```
+
+请求体：
+```json
+{
+  "client_id": "cli_getnote_openclaw"
+}
+```
+
+> ⚠️ **client_id 固定为 `cli_getnote_openclaw`**，这是 Get笔记 为 OpenClaw 预注册的应用。
+
+返回：
+```json
+{
+  "success": true,
+  "data": {
+    "device_code": "abc123...",
+    "user_code": "ABCD-1234",
+    "verification_uri": "https://biji.com/openapi/oauth/authorize?code=abc123...",
+    "verification_uri_qrcode": "data:image/png;base64,...",
+    "expires_in": 600,
+    "interval": 5
+  }
+}
+```
+
+| 字段 | 说明 |
+|------|------|
+| device_code | 设备码，轮询时使用 |
+| user_code | 用户码，展示给用户（备用） |
+| verification_uri | 授权链接，**发送给用户点击** |
+| verification_uri_qrcode | 二维码图片（base64），**发送给用户扫码** |
+| expires_in | 授权码有效期（秒），默认 600 |
+| interval | 建议轮询间隔（秒），默认 5 |
+
+### 步骤 2：展示授权链接
+
+**发送给用户**（同时展示链接和二维码）：
+
+> 🔗 请点击链接或扫描二维码完成授权：
+> 
+> {verification_uri}
+> 
+> {verification_uri_qrcode 图片}
+> 
+> 授权码 10 分钟内有效，授权后我会自动完成配置。
+
+### 步骤 3：轮询等待授权
+
+```
+POST https://openapi.biji.com/open/api/v1/oauth/token
+Content-Type: application/json
+```
+
+请求体：
+```json
+{
+  "grant_type": "device_code",
+  "client_id": "cli_getnote_openclaw",
+  "code": "{device_code}"
+}
+```
+
+**轮询响应状态**：
+
+| 响应 | 说明 | 处理方式 |
+|------|------|---------|
+| `{"msg": "authorization_pending"}` | 用户尚未操作 | 继续轮询（间隔 5-10 秒） |
+| `{"msg": "rejected"}` | 用户拒绝授权 | **停止轮询**，告知用户已拒绝 |
+| `{"msg": "expired_token"}` | 授权码已过期 | **停止轮询**，提示重新发起 |
+| `{"msg": "already_consumed"}` | 授权码已使用 | **停止轮询**，可能已配置成功 |
+| `{"api_key": "...", "client_id": "...", ...}` | **授权成功** | 进入步骤 4 |
+
+**授权成功返回**：
+```json
+{
+  "success": true,
+  "data": {
+    "client_id": "cli_getnote_openclaw",
+    "api_key": "gk_live_xxx",
+    "key_id": "abc123",
+    "expires_at": 1742000000
+  }
+}
+```
+
+| 字段 | 说明 |
+|------|------|
+| client_id | 应用 ID |
+| api_key | API Key，**写入配置文件** |
+| key_id | Key ID（管理用） |
+| expires_at | 过期时间戳（Unix 秒），有效期 1 年 |
+
+### 步骤 4：写入配置
+
+将获取的凭证写入 `~/.openclaw/openclaw.json`：
+
+```json
+{
+  "skills": {
+    "entries": {
+      "getnote": {
+        "apiKey": "{api_key}",
+        "env": {
+          "GETNOTE_CLIENT_ID": "{client_id}"
+        }
+      }
+    }
+  }
+}
+```
+
+**告知用户**：
+
+> ✅ Get笔记 配置完成！
+> 
+> - API Key 有效期至 {expires_at 格式化日期}
+> - 现在可以使用「记一下」「查笔记」等功能了
+
+### 完整示例对话
+
+> **用户**：帮我配置 Get笔记
+> 
+> **Agent**：正在为你生成授权链接...
+> 
+> 🔗 请点击链接或扫描二维码完成授权：
+> https://biji.com/openapi/oauth/authorize?code=xxx
+> [二维码图片]
+> 
+> 授权码 10 分钟内有效。
+> 
+> ---
+> 
+> **（用户点击链接，在网页上点击「授权」）**
+> 
+> ---
+> 
+> **Agent**：✅ Get笔记 配置完成！API Key 有效期至 2027-03-18。
+> 
+> 现在可以使用以下功能：
+> - 「记一下 xxx」保存笔记
+> - 「查我的笔记」查看笔记列表
+> - 「搜一下 xxx」语义搜索
