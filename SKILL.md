@@ -853,10 +853,10 @@ Content-Type: application/json
 
 ```bash
 # 后台启动轮询（发送授权链接后立即执行）
-./scripts/oauth-poll.sh "{code}" &
+python scripts/oauth_poll.py "{code}" &
 
 # 或等待结果
-result=$(./scripts/oauth-poll.sh "{code}")
+result=$(python scripts/oauth_poll.py "{code}")
 api_key=$(echo "$result" | jq -r '.api_key')
 client_id=$(echo "$result" | jq -r '.client_id')
 ```
@@ -918,3 +918,4 @@ client_id=$(echo "$result" | jq -r '.client_id')
 > 
 > - API Key 有效期至 {expires_at 格式化日期}
 > - 现在可以使用「记一下」「查笔记」等功能了
+> - 如需注销授权，请访问：https://www.biji.com/openapi?tab=keys
