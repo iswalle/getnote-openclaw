@@ -34,8 +34,8 @@ import urllib.error
 
 API_URL = "https://openapi.biji.com/open/api/v1/oauth/token"
 DEFAULT_CLIENT_ID = "cli_a1b2c3d4e5f6789012345678abcdef90"
-INTERVAL = 15      # 轮询间隔（秒）
-MAX_ATTEMPTS = 40  # 最大尝试次数（15秒 * 40 = 10分钟）
+INTERVAL = 5       # 轮询间隔（秒）
+MAX_ATTEMPTS = 120 # 最大尝试次数（5秒 * 120 = 10分钟）
 
 
 def poll_token(code: str, client_id: str) -> dict:

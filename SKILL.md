@@ -59,7 +59,7 @@ https://openapi.biji.com
 让 AI Agent 为你自动完成授权：
 
 1. 告诉 Agent：「帮我配置 Get笔记」或「连接 Get笔记」
-2. Agent 会生成授权链接和二维码，打开链接或扫码
+2. Agent 会生成授权链接，点击链接打开授权页面
 3. 在 Get笔记 页面点击「授权」
 4. 授权成功后 Agent 自动完成配置，无需手动填写任何凭证
 
@@ -762,8 +762,8 @@ GET /open/api/v1/resource/knowledge/live/detail?topic_id={alias_id}&live_id={liv
 
 ### 流程概述
 
-1. **申请授权码** → 获取 `user_code` 和 `verification_uri`
-2. **展示给用户** → 发送授权链接和二维码
+1. **申请授权码** → 获取 `code` 和 `verification_uri`
+2. **展示给用户** → 发送授权链接
 3. **轮询等待** → 用户授权后获取 `api_key` 和 `client_id`
 4. **写入配置** → 自动配置完成
 
@@ -790,7 +790,6 @@ Content-Type: application/json
   "data": {
     "code": "abc123...",
     "verification_uri": "https://biji.com/openapi/oauth/authorize?code=abc123...",
-    "verification_uri_qrcode": "data:image/png;base64,...",
     "expires_in": 600,
     "interval": 5
   }
@@ -801,26 +800,16 @@ Content-Type: application/json
 |------|------|
 | code | 授权码，轮询时使用 |
 | verification_uri | 授权链接，**发送给用户点击** |
-| verification_uri_qrcode | 二维码图片（base64），直接保存成本地图片，**发送给用户扫码** |
 | expires_in | 授权码有效期（秒），默认 600 |
 | interval | 建议轮询间隔（秒），默认 5 |
 
 ### 步骤 2：展示授权链接
 
-API 返回的 `verification_uri` 是授权链接，`verification_uri_qrcode` 是二维码图片的 base64 Data URI。
+将 `verification_uri` 发送给用户：
 
-**展示方式**（选择其一）：
-1. **直接发送链接**：将 `verification_uri` 发送给用户点击
-2. **发送二维码图片**：将 `verification_uri_qrcode`（base64）保存为本地图片文件，然后发送图片给用户扫码
-3. **同时发送**：链接 + 二维码图片一起发送（推荐）
-
-**示例消息**：
-
-> 🔗 请点击链接或扫描二维码完成授权：
+> 🔗 请点击链接完成授权：
 > 
 > {verification_uri}
-> 
-> [二维码图片]
 > 
 > 授权码 10 分钟内有效，授权后我会自动完成配置。
 
@@ -845,17 +834,18 @@ Content-Type: application/json
 ```
 
 **轮询策略**：
-- **间隔**：10-30 秒查询一次
+- **间隔**：5 秒查询一次
 - **超时**：最多轮询 10 分钟（与授权码有效期一致）
 - **并行**：轮询在后台进行，不阻塞用户其他操作
 
 **推荐：使用轮询脚本**
 
 ```bash
-# 后台启动轮询（发送授权链接后立即执行）
-python scripts/oauth_poll.py "{code}" &
+# 后台启动轮询，成功后主动通知用户
+python scripts/oauth_poll.py "{code}" > /tmp/oauth_result.json && \
+  openclaw cron wake --text "Get笔记授权成功，请完成配置" &
 
-# 或等待结果
+# 或直接等待结果
 result=$(python scripts/oauth_poll.py "{code}")
 api_key=$(echo "$result" | jq -r '.api_key')
 client_id=$(echo "$result" | jq -r '.client_id')
