@@ -125,21 +125,9 @@ https://openapi.biji.com
 
 ### Scope 权限
 
-| Scope | 说明 |
-|-------|------|
-| note.content.read | 笔记列表、内容读取 |
-| note.content.write | 文字/链接/图片笔记写入 |
-| note.tag.write | 添加、删除笔记标签 |
-| note.content.trash | 笔记移入回收站 |
-| topic.read | 知识库列表 |
-| topic.write | 创建知识库 |
-| note.topic.read | 笔记所属知识库查询 |
-| note.topic.write | 笔记加入/移出知识库 |
-| note.image.upload | 获取上传图片签名 |
-| topic.blogger.read | 读取知识库订阅博主列表和博主内容 |
-| topic.live.read | 读取知识库已完成直播列表和直播详情 |
-| note.recall.read | 语义召回笔记（全局） |
-| note.topic.recall.read | 语义召回知识库内容 |
+常用权限：`note.content.read`（读取）、`note.content.write`（写入）、`note.recall.read`（搜索）。
+
+完整权限列表见 [references/api-details.md](references/api-details.md#scope-权限列表)。
 
 ---
 
@@ -393,18 +381,11 @@ GET /open/api/v1/resource/image/upload_token?mime_type=jpg&count=1
 
 ### OSS 上传示例
 
-> ⚠️ **字段顺序必须严格遵守**，否则 OSS 签名验证失败。正确顺序：`key → OSSAccessKeyId → policy → signature → callback → Content-Type → file`
+> ⚠️ **字段顺序必须严格遵守**，否则 OSS 签名验证失败。
 
-```bash
-curl -X POST "$host" \
-  -F "key=$object_key" \
-  -F "OSSAccessKeyId=$accessid" \
-  -F "policy=$policy" \
-  -F "signature=$signature" \
-  -F "callback=$callback" \
-  -F "Content-Type=$oss_content_type" \
-  -F "file=@/path/to/image.jpg"
-```
+字段顺序：`key → OSSAccessKeyId → policy → signature → callback → Content-Type → file`
+
+完整示例见 [references/api-details.md](references/api-details.md#oss-上传详细示例)。
 
 ---
 
@@ -697,30 +678,11 @@ GET /open/api/v1/resource/knowledge/bloggers?topic_id={alias_id}&page=1
 GET /open/api/v1/resource/knowledge/blogger/contents?topic_id={alias_id}&follow_id={follow_id}&page=1
 ```
 
-参数：
-- topic_id (string, 必填) - 知识库 AliasID
-- follow_id (int64, 必填) - 博主订阅 ID（来自 /bloggers 的 follow_id）
-- page: 页码，从 1 开始
+参数：`topic_id`（知识库 AliasID）、`follow_id`（博主订阅 ID）、`page`（页码）
 
-每页固定 20 条，用 has_more 判断。
+返回 `contents[]`，关键字段：`post_id_alias`（详情必用）、`post_title`、`post_summary`。
 
-返回 contents[]，每项字段：
-
-| 字段 | 说明 |
-|------|------|
-| post_id_alias | 内容 ID，**查详情/原文时必用** |
-| post_name | 内容名称（原标题）|
-| post_type | 类型：video / audio / article / live |
-| post_cover | 封面图 |
-| post_title | AI 生成标题 |
-| post_summary | AI 摘要（Markdown）|
-| post_url | 原文链接 |
-| post_icon | 博主头像 |
-| post_subtitle | 副标题 |
-| post_create_time | 创建时间（YYYY-MM-DD HH:MM:SS）|
-| post_publish_time | 发布时间（YYYY-MM-DD HH:MM:SS）|
-
-> 列表不含原文（`post_media_text`），需要原文请调 `/blogger/content/detail`。
+> 列表不含原文，需要原文请调详情接口。完整字段见 [references/api-details.md](references/api-details.md#博主内容字段说明)。
 
 ---
 
@@ -730,25 +692,9 @@ GET /open/api/v1/resource/knowledge/blogger/contents?topic_id={alias_id}&follow_
 GET /open/api/v1/resource/knowledge/blogger/content/detail?topic_id={alias_id}&post_id={post_id_alias}
 ```
 
-参数：
-- topic_id (string, 必填) - 知识库 AliasID
-- post_id (string, 必填) - 内容 ID（来自 /blogger/contents 的 post_id_alias）
+参数：`topic_id`（知识库 AliasID）、`post_id`（内容 ID，来自列表的 post_id_alias）
 
-返回字段：
-
-| 字段 | 说明 |
-|------|------|
-| post_id_alias | 内容 ID |
-| post_name | 内容名称（原标题）|
-| post_type | 类型：video / audio / article / live |
-| post_cover | 封面图 |
-| post_subtitle | 副标题 |
-| post_url | 原文链接 |
-| post_title | AI 生成标题 |
-| post_summary | AI 摘要（Markdown）|
-| post_media_text | 原文内容（全文转写/文章正文）|
-| post_create_time | 创建时间（YYYY-MM-DD HH:MM:SS）|
-| post_publish_time | 发布时间（YYYY-MM-DD HH:MM:SS）|
+返回完整内容，包含 `post_media_text`（原文）。
 
 ---
 
@@ -760,25 +706,11 @@ GET /open/api/v1/resource/knowledge/blogger/content/detail?topic_id={alias_id}&p
 GET /open/api/v1/resource/knowledge/lives?topic_id={alias_id}&page=1
 ```
 
-参数：
-- topic_id (string, 必填) - 知识库 AliasID
-- page: 页码，从 1 开始
+参数：`topic_id`（知识库 AliasID）、`page`（页码）
 
-每页固定 20 条，用 has_more 判断。**只返回已结束且 AI 已处理完的直播。**
+返回 `lives[]`，关键字段：`live_id`（详情必用）、`name`、`status`。
 
-返回 lives[]，每项字段：
-
-| 字段 | 说明 |
-|------|------|
-| live_id | 直播 ID，**查直播详情时必用** |
-| follow_id | 订阅关系 ID |
-| name | 直播名称 |
-| cover | 封面图 |
-| sub_title | 副标题 |
-| link | 直播链接 |
-| platform | 平台（如 DEDAO）|
-| status | 直播状态（已结束为 FINISHED）|
-| follow_time | 订阅时间（YYYY-MM-DD HH:MM:SS）|
+**只返回已结束且 AI 已处理完的直播。** 完整字段见 [references/api-details.md](references/api-details.md#直播字段说明)。
 
 ---
 
@@ -788,24 +720,9 @@ GET /open/api/v1/resource/knowledge/lives?topic_id={alias_id}&page=1
 GET /open/api/v1/resource/knowledge/live/detail?topic_id={alias_id}&live_id={live_id}
 ```
 
-参数：
-- topic_id (string, 必填) - 知识库 AliasID
-- live_id (int64, 必填) - 直播 ID（来自 /lives 的 live_id）
+参数：`topic_id`（知识库 AliasID）、`live_id`（直播 ID，来自列表）
 
-返回字段：
-
-| 字段 | 说明 |
-|------|------|
-| post_id_alias | 内容 ID |
-| post_name | 直播名称（原标题）|
-| post_cover | 封面图 |
-| post_subtitle | 副标题（如开播时间）|
-| post_url | 直播原始链接 |
-| post_title | AI 生成标题 |
-| post_summary | AI 摘要（Markdown，含章节纪要、金句）|
-| post_media_text | 直播原文转写文本 |
-| post_create_time | 创建时间（YYYY-MM-DD HH:MM:SS）|
-| post_publish_time | 直播时间（YYYY-MM-DD HH:MM:SS）|
+返回完整内容，包含 `post_summary`（AI 摘要）和 `post_media_text`（原文转写）。
 
 ---
 
@@ -987,28 +904,3 @@ Content-Type: application/json
 > 
 > - API Key 有效期至 {expires_at 格式化日期}
 > - 现在可以使用「记一下」「查笔记」等功能了
-
-### 完整示例对话
-
-> **用户**：帮我配置 Get笔记
-> 
-> **Agent**：正在为你生成授权链接...
-> 
-> 🔗 请点击链接或扫描二维码完成授权：
-> https://biji.com/openapi/oauth/authorize?code=xxx
-> [二维码图片]
-> 
-> 授权码 10 分钟内有效。
-> 
-> ---
-> 
-> **（用户点击链接，在网页上点击「授权」）**
-> 
-> ---
-> 
-> **Agent**：✅ Get笔记 配置完成！API Key 有效期至 2027-03-18。
-> 
-> 现在可以使用以下功能：
-> - 「记一下 xxx」保存笔记
-> - 「查我的笔记」查看笔记列表
-> - 「搜一下 xxx」语义搜索

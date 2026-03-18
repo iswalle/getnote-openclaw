@@ -128,3 +128,114 @@
 | `oss_content_type` | 上传时需设置的 Content-Type（与 mime_type 对应） |
 
 ⚠️ `mime_type` 必须与实际文件格式一致，否则 OSS 签名验证失败。
+
+---
+
+## Scope 权限列表
+
+| Scope | 说明 |
+|-------|------|
+| note.content.read | 读取笔记（列表、详情）|
+| note.content.write | 添加或修改笔记 |
+| note.tag.read | 获取标签列表 |
+| note.tag.write | 修改标签 |
+| note.topic.read | 获取知识库笔记 |
+| note.topic.write | 笔记加入或移除知识库 |
+| topic.read | 获取知识库信息 |
+| topic.write | 创建和编辑知识库 |
+| note.recall.read | 笔记内容搜索 |
+| note.topic.recall.read | 知识库内容搜索 |
+| note.image.upload | 获取上传图片签名 |
+| note.content.trash | 笔记移入回收站 |
+| topic.blogger.read | 获取知识库订阅博主 |
+| topic.live.read | 获取知识库订阅直播 |
+
+---
+
+## 博主内容字段说明
+
+| 字段 | 说明 |
+|------|------|
+| post_id_alias | 内容 ID，查详情时必用 |
+| post_name | 内容名称（原标题）|
+| post_type | 类型：video / audio / article / live |
+| post_cover | 封面图 |
+| post_title | AI 生成标题 |
+| post_summary | AI 摘要（Markdown）|
+| post_url | 原文链接 |
+| post_icon | 博主头像 |
+| post_subtitle | 副标题 |
+| post_media_text | 原文内容（仅详情接口返回）|
+| post_create_time | 创建时间（YYYY-MM-DD HH:MM:SS）|
+| post_publish_time | 发布时间（YYYY-MM-DD HH:MM:SS）|
+
+---
+
+## 直播字段说明
+
+| 字段 | 说明 |
+|------|------|
+| live_id | 直播 ID，查直播详情时必用 |
+| follow_id | 订阅关系 ID |
+| name | 直播名称 |
+| cover | 封面图 |
+| sub_title | 副标题 |
+| link | 直播链接 |
+| platform | 平台（如 DEDAO）|
+| status | 直播状态（已结束为 FINISHED）|
+| follow_time | 订阅时间（YYYY-MM-DD HH:MM:SS）|
+
+---
+
+## 召回结果字段说明
+
+### 笔记召回 (recall) 返回字段
+
+| 字段 | 说明 |
+|------|------|
+| id | 笔记 ID |
+| note_id | 笔记 ID（字符串格式）|
+| title | 标题 |
+| content | 摘要内容 |
+| note_type | 笔记类型 |
+| tags | 标签列表 |
+| created_at | 创建时间 |
+
+### 知识库召回 (recall/knowledge) 返回字段
+
+| 字段 | 说明 |
+|------|------|
+| id | 内容 ID |
+| content_type | 内容类型：note / blogger / live |
+| title | 标题 |
+| summary | 摘要 |
+| source_type | 来源类型 |
+| created_at | 创建时间 |
+
+---
+
+## OSS 上传详细示例
+
+```bash
+# 1. 获取上传凭证
+curl 'https://openapi.biji.com/open/api/v1/resource/image/upload_token?mime_type=jpg&count=1' \
+  -H 'X-Client-ID: {client_id}' \
+  -H 'Authorization: {api_key}'
+
+# 2. 上传到 OSS（使用返回的凭证）
+curl -X POST '{host}' \
+  -F 'key={object_key}' \
+  -F 'policy={policy}' \
+  -F 'OSSAccessKeyId={accessid}' \
+  -F 'signature={signature}' \
+  -F 'callback={callback}' \
+  -F 'Content-Type=image/jpeg' \
+  -F 'file=@/path/to/image.jpg'
+
+# 3. 创建图片笔记
+curl -X POST 'https://openapi.biji.com/open/api/v1/resource/note/save' \
+  -H 'X-Client-ID: {client_id}' \
+  -H 'Authorization: {api_key}' \
+  -H 'Content-Type: application/json' \
+  -d '{"note_type": "img_text", "content": "描述", "image_urls": ["{access_url}"]}'
+```
