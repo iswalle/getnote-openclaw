@@ -871,8 +871,7 @@ Content-Type: application/json
 {
   "success": true,
   "data": {
-    "device_code": "abc123...",
-    "user_code": "ABCD-1234",
+    "code": "abc123...",
     "verification_uri": "https://biji.com/openapi/oauth/authorize?code=abc123...",
     "verification_uri_qrcode": "data:image/png;base64,...",
     "expires_in": 600,
@@ -883,8 +882,7 @@ Content-Type: application/json
 
 | 字段 | 说明 |
 |------|------|
-| device_code | 设备码，轮询时使用 |
-| user_code | 用户码，展示给用户（备用） |
+| code | 授权码，轮询时使用 |
 | verification_uri | 授权链接，**发送给用户点击** |
 | verification_uri_qrcode | 二维码图片（base64），直接保存成本地图片，**发送给用户扫码** |
 | expires_in | 授权码有效期（秒），默认 600 |
@@ -892,17 +890,28 @@ Content-Type: application/json
 
 ### 步骤 2：展示授权链接
 
-**发送给用户**（同时展示链接和二维码）：
+API 返回的 `verification_uri` 是授权链接，`verification_uri_qrcode` 是二维码图片的 base64 Data URI。
+
+**展示方式**（选择其一）：
+1. **直接发送链接**：将 `verification_uri` 发送给用户点击
+2. **发送二维码图片**：将 `verification_uri_qrcode`（base64）保存为本地图片文件，然后发送图片给用户扫码
+3. **同时发送**：链接 + 二维码图片一起发送（推荐）
+
+**示例消息**：
 
 > 🔗 请点击链接或扫描二维码完成授权：
 > 
 > {verification_uri}
 > 
-> {verification_uri_qrcode 图片}
+> [二维码图片]
 > 
 > 授权码 10 分钟内有效，授权后我会自动完成配置。
 
+**发送后立即启动后台轮询**（步骤 3）。
+
 ### 步骤 3：轮询等待授权
+
+发送授权链接给用户后，**立即在后台启动轮询**，无需等待用户回复。
 
 ```
 POST https://openapi.biji.com/open/api/v1/oauth/token
@@ -914,15 +923,20 @@ Content-Type: application/json
 {
   "grant_type": "device_code",
   "client_id": "cli_a1b2c3d4e5f6789012345678abcdef90",
-  "code": "{device_code}"
+  "code": "{code}"
 }
 ```
+
+**轮询策略**：
+- **间隔**：10-30 秒查询一次
+- **超时**：最多轮询 10 分钟（与授权码有效期一致）
+- **并行**：轮询在后台进行，不阻塞用户其他操作
 
 **轮询响应状态**：
 
 | 响应 | 说明 | 处理方式 |
 |------|------|---------|
-| `{"msg": "authorization_pending"}` | 用户尚未操作 | 继续轮询（间隔 5-10 秒） |
+| `{"msg": "authorization_pending"}` | 用户尚未操作 | 继续轮询 |
 | `{"msg": "rejected"}` | 用户拒绝授权 | **停止轮询**，告知用户已拒绝 |
 | `{"msg": "expired_token"}` | 授权码已过期 | **停止轮询**，提示重新发起 |
 | `{"msg": "already_consumed"}` | 授权码已使用 | **停止轮询**，可能已配置成功 |
