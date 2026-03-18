@@ -114,6 +114,7 @@ Base URL: `https://openapi.biji.com`
 | 用户意图 | 接口 | 关键点 |
 |---------|------|--------|
 | 「记一下」「保存笔记」 | POST /open/api/v1/resource/note/save | 同步返回 |
+| 「改笔记」「更新笔记」 | POST /open/api/v1/resource/note/update | note_id 必填，内容部分更新 |
 | 「保存这个链接」 | POST /open/api/v1/resource/note/save | note_type:"link" → **必须轮询** |
 | 「保存这张图」 | 见「图片笔记流程」 | **4 步流程，必须轮询** |
 | 「查我的笔记」 | GET /open/api/v1/resource/note/list | since_id=0 起始 |
@@ -175,7 +176,11 @@ GET /open/api/v1/resource/note/detail?id={note_id}
 
 参数：id (int64, 必填) - 笔记 ID
 
-**详情独有字段**（列表不返回）：`audio.original`、`audio.play_url`、`audio.duration`、`web_page.content`、`web_page.url`、`web_page.excerpt`、`attachments[]`。详见 [references/api-details.md](references/api-details.md)。
+**新增字段**：
+- `note_id` (string) - 笔记 ID 的字符串格式，便于 AI Agent 解析，避免 int64 精度问题
+- `children_ids` (string[]) - 子笔记 ID 列表（字符串格式），仅当有子笔记时返回
+
+**详情独有字段**（列表不返回）：`audio.original`、`audio.play_url`、`audio.duration`、`web_page.content`、`web_page.url`、`web_page.excerpt`、`attachments[]`、`children_ids`。详见 [references/api-details.md](references/api-details.md)。
 
 ---
 
@@ -205,6 +210,35 @@ Content-Type: application/json
 - `link` / `img_text`：返回 task_id，**必须轮询** /task/progress
 
 详细字段说明见 [references/api-details.md](references/api-details.md)。
+
+---
+
+### 更新笔记
+
+```
+POST /open/api/v1/resource/note/update
+Content-Type: application/json
+```
+
+请求体：
+```json
+{
+  "note_id": 123456789,
+  "title": "新标题",
+  "content": "新的 Markdown 内容",
+  "tags": ["标签1", "标签2"]
+}
+```
+
+参数说明：
+- `note_id` (int64, **必填**) - 要更新的笔记 ID
+- `title` (string, 可选) - 新标题，不传则不更新
+- `content` (string, 可选) - 新内容，不传则不更新
+- `tags` (string[], 可选) - 新标签列表，**替换**原有标签（不传则保持原标签）
+
+> ⚠️ **至少需要传 title、content、tags 中的一个**，否则返回错误。
+
+> ⚠️ **仅支持 plain_text 类型笔记**，链接笔记、图片笔记等暂不支持更新。
 
 ---
 
