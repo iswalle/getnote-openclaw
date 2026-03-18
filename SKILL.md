@@ -886,7 +886,7 @@ Content-Type: application/json
 | device_code | 设备码，轮询时使用 |
 | user_code | 用户码，展示给用户（备用） |
 | verification_uri | 授权链接，**发送给用户点击** |
-| verification_uri_qrcode | 二维码图片（base64），**发送给用户扫码** |
+| verification_uri_qrcode | 二维码图片（base64），直接保存成本地图片，**发送给用户扫码** |
 | expires_in | 授权码有效期（秒），默认 600 |
 | interval | 建议轮询间隔（秒），默认 5 |
 
