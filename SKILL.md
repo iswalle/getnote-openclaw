@@ -841,11 +841,17 @@ Content-Type: application/json
 **推荐：使用轮询脚本**
 
 ```bash
-# 后台启动轮询，成功后主动通知用户
-python scripts/oauth_poll.py "{code}" > /tmp/oauth_result.json && \
-  openclaw cron wake --text "Get笔记授权成功，请完成配置" &
+# 方式 1：后台轮询 + process poll 等待结果（OpenClaw 推荐）
+# exec 启动后台任务，然后用 process poll 等待完成
+exec: python scripts/oauth_poll.py "{code}"
+  background: true
+  
+# 用 process poll 等待结果（最长等 10 分钟）
+process: poll
+  sessionId: {上一步返回的 sessionId}
+  timeout: 600000
 
-# 或直接等待结果
+# 方式 2：简单等待（适合短时间）
 result=$(python scripts/oauth_poll.py "{code}")
 api_key=$(echo "$result" | jq -r '.api_key')
 client_id=$(echo "$result" | jq -r '.client_id')
