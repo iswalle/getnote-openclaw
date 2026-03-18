@@ -849,6 +849,20 @@ Content-Type: application/json
 - **超时**：最多轮询 10 分钟（与授权码有效期一致）
 - **并行**：轮询在后台进行，不阻塞用户其他操作
 
+**推荐：使用轮询脚本**
+
+```bash
+# 后台启动轮询（发送授权链接后立即执行）
+./scripts/oauth-poll.sh "{code}" &
+
+# 或等待结果
+result=$(./scripts/oauth-poll.sh "{code}")
+api_key=$(echo "$result" | jq -r '.api_key')
+client_id=$(echo "$result" | jq -r '.client_id')
+```
+
+脚本会自动处理各种状态，成功时输出 JSON，失败时输出错误到 stderr。
+
 **轮询响应状态**：
 
 | 响应 | 说明 | 处理方式 |
