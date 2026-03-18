@@ -860,11 +860,11 @@ Content-Type: application/json
 请求体：
 ```json
 {
-  "client_id": "cli_getnote_openclaw"
+  "client_id": "cli_a1b2c3d4e5f6789012345678abcdef90"
 }
 ```
 
-> ⚠️ **client_id 固定为 `cli_getnote_openclaw`**，这是 Get笔记 为 OpenClaw 预注册的应用。
+> ⚠️ **client_id 固定为 `cli_a1b2c3d4e5f6789012345678abcdef90`**，这是 Get笔记 为 OpenClaw 预注册的应用。
 
 返回：
 ```json
@@ -913,7 +913,7 @@ Content-Type: application/json
 ```json
 {
   "grant_type": "device_code",
-  "client_id": "cli_getnote_openclaw",
+  "client_id": "cli_a1b2c3d4e5f6789012345678abcdef90",
   "code": "{device_code}"
 }
 ```
@@ -933,7 +933,7 @@ Content-Type: application/json
 {
   "success": true,
   "data": {
-    "client_id": "cli_getnote_openclaw",
+    "client_id": "cli_a1b2c3d4e5f6789012345678abcdef90",
     "api_key": "gk_live_xxx",
     "key_id": "abc123",
     "expires_at": 1742000000
