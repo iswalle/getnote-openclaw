@@ -199,7 +199,9 @@ GET /open/api/v1/resource/note/list?since_id=0
 GET /open/api/v1/resource/note/detail?id={note_id}
 ```
 
-参数：id (int64, 必填) - 笔记 ID
+参数：
+- `id` (int64, 必填) - 笔记 ID
+- `image_quality` (string, 可选) - 图片质量，传 `original` 返回正文中图片的原图链接（无压缩）
 
 **新增字段**：
 - `note_id` (string) - 笔记 ID 的字符串格式，便于 AI Agent 解析，避免 int64 精度问题
@@ -208,6 +210,8 @@ GET /open/api/v1/resource/note/detail?id={note_id}
 **图片附件**：`attachments[]` 中每个图片包含：
 - `url` - 缩略图 URL（720px 压缩）
 - `original_url` - 原图 URL（无压缩，适合需要高清图的场景）
+
+**正文原图**：传 `image_quality=original` 时，`content` 中的 markdown 图片链接会返回原图（去掉 OSS 压缩参数）。
 
 **详情独有字段**（列表不返回）：`audio.original`、`audio.play_url`、`audio.duration`、`web_page.content`、`web_page.url`、`web_page.excerpt`、`attachments[]`、`children_ids`。详见 [references/api-details.md](references/api-details.md)。
 
@@ -790,6 +794,7 @@ Content-Type: application/json
   "data": {
     "code": "abc123...",
     "verification_uri": "https://biji.com/openapi/oauth/authorize?code=abc123...",
+    "user_code": "ABCD-1234",
     "expires_in": 600,
     "interval": 5
   }
@@ -800,18 +805,23 @@ Content-Type: application/json
 |------|------|
 | code | 授权码，轮询时使用 |
 | verification_uri | 授权链接，**发送给用户点击** |
+| user_code | 确认码，**必须展示给用户核对** |
 | expires_in | 授权码有效期（秒），默认 600 |
 | interval | 建议轮询间隔（秒），默认 5 |
 
 ### 步骤 2：展示授权链接
 
-将 `verification_uri` 发送给用户：
+将 `verification_uri` 和 `user_code` 发送给用户：
 
 > 🔗 请点击链接完成授权：
 > 
 > {verification_uri}
 > 
-> 授权码 10 分钟内有效，授权后我会自动完成配置。
+> ⚠️ **请核对确认码**：`{user_code}`
+> 
+> 授权页面会显示确认码，请确保与上面一致后再点击授权。授权码 10 分钟内有效。
+
+**安全提醒**：`user_code` 用于防止钓鱼攻击。用户在授权页面看到的确认码必须与 Agent 展示的一致，不一致请勿授权。
 
 **发送后立即启动后台轮询**（步骤 3）。
 
