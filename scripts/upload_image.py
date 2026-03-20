@@ -3,14 +3,15 @@
 Get笔记图片上传脚本
 
 用法:
-    python upload_image.py <图片路径> [--api-key KEY]
+    python upload_image.py <图片路径> [--api-key KEY] [--client-id ID]
     
 示例:
     python upload_image.py /path/to/image.jpg
-    python upload_image.py /path/to/image.jpg --api-key gk_live_xxx
+    python upload_image.py /path/to/image.jpg --api-key gk_live_xxx --client-id cli_xxx
     
 环境变量:
     GETNOTE_API_KEY - API Key（如未提供 --api-key 则使用此变量）
+    GETNOTE_CLIENT_ID - Client ID（可选）
 """
 
 import os
@@ -28,6 +29,7 @@ except ImportError:
 
 
 BASE_URL = "https://openapi.biji.com/open/api/v1/resource"
+DEFAULT_CLIENT_ID = "cli_a1b2c3d4e5f6789012345678abcdef90"
 
 
 def get_mime_type(file_path: str) -> str:
@@ -36,13 +38,14 @@ def get_mime_type(file_path: str) -> str:
     return mime_type or "image/jpeg"
 
 
-def upload_image(image_path: str, api_key: str) -> str:
+def upload_image(image_path: str, api_key: str, client_id: str = DEFAULT_CLIENT_ID) -> str:
     """
     上传图片到 Get笔记 OSS
     
     Args:
         image_path: 本地图片路径
         api_key: Get笔记 API Key
+        client_id: 应用 Client ID
         
     Returns:
         上传后的访问 URL
@@ -52,7 +55,10 @@ def upload_image(image_path: str, api_key: str) -> str:
         raise FileNotFoundError(f"文件不存在: {image_path}")
     
     mime_type = get_mime_type(image_path)
-    headers = {"Authorization": api_key}
+    headers = {
+        "Authorization": api_key,
+        "X-Client-ID": client_id
+    }
     
     # 步骤 1: 获取上传凭证
     print("[1/3] 获取上传凭证...")
@@ -69,34 +75,54 @@ def upload_image(image_path: str, api_key: str) -> str:
         error = data.get("error", {})
         raise Exception(f"获取凭证失败: {error.get('message', 'Unknown error')}")
     
-    tokens = data["data"]["tokens"]
-    if not tokens:
-        raise Exception("获取凭证失败: tokens 为空")
+    # 兼容两种返回格式：tokens[] 数组 或 直接在 data 中
+    token_data = data["data"]
+    if "tokens" in token_data:
+        tokens = token_data["tokens"]
+        if not tokens:
+            raise Exception("获取凭证失败: tokens 为空")
+        token = tokens[0]
+    else:
+        # 直接在 data 中的格式
+        token = token_data
     
-    token = tokens[0]
     host = token["host"]
     object_key = token["object_key"]
+    accessid = token["accessid"]
     policy = token.get("policy", "")
     signature = token.get("signature", "")
     callback = token.get("callback", "")
     access_url = token["access_url"]
+    oss_content_type = token.get("oss_content_type", mime_type)
     
     print("✓ 凭证获取成功")
     
-    # 步骤 2: 上传到 OSS（multipart form）
+    # 步骤 2: 上传到 OSS（multipart form，字段顺序必须严格遵守）
     print("[2/3] 上传图片到 OSS...")
     
     file_name = os.path.basename(image_path)
     with open(image_path, "rb") as f:
-        form_data = {
-            "key": object_key,
-            "policy": policy,
-            "signature": signature,
-            "callback": callback,
-            "Content-Type": mime_type,
-        }
+        # 字段顺序：key → OSSAccessKeyId → policy → signature → callback → Content-Type → file
+        form_data = [
+            ("key", object_key),
+            ("OSSAccessKeyId", accessid),
+            ("policy", policy),
+            ("signature", signature),
+            ("callback", callback),
+            ("Content-Type", oss_content_type),
+        ]
         files = {"file": (file_name, f, mime_type)}
         resp = requests.post(host, data=form_data, files=files)
+    
+    if resp.status_code == 429:
+        # 限流处理
+        try:
+            error_data = resp.json()
+            rate_limit = error_data.get("error", {}).get("rate_limit", {})
+            print(f"限流: {rate_limit}", file=sys.stderr)
+        except:
+            pass
+        raise Exception(f"上传失败: 限流 (HTTP 429)，请稍后重试")
     
     if resp.status_code not in (200, 204):
         raise Exception(f"上传失败: HTTP {resp.status_code}")
@@ -124,6 +150,7 @@ def main():
     )
     parser.add_argument("image_path", help="本地图片路径")
     parser.add_argument("--api-key", "-k", help="API Key（或设置 GETNOTE_API_KEY 环境变量）")
+    parser.add_argument("--client-id", "-c", help="Client ID（可选，默认使用 OpenClaw 预注册应用）")
     
     args = parser.parse_args()
     
@@ -133,8 +160,11 @@ def main():
         print("错误: 请提供 API Key（--api-key 参数或 GETNOTE_API_KEY 环境变量）")
         sys.exit(1)
     
+    # 获取 Client ID
+    client_id = args.client_id or os.environ.get("GETNOTE_CLIENT_ID") or DEFAULT_CLIENT_ID
+    
     try:
-        image_url = upload_image(args.image_path, api_key)
+        image_url = upload_image(args.image_path, api_key, client_id)
         
         print()
         print("=" * 40)

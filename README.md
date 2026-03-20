@@ -114,27 +114,40 @@ curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/package
 
 ---
 
-## 🔑 配置 API Key
+## 🔑 配置
 
-### 1. 获取凭证
+### 方式一：OAuth 自动配置（推荐）
 
-前往 **[Get笔记开放平台](https://www.biji.com/openapi)** 获取：
-- **API Key**（格式：`gk_live_xxx`）
-- **Client ID**（格式：`cli_xxx`）
+告诉 AI 助手：
 
-> 💡 需要 [Get笔记会员](https://www.biji.com/checkout?product_alias=6AydVpYeKl) 才能使用 API
+> 帮我配置 Get笔记
 
-### 2. 配置环境变量
+AI 会生成授权链接，点击授权后自动完成配置，无需手动填写凭证。
 
-将凭证添加到 `~/.zshrc` 或 `~/.bashrc`：
+### 方式二：手动配置
 
-```bash
-export GETNOTE_API_KEY="gk_live_xxx"
-export GETNOTE_CLIENT_ID="cli_xxx"
-export GETNOTE_OWNER_ID="ou_xxx"  # 可选，你的用户 ID，用于安全校验
+1. 前往 **[Get笔记开放平台](https://www.biji.com/openapi)** 获取 API Key 和 Client ID
+2. 在 `~/.openclaw/openclaw.json` 中添加：
+
+```json
+{
+  "skills": {
+    "entries": {
+      "getnote": {
+        "apiKey": "gk_live_xxx",
+        "env": {
+          "GETNOTE_CLIENT_ID": "cli_xxx",
+          "GETNOTE_OWNER_ID": "ou_xxx"
+        }
+      }
+    }
+  }
+}
 ```
 
-然后运行 `source ~/.zshrc` 或重启终端使配置生效。
+> 💡 `GETNOTE_OWNER_ID` 可选，配置后只有你能操作笔记（群聊安全）
+
+> 💡 需要 [Get笔记会员](https://www.biji.com/checkout?product_alias=6AydVpYeKl) 才能使用 API
 
 ---
 
