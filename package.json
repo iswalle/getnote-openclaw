@@ -1,6 +1,6 @@
 {
   "name": "getnote",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "让 AI 帮你保存和管理 Get笔记。有灵感，随时保存，发个链接说「存一下」，发张图片说「记到笔记」，就这么简单。",
   "license": "MIT-0",
   "author": "get-notes@luojilab.com",
