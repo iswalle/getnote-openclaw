@@ -13,7 +13,7 @@
 **所需 scope**: `note.recall.read`
 
 ```
-POST /open/api/v1/resource/recall
+POST https://openapi.biji.com/open/api/v1/resource/recall
 Content-Type: application/json
 ```
 
@@ -55,7 +55,7 @@ Content-Type: application/json
 **所需 scope**: `note.topic.recall.read`
 
 ```
-POST /open/api/v1/resource/recall/knowledge
+POST https://openapi.biji.com/open/api/v1/resource/recall/knowledge
 Content-Type: application/json
 ```
 

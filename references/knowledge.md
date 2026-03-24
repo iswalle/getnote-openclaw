@@ -9,7 +9,7 @@
 ## 知识库列表
 
 ```
-GET /open/api/v1/resource/knowledge/list?page=1
+GET https://openapi.biji.com/open/api/v1/resource/knowledge/list?page=1
 ```
 
 参数：
@@ -32,7 +32,7 @@ GET /open/api/v1/resource/knowledge/list?page=1
 ## 创建知识库
 
 ```
-POST /open/api/v1/resource/knowledge/create
+POST https://openapi.biji.com/open/api/v1/resource/knowledge/create
 Content-Type: application/json
 ```
 
@@ -52,7 +52,7 @@ Content-Type: application/json
 ## 知识库笔记列表
 
 ```
-GET /open/api/v1/resource/knowledge/notes?topic_id=abc123&page=1
+GET https://openapi.biji.com/open/api/v1/resource/knowledge/notes?topic_id=abc123&page=1
 ```
 
 参数：
@@ -77,7 +77,7 @@ GET /open/api/v1/resource/knowledge/notes?topic_id=abc123&page=1
 ## 添加笔记到知识库
 
 ```
-POST /open/api/v1/resource/knowledge/note/batch-add
+POST https://openapi.biji.com/open/api/v1/resource/knowledge/note/batch-add
 Content-Type: application/json
 ```
 
@@ -96,7 +96,7 @@ Content-Type: application/json
 ## 从知识库移除笔记
 
 ```
-POST /open/api/v1/resource/knowledge/note/remove
+POST https://openapi.biji.com/open/api/v1/resource/knowledge/note/remove
 Content-Type: application/json
 ```
 
@@ -115,7 +115,7 @@ Content-Type: application/json
 ### 博主列表
 
 ```
-GET /open/api/v1/resource/knowledge/bloggers?topic_id={alias_id}&page=1
+GET https://openapi.biji.com/open/api/v1/resource/knowledge/bloggers?topic_id={alias_id}&page=1
 ```
 
 参数：
@@ -138,7 +138,7 @@ GET /open/api/v1/resource/knowledge/bloggers?topic_id={alias_id}&page=1
 ### 博主内容列表
 
 ```
-GET /open/api/v1/resource/knowledge/blogger/contents?topic_id={alias_id}&follow_id={follow_id}&page=1
+GET https://openapi.biji.com/open/api/v1/resource/knowledge/blogger/contents?topic_id={alias_id}&follow_id={follow_id}&page=1
 ```
 
 参数：`topic_id`（知识库 AliasID）、`follow_id`（博主订阅 ID）、`page`（页码）
@@ -150,7 +150,7 @@ GET /open/api/v1/resource/knowledge/blogger/contents?topic_id={alias_id}&follow_
 ### 博主内容详情（含原文）
 
 ```
-GET /open/api/v1/resource/knowledge/blogger/content/detail?topic_id={alias_id}&post_id={post_id_alias}
+GET https://openapi.biji.com/open/api/v1/resource/knowledge/blogger/content/detail?topic_id={alias_id}&post_id={post_id_alias}
 ```
 
 参数：`topic_id`（知识库 AliasID）、`post_id`（内容 ID，来自列表的 `post_id_alias`）
@@ -164,7 +164,7 @@ GET /open/api/v1/resource/knowledge/blogger/content/detail?topic_id={alias_id}&p
 ### 已完成直播列表
 
 ```
-GET /open/api/v1/resource/knowledge/lives?topic_id={alias_id}&page=1
+GET https://openapi.biji.com/open/api/v1/resource/knowledge/lives?topic_id={alias_id}&page=1
 ```
 
 参数：`topic_id`（知识库 AliasID）、`page`（页码）
@@ -176,7 +176,7 @@ GET /open/api/v1/resource/knowledge/lives?topic_id={alias_id}&page=1
 ### 直播详情（总结 + 原文）
 
 ```
-GET /open/api/v1/resource/knowledge/live/detail?topic_id={alias_id}&live_id={live_id}
+GET https://openapi.biji.com/open/api/v1/resource/knowledge/live/detail?topic_id={alias_id}&live_id={live_id}
 ```
 
 参数：`topic_id`（知识库 AliasID）、`live_id`（直播 ID，来自列表）

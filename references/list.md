@@ -9,7 +9,7 @@
 ## 笔记列表
 
 ```
-GET /open/api/v1/resource/note/list?since_id=0
+GET https://openapi.biji.com/open/api/v1/resource/note/list?since_id=0
 ```
 
 参数：
@@ -41,7 +41,7 @@ GET /open/api/v1/resource/note/list?since_id=0
 ## 笔记详情
 
 ```
-GET /open/api/v1/resource/note/detail?id={note_id}
+GET https://openapi.biji.com/open/api/v1/resource/note/detail?id={note_id}
 ```
 
 参数：
@@ -67,7 +67,7 @@ GET /open/api/v1/resource/note/detail?id={note_id}
 ## 更新笔记
 
 ```
-POST /open/api/v1/resource/note/update
+POST https://openapi.biji.com/open/api/v1/resource/note/update
 Content-Type: application/json
 ```
 
@@ -96,7 +96,7 @@ Content-Type: application/json
 ## 删除笔记
 
 ```
-POST /open/api/v1/resource/note/delete
+POST https://openapi.biji.com/open/api/v1/resource/note/delete
 Content-Type: application/json
 ```
 

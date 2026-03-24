@@ -9,7 +9,7 @@
 ## 添加标签
 
 ```
-POST /open/api/v1/resource/note/tags/add
+POST https://openapi.biji.com/open/api/v1/resource/note/tags/add
 Content-Type: application/json
 ```
 
@@ -34,7 +34,7 @@ Content-Type: application/json
 ## 删除标签
 
 ```
-POST /open/api/v1/resource/note/tags/delete
+POST https://openapi.biji.com/open/api/v1/resource/note/tags/delete
 Content-Type: application/json
 ```
 

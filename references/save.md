@@ -9,7 +9,7 @@
 ## 新建笔记
 
 ```
-POST /open/api/v1/resource/note/save
+POST https://openapi.biji.com/open/api/v1/resource/note/save
 Content-Type: application/json
 ```
 
@@ -38,7 +38,7 @@ Content-Type: application/json
 ## 查询任务进度
 
 ```
-POST /open/api/v1/resource/note/task/progress
+POST https://openapi.biji.com/open/api/v1/resource/note/task/progress
 Content-Type: application/json
 ```
 
@@ -64,7 +64,7 @@ Content-Type: application/json
 
 **步骤 1**：提交任务
 ```
-POST /open/api/v1/resource/note/save {note_type:"link", link_url:"https://..."}
+POST https://openapi.biji.com/open/api/v1/resource/note/save {note_type:"link", link_url:"https://..."}
 ```
 返回 task_id 后，**立即发消息给用户**：
 > ✅ 链接已保存，正在抓取原文和生成总结，稍后告诉你结果...
@@ -73,12 +73,12 @@ POST /open/api/v1/resource/note/save {note_type:"link", link_url:"https://..."}
 
 **步骤 2**：后台轮询（10-30 秒间隔）
 ```
-POST /open/api/v1/resource/note/task/progress {task_id} → 直到 status=success/failed
+POST https://openapi.biji.com/open/api/v1/resource/note/task/progress {task_id} → 直到 status=success/failed
 ```
 
 **步骤 3**：任务完成后，**调详情接口展示价值**
 ```
-GET /open/api/v1/resource/note/detail?id={note_id}
+GET https://openapi.biji.com/open/api/v1/resource/note/detail?id={note_id}
 ```
 然后发第二条消息：
 > ✅ 笔记生成完成！
@@ -92,7 +92,7 @@ GET /open/api/v1/resource/note/detail?id={note_id}
 
 **步骤 1**：获取上传凭证
 ```
-GET /open/api/v1/resource/image/upload_token?mime_type=jpg&count=1
+GET https://openapi.biji.com/open/api/v1/resource/image/upload_token?mime_type=jpg&count=1
 ```
 
 参数：
@@ -113,19 +113,19 @@ GET /open/api/v1/resource/image/upload_token?mime_type=jpg&count=1
 
 **步骤 3**：提交任务
 ```
-POST /open/api/v1/resource/note/save {note_type:"img_text", image_urls:[access_url]}
+POST https://openapi.biji.com/open/api/v1/resource/note/save {note_type:"img_text", image_urls:[access_url]}
 ```
 拿到 task_id 后，**立即发消息给用户**：
 > ✅ 图片已保存，正在识别内容，稍后告诉你结果...
 
 **步骤 4**：后台轮询
 ```
-POST /open/api/v1/resource/note/task/progress {task_id} → 直到 status=success/failed
+POST https://openapi.biji.com/open/api/v1/resource/note/task/progress {task_id} → 直到 status=success/failed
 ```
 
 **步骤 5**：任务完成后，**调详情接口展示价值**
 ```
-GET /open/api/v1/resource/note/detail?id={note_id}
+GET https://openapi.biji.com/open/api/v1/resource/note/detail?id={note_id}
 ```
 然后发第二条消息：
 > ✅ 图片笔记生成完成！
