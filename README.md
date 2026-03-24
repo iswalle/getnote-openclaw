@@ -116,15 +116,18 @@ curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/package
 
 ## 🔑 配置
 
-### 方式一：OAuth 自动配置（推荐）
+### 自动配置（默认）
 
-告诉 AI 助手：
+安装后首次使用时，AI 会自动发起 OAuth 授权：
 
-> 帮我配置 Get笔记
+1. 你说「存到笔记」或任何笔记相关操作
+2. AI 检测到未配置，自动生成授权链接
+3. 点击链接，授权
+4. 自动配置完成，继续执行你的请求
 
-AI 会生成授权链接，点击授权后自动完成配置，无需手动填写凭证。
+无需手动配置，无需记忆任何命令。
 
-### 方式二：手动配置
+### 手动配置（可选）
 
 1. 前往 **[Get笔记开放平台](https://www.biji.com/openapi)** 获取 API Key 和 Client ID
 2. 在 `~/.openclaw/openclaw.json` 中添加：

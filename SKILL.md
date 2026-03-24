@@ -33,7 +33,7 @@ description: |
   - 用户发送图片时（自动识别为保存图片笔记）
   - 用户提到「笔记」「记一下」「保存」「收藏」「存起来」等关键词
   - 用户询问「我之前存过什么」「帮我找一下」「搜一下笔记」等
-metadata: {"openclaw": {"requires": {}, "optionalEnv": ["GETNOTE_CLIENT_ID", "GETNOTE_OWNER_ID"], "primaryEnv": "GETNOTE_API_KEY", "baseUrl": "https://openapi.biji.com", "homepage": "https://biji.com"}}
+metadata: {"openclaw": {"requires": {}, "optionalEnv": ["GETNOTE_API_KEY", "GETNOTE_CLIENT_ID", "GETNOTE_OWNER_ID"], "baseUrl": "https://openapi.biji.com", "homepage": "https://biji.com"}}
 ---
 
 # Get笔记 API
@@ -52,20 +52,19 @@ https://openapi.biji.com
 
 ### 🔑 首次安装配置
 
-有两种方式获取凭证：
+> ⚠️ **Agent 必读**：每次调用 API 前，先检查 `$GETNOTE_API_KEY` 是否存在。若不存在，**自动发起 OAuth 授权流程**（无需用户主动说"配置"），告知用户需要先授权才能使用。
 
-#### 方式一：OAuth 授权（推荐）
+#### 自动触发 OAuth（默认行为）
 
-让 AI Agent 为你自动完成授权：
+当检测到未配置时，Agent 会自动：
+1. 生成授权链接并发送给用户
+2. 后台轮询等待授权完成
+3. 授权成功后自动写入配置
+4. 继续执行用户原本的请求
 
-1. 告诉 Agent：「帮我配置 Get笔记」或「连接 Get笔记」
-2. Agent 会生成授权链接，点击链接打开授权页面
-3. 在 Get笔记 页面点击「授权」
-4. 授权成功后 Agent 自动完成配置，无需手动填写任何凭证
+用户只需点击链接、授权，即可无缝使用。
 
-> OAuth 授权会自动获取 API Key 和 Client ID，并写入配置文件。
-
-#### 方式二：手动配置
+#### 手动配置（可选）
 
 1. 前往 [Get笔记开放平台](https://www.biji.com/openapi) 创建应用
 2. 获取 Client ID 和 API Key
