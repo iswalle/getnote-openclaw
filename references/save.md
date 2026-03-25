@@ -66,10 +66,24 @@ Content-Type: application/json
 ```
 POST https://openapi.biji.com/open/api/v1/resource/note/save {note_type:"link", link_url:"https://..."}
 ```
-返回 task_id 后，**立即发消息给用户**：
+
+返回结构：
+```json
+{
+  "data": {
+    "created_count": 1,
+    "tasks": [{"task_id": "69c3995e99f5a67e", "url": "https://..."}],
+    "message": "链接笔记任务已创建，请通过 /note/task/progress 接口查询处理状态"
+  }
+}
+```
+
+⚠️ **task_id 在 `data.tasks[0].task_id`**，不是 `data.task_id`。
+
+拿到 task_id 后，**立即发消息给用户**：
 > ✅ 链接已保存，正在抓取原文和生成总结，稍后告诉你结果...
 
-> ⚠️ **重复链接处理**：若响应中包含 `duplicate_count > 0` 且没有 `task_id`，说明该链接已存在于你的笔记中，无需轮询，直接告知用户「该链接已存在于你的笔记中」。
+> ⚠️ **重复链接处理**：若响应中包含 `duplicate_count > 0` 且没有 `tasks`，说明该链接已存在于你的笔记中，无需轮询，直接告知用户「该链接已存在于你的笔记中」。
 
 **步骤 2**：后台轮询（10-30 秒间隔）
 ```
