@@ -48,7 +48,23 @@ GET https://openapi.biji.com/open/api/v1/resource/note/detail?id={note_id}
 - `id` (int64, 必填) - 笔记 ID
 - `image_quality` (string, 可选) - 传 `original` 返回正文中图片的原图链接（无压缩）
 
-**新增字段**：
+**⚠️ 返回结构**：数据在 `data.note` 对象下，不是 `data` 直接取：
+```json
+{
+  "data": {
+    "note": {
+      "id": "1234567890",
+      "note_id": "1234567890",
+      "title": "笔记标题",
+      "content": "笔记内容",
+      "tags": [...],
+      ...
+    }
+  }
+}
+```
+
+**字段说明**：
 - `note_id` (string) - 笔记 ID 的字符串格式，便于 AI Agent 解析，避免 int64 精度问题
 - `children_ids` (string[]) - 子笔记 ID 列表（字符串格式），仅当有子笔记时返回
 
