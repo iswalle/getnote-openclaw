@@ -18,7 +18,7 @@ GET https://openapi.biji.com/open/api/v1/resource/knowledge/list?page=1
 返回：`topics[]`、`has_more`、`total`
 
 每个 topic 包含：
-- `topic_id`：知识库 ID（即 API 返回的 `id` 字段，字符串，如 `"qnNX75j0"`）
+- `topic_id`：知识库 ID（字符串，后续所有操作接口的 `topic_id` 参数均传此值）
 - `name`、`description`、`cover`
 - `created_at` / `updated_at`：时间字符串（YYYY-MM-DD HH:MM:SS）
 - `stats`：统计数据
@@ -56,7 +56,7 @@ GET https://openapi.biji.com/open/api/v1/resource/knowledge/notes?topic_id=abc12
 ```
 
 参数：
-- `topic_id` (string, 必填) - 知识库 ID（知识库 ID（来自 `/knowledge/list` 的 `id` 字段））
+- `topic_id` (string, 必填) - 知识库 ID（来自 `/knowledge/list` 的 `topic_id` 字段）
 - `page`: 页码，从 1 开始
 
 每页固定 20 条，用 `has_more` 判断是否有下一页。
@@ -119,7 +119,7 @@ GET https://openapi.biji.com/open/api/v1/resource/knowledge/bloggers?topic_id={t
 ```
 
 参数：
-- `topic_id` (string, 必填) - 知识库 ID（来自 `/knowledge/list` 的 `id` 字段）
+- `topic_id` (string, 必填) - 知识库 ID（来自 `/knowledge/list` 的 `topic_id` 字段）
 - `page`: 页码，从 1 开始
 
 每页固定 20 条，用 `has_more` 判断。

@@ -70,7 +70,7 @@ Content-Type: application/json
 
 | 参数 | 类型 | 说明 |
 |------|------|------|
-| topic_id | string, 必填 | 知识库 ID（来自 `/knowledge/list` 的 `id` 字段） |
+| topic_id | string, 必填 | 知识库 ID（来自 `/knowledge/list` 的 `topic_id` 字段） |
 | query | string, 必填 | 搜索关键词或语义描述 |
 | top_k | int, 可选 | 返回数量，默认 **3**，最大 **10** |
 
@@ -99,7 +99,7 @@ Content-Type: application/json
 > → `POST /recall` `{ "query": "大模型 API", "top_k": 3 }`
 
 > 用户：「在我的 AI 学习知识库里搜一下 RAG」
-> → 先调 `/knowledge/list` 找到对应知识库的 `id`，再 `POST /recall/knowledge` `{ "topic_id": "xxx", "query": "RAG", "top_k": 3 }`
+> → 先调 `/knowledge/list` 找到对应知识库的 `topic_id`，再 `POST /recall/knowledge` `{ "topic_id": "xxx", "query": "RAG", "top_k": 3 }`
 
 ---
 
