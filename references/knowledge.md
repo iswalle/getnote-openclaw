@@ -18,7 +18,7 @@ GET https://openapi.biji.com/open/api/v1/resource/knowledge/list?page=1
 返回：`topics[]`、`has_more`、`total`
 
 每个 topic 包含：
-- `topic_id` / `topic_id_alias`：知识库 ID（**操作时用 `topic_id_alias`**）
+- `topic_id`：知识库 ID（即 API 返回的 `id` 字段，字符串，如 `"qnNX75j0"`）
 - `name`、`description`、`cover`
 - `created_at` / `updated_at`：时间字符串（YYYY-MM-DD HH:MM:SS）
 - `stats`：统计数据
@@ -56,7 +56,7 @@ GET https://openapi.biji.com/open/api/v1/resource/knowledge/notes?topic_id=abc12
 ```
 
 参数：
-- `topic_id` (string, 必填) - 知识库 ID（alias id，来自 `topic_id_alias`）
+- `topic_id` (string, 必填) - 知识库 ID（知识库 ID（来自 `/knowledge/list` 的 `id` 字段））
 - `page`: 页码，从 1 开始
 
 每页固定 20 条，用 `has_more` 判断是否有下一页。
@@ -115,11 +115,11 @@ Content-Type: application/json
 ### 博主列表
 
 ```
-GET https://openapi.biji.com/open/api/v1/resource/knowledge/bloggers?topic_id={alias_id}&page=1
+GET https://openapi.biji.com/open/api/v1/resource/knowledge/bloggers?topic_id={topic_id}&page=1
 ```
 
 参数：
-- `topic_id` (string, 必填) - 知识库 AliasID（来自 `/knowledge/list` 的 `topic_id_alias`）
+- `topic_id` (string, 必填) - 知识库 ID（来自 `/knowledge/list` 的 `id` 字段）
 - `page`: 页码，从 1 开始
 
 每页固定 20 条，用 `has_more` 判断。
@@ -138,10 +138,10 @@ GET https://openapi.biji.com/open/api/v1/resource/knowledge/bloggers?topic_id={a
 ### 博主内容列表
 
 ```
-GET https://openapi.biji.com/open/api/v1/resource/knowledge/blogger/contents?topic_id={alias_id}&follow_id={follow_id}&page=1
+GET https://openapi.biji.com/open/api/v1/resource/knowledge/blogger/contents?topic_id={topic_id}&follow_id={follow_id}&page=1
 ```
 
-参数：`topic_id`（知识库 AliasID）、`follow_id`（博主订阅 ID）、`page`（页码）
+参数：`topic_id`（知识库 ID）、`follow_id`（博主订阅 ID）、`page`（页码）
 
 返回 `contents[]`，关键字段：`post_id_alias`（详情必用）、`post_title`、`post_summary`。
 
@@ -150,10 +150,10 @@ GET https://openapi.biji.com/open/api/v1/resource/knowledge/blogger/contents?top
 ### 博主内容详情（含原文）
 
 ```
-GET https://openapi.biji.com/open/api/v1/resource/knowledge/blogger/content/detail?topic_id={alias_id}&post_id={post_id_alias}
+GET https://openapi.biji.com/open/api/v1/resource/knowledge/blogger/content/detail?topic_id={topic_id}&post_id={post_id_alias}
 ```
 
-参数：`topic_id`（知识库 AliasID）、`post_id`（内容 ID，来自列表的 `post_id_alias`）
+参数：`topic_id`（知识库 ID）、`post_id`（内容 ID，来自列表的 `post_id_alias`）
 
 返回完整内容，包含 `post_media_text`（原文）。
 
@@ -164,10 +164,10 @@ GET https://openapi.biji.com/open/api/v1/resource/knowledge/blogger/content/deta
 ### 已完成直播列表
 
 ```
-GET https://openapi.biji.com/open/api/v1/resource/knowledge/lives?topic_id={alias_id}&page=1
+GET https://openapi.biji.com/open/api/v1/resource/knowledge/lives?topic_id={topic_id}&page=1
 ```
 
-参数：`topic_id`（知识库 AliasID）、`page`（页码）
+参数：`topic_id`（知识库 ID）、`page`（页码）
 
 返回 `lives[]`，关键字段：`live_id`（详情必用）、`name`、`status`。
 
@@ -176,10 +176,10 @@ GET https://openapi.biji.com/open/api/v1/resource/knowledge/lives?topic_id={alia
 ### 直播详情（总结 + 原文）
 
 ```
-GET https://openapi.biji.com/open/api/v1/resource/knowledge/live/detail?topic_id={alias_id}&live_id={live_id}
+GET https://openapi.biji.com/open/api/v1/resource/knowledge/live/detail?topic_id={topic_id}&live_id={live_id}
 ```
 
-参数：`topic_id`（知识库 AliasID）、`live_id`（直播 ID，来自列表）
+参数：`topic_id`（知识库 ID）、`live_id`（直播 ID，来自列表）
 
 返回完整内容，包含 `post_summary`（AI 摘要）和 `post_media_text`（原文转写）。
 
