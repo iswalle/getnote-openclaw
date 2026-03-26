@@ -30,7 +30,7 @@ Content-Type: application/json
 
 详细字段说明见 [api-details.md](api-details.md#新建笔记字段说明)。
 
-- `plain_text`：同步返回，立即完成
+- `plain_text`：同步返回，立即完成，响应中包含 `note_id`（字符串）
 - `link` / `img_text`：返回 `task_id`，**必须轮询** `/task/progress`
 
 ---
@@ -49,10 +49,8 @@ Content-Type: application/json
 
 返回：
 - `status`: `pending` | `processing` | `success` | `failed`
-- `note_id`: 成功时返回笔记 ID
+- `note_id`: 成功时返回笔记 ID（**字符串**）
 - `error_msg`: 失败时返回错误信息
-
-> ⚠️ **note_id 是 int64**，JavaScript 环境须按「笔记 ID 处理规则」做字符串化，拿到后直接当字符串透传。
 
 **建议 10-30 秒间隔轮询，直到 success 或 failed**。
 

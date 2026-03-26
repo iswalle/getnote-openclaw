@@ -44,6 +44,10 @@ GET https://openapi.biji.com/open/api/v1/resource/knowledge/subscribe/list?page=
 
 > 与 `/knowledge/list` 的区别：该接口只返回他人分享/公开的知识库，不包含自己创建的。
 
+**订阅知识库的限制**：
+- ⚠️ **无法添加笔记**：订阅的知识库只读，不能向其中添加笔记
+- ⚠️ **查看源内容受限**：若知识库管理员关闭了「查看源文件」，则无法获取笔记原文，只能对该知识库进行语义搜索（`/recall/knowledge`）
+
 ---
 
 ## 创建知识库
