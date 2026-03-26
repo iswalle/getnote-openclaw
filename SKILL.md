@@ -26,7 +26,7 @@ https://openapi.biji.com
 - `Authorization: $GETNOTE_API_KEY`（格式：`gk_live_xxx`）
 - `X-Client-ID: $GETNOTE_CLIENT_ID`（格式：`cli_xxx`）
 
-**每次调用 API 前先检查 `$GETNOTE_API_KEY` 是否存在**。若不存在，自动发起 OAuth 授权流程（见 `/note config`），授权完成后再继续执行用户原本的请求。
+**每次调用 API 前先检查 `$GETNOTE_API_KEY` 是否存在**。若不存在，提示用户运行 `/note config` 完成配置，配置完成后再继续执行用户原本的请求。
 
 Scope 权限：`note.content.read`（读取）、`note.content.write`（写入）、`note.recall.read`（搜索）。完整列表见 [references/api-details.md](references/api-details.md#scope-权限列表)。
 
@@ -59,7 +59,7 @@ Python / Go 等语言原生支持大整数，无此问题。
 | `/note list` 或「最近的笔记」| 📋 整理师 | 浏览列表、查看详情、更新、删除 | [references/list.md](references/list.md) |
 | `/note kb` 或「知识库」| 📚 图书管理员 | 知识库 CRUD + 博主订阅 + 直播订阅 | [references/knowledge.md](references/knowledge.md) |
 | `/note tag` 或「加标签」| 🏷️ 标签员 | 添加/删除标签 | [references/tags.md](references/tags.md) |
-| `/note config` 或「配置笔记」| ⚙️ 配置 | OAuth Device Flow 完整授权流程 | [references/oauth.md](references/oauth.md) |
+| `/note config` 或「配置笔记」| ⚙️ 配置 | 配置 API Key 和 Client ID | [references/oauth.md](references/oauth.md) |
 
 ---
 
