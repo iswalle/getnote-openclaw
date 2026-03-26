@@ -49,7 +49,7 @@ Content-Type: application/json
 
 返回：
 - `status`: `pending` | `processing` | `success` | `failed`
-- `note_id`: 成功时返回笔记 ID（**字符串**）
+- `note_id`: 成功时返回笔记 ID（**字符串**）；任务进行中时值为 `"0"`，需过滤
 - `error_msg`: 失败时返回错误信息
 
 **建议 10-30 秒间隔轮询，直到 success 或 failed**。
@@ -81,7 +81,7 @@ POST https://openapi.biji.com/open/api/v1/resource/note/save {note_type:"link", 
 拿到 task_id 后，**立即发消息给用户**：
 > ✅ 链接已保存，正在抓取原文和生成总结，稍后告诉你结果...
 
-> ⚠️ **重复链接处理**：若响应中包含 `duplicate_count > 0` 且没有 `tasks`，说明该链接已存在于你的笔记中，无需轮询，直接告知用户「该链接已存在于你的笔记中」。
+> ⚠️ **重复链接说明**：OpenAPI 层不做 URL 去重，重复保存同一链接会创建新笔记任务。App 端有去重提示，API 调用方需自行判断。
 
 **步骤 2**：后台轮询（10-30 秒间隔）
 ```

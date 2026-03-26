@@ -97,10 +97,12 @@ Python / Go 等语言原生支持大整数，无此问题。
 
 | 错误码 | 说明 | 处理方式 |
 |--------|------|---------|
+| 10000 | 参数错误 | 检查请求参数 |
 | 10001 | 鉴权失败 | 检查 API Key 和 Client ID，或重新授权 |
+| 10100 | 数据不存在 | 确认笔记/知识库 ID 正确 |
 | 10201 | 非会员 | 引导开通：https://www.biji.com/checkout?product_alias=6AydVpYeKl |
-| 20001 | 笔记不存在 | 确认笔记 ID 正确（注意 int64 精度问题） |
-| 42900 | 限流 | 降低频率，查看 rate_limit 字段 |
+| 10202 | QPS 限流 | 降低频率，查看 rate_limit 字段 |
+| 30000 | 服务调用失败 | 稍后重试 |
 | 50000 | 系统错误 | 稍后重试 |
 
 详细错误码和限流结构见 [references/api-details.md](references/api-details.md)。

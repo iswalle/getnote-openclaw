@@ -21,6 +21,11 @@ Content-Type: application/json
 }
 ```
 
+返回：`note_id`（string）+ `tags[]` 数组，每项包含：
+- `id`：标签 ID（**删除时传入此值作为 `tag_id`**）
+- `name`：标签名
+- `type`：`ai` / `manual` / `system`
+
 **标签类型 type**：
 
 | 值 | 说明 |
@@ -45,6 +50,8 @@ Content-Type: application/json
   "tag_id": "123"
 }
 ```
+
+> `tag_id` 来自 `tags/add` 返回或 `GET /note/detail` 中 `tags[].id` 字段。
 
 ⚠️ `system` 类型标签不允许删除，尝试删除会返回错误。
 

@@ -133,6 +133,11 @@ Content-Type: application/json
 }
 ```
 
+返回：
+```json
+{"removed_count": 1}
+```
+
 ---
 
 ## 博主订阅
