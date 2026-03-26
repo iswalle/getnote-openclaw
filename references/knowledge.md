@@ -6,7 +6,7 @@
 
 ---
 
-## 知识库列表
+## 我的知识库列表
 
 ```
 GET https://openapi.biji.com/open/api/v1/resource/knowledge/list?page=1
@@ -26,6 +26,23 @@ GET https://openapi.biji.com/open/api/v1/resource/knowledge/list?page=1
   - `file_count`：文件数
   - `blogger_count`：订阅博主数
   - `live_count`：已完成直播数
+
+---
+
+## 订阅知识库列表
+
+获取当前用户订阅（但非自己创建）的知识库列表。
+
+```
+GET https://openapi.biji.com/open/api/v1/resource/knowledge/subscribe/list?page=1
+```
+
+参数：
+- `page`: 页码，从 1 开始，默认 1（固定每页 20 条）
+
+返回字段与"我的知识库列表"相同：`topics[]`、`has_more`、`total`
+
+> 与 `/knowledge/list` 的区别：该接口只返回他人分享/公开的知识库，不包含自己创建的。
 
 ---
 
@@ -57,9 +74,13 @@ GET https://openapi.biji.com/open/api/v1/resource/knowledge/notes?topic_id=abc12
 
 参数：
 - `topic_id` (string, 必填) - 知识库 ID（来自 `/knowledge/list` 的 `topic_id` 字段）
-- `page`: 页码，从 1 开始
+- `page`: 页码，从 1 开始，默认 1（固定每页 20 条）
 
-每页固定 20 条，用 `has_more` 判断是否有下一页。
+返回 `notes[]`，每项字段：
+- `note_id`：笔记 ID（**字符串**）
+- `title`、`content`、`note_type`、`tags`、`created_at`、`edit_time`
+
+用 `has_more` 判断是否有下一页。
 
 ---
 
@@ -169,7 +190,9 @@ GET https://openapi.biji.com/open/api/v1/resource/knowledge/lives?topic_id={topi
 
 参数：`topic_id`（知识库 ID）、`page`（页码）
 
-返回 `lives[]`，关键字段：`live_id`（详情必用）、`name`、`status`。
+返回 `lives[]`，关键字段：
+- `live_id`：直播 ID（**字符串**，详情接口传此值）
+- `name`、`status`
 
 **只返回已结束且 AI 已处理完的直播。** 完整字段见 [api-details.md](api-details.md#直播字段说明)。
 
@@ -179,7 +202,9 @@ GET https://openapi.biji.com/open/api/v1/resource/knowledge/lives?topic_id={topi
 GET https://openapi.biji.com/open/api/v1/resource/knowledge/live/detail?topic_id={topic_id}&live_id={live_id}
 ```
 
-参数：`topic_id`（知识库 ID）、`live_id`（直播 ID，来自列表）
+参数：
+- `topic_id`（知识库 ID）
+- `live_id`（**字符串**，来自列表的 `live_id` 字段）
 
 返回完整内容，包含 `post_summary`（AI 摘要）和 `post_media_text`（原文转写）。
 
