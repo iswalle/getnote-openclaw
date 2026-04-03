@@ -110,13 +110,13 @@ Content-Type: application/json
 ```json
 {
   "topic_id": "abc123",
-  "note_ids": [123456789, 123456790]
+  "note_ids": ["123456789", "123456790"]
 }
 ```
 
 ⚠️ 每批最多 20 条。已存在的笔记会跳过。
 
-> ⚠️ **JS 精度风险**：`note_ids` 是 int64 数组，JavaScript 直接 `JSON.parse` 会丢失精度。建议先把 note_id 作为字符串保存，发送时用 `BigInt` 或直接拼 JSON 字符串传递。
+> ✅ **note_ids 推荐用字符串格式**：API 同时兼容整数和字符串，统一用字符串可避免 JavaScript int64 精度丢失问题。
 
 > ⚠️ **订阅知识库只读**：订阅的知识库（非自己创建）不支持添加笔记，API 会返回错误。只有通过 `/knowledge/list` 获取的自己创建的知识库才可写入。
 
@@ -133,7 +133,7 @@ Content-Type: application/json
 ```json
 {
   "topic_id": "abc123",
-  "note_ids": [123456789]
+  "note_ids": ["123456789"]
 }
 ```
 
