@@ -116,6 +116,10 @@ Content-Type: application/json
 
 ⚠️ 每批最多 20 条。已存在的笔记会跳过。
 
+> ⚠️ **JS 精度风险**：`note_ids` 是 int64 数组，JavaScript 直接 `JSON.parse` 会丢失精度。建议先把 note_id 作为字符串保存，发送时用 `BigInt` 或直接拼 JSON 字符串传递。
+
+> ⚠️ **订阅知识库只读**：订阅的知识库（非自己创建）不支持添加笔记，API 会返回错误。只有通过 `/knowledge/list` 获取的自己创建的知识库才可写入。
+
 ---
 
 ## 从知识库移除笔记
@@ -132,6 +136,8 @@ Content-Type: application/json
   "note_ids": [123456789]
 }
 ```
+
+> ⚠️ **订阅知识库只读**：若非知识库管理员，则无法移除笔记，API 会返回错误。
 
 返回：
 ```json
