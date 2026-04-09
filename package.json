@@ -1,6 +1,6 @@
 {
   "name": "getnote",
-  "version": "1.5.7",
+  "version": "1.5.8",
   "description": "Get笔记 Skill — 保存链接/图片/文本到笔记，语义搜索，知识库管理。说「记一下」就能存，说「搜一下」就能找。",
   "license": "MIT-0",
   "author": "get-notes@luojilab.com",
