@@ -9,17 +9,18 @@
 ## 笔记列表
 
 ```
-GET https://openapi.biji.com/open/api/v1/resource/note/list?since_id=0
+GET https://openapi.biji.com/open/api/v1/resource/note/list?cursor=0
 ```
 
 参数：
-- `since_id` (int64, 必填) - 游标，首次传 `0`，后续用上次返回的 `next_cursor`
+- `cursor` (string, 可选) - 翻页游标，首次不传或传 `"0"`，后续将响应中的 `cursor` 字段直接传入（**推荐，字符串类型无精度问题**）
+- `since_id` (int64, 可选) - 游标旧版参数，仍然支持，与 `cursor` 二选一（`since_id` 优先）
 
-返回：`notes[]`、`has_more`、`next_cursor`、`total`（每次固定 20 条）
+返回：`notes[]`、`has_more`、`cursor`（string，推荐）、`next_cursor`（int，向后兼容）、`total`（每次固定 20 条）
+
+**翻页方式**：将响应的 `cursor` 字段直接传入下次请求的 `cursor` 参数即可，无需任何转换。
 
 > ⚠️ **响应 JSON 可能包含未转义的控制字符**（笔记 content 中的原始换行符），建议用支持容错解析的 JSON 库处理。
-
-> ⚠️ **`id`、`next_cursor`、`parent_id` 均为 int64**，JavaScript 环境必须在 `JSON.parse` 前做字符串化处理（见主文档「笔记 ID 处理规则」）。务必用字符串保存这些值，后续操作直接透传字符串即可。
 
 **笔记类型 note_type**：
 
