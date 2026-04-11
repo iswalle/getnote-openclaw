@@ -13,8 +13,7 @@ GET https://openapi.biji.com/open/api/v1/resource/note/list?cursor=0
 ```
 
 参数：
-- `cursor` (string, 可选) - 翻页游标，首次不传或传 `"0"`，后续将响应中的 `cursor` 字段直接传入（**推荐，字符串类型无精度问题**）
-- `since_id` (int64, 可选) - 游标旧版参数，仍然支持，与 `cursor` 二选一（`since_id` 优先）
+- `cursor` (string, 可选) - 翻页游标，首次不传，后续将响应中的 `cursor` 字段直接传入即可
 
 返回：`notes[]`、`has_more`、`cursor`（string，推荐）、`next_cursor`（int，向后兼容）、`total`（每次固定 20 条）
 
