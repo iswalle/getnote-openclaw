@@ -15,7 +15,33 @@ GET https://openapi.biji.com/open/api/v1/resource/note/list?cursor=0
 参数：
 - `cursor` (string, 可选) - 翻页游标，首次不传，后续将响应中的 `cursor` 字段直接传入即可
 
-返回：`notes[]`、`has_more`、`cursor`（string，推荐）、`next_cursor`（int，向后兼容）、`total`（每次固定 20 条）
+响应结构（`data` 下）：
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `notes` | array | 笔记列表 |
+| `has_more` | bool | 是否还有更多 |
+| `cursor` | string | 下一页游标（**推荐**，直接传入下次请求的 `cursor` 参数） |
+| `next_cursor` | int | 下一页游标（向后兼容） |
+| `total` | int | 本次返回条数（每次固定 20 条） |
+
+`notes[]` 列表项字段：
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `note_id` | string | 笔记 ID（字符串，推荐使用） |
+| `id` | int64 | 笔记 ID（整数，向后兼容） |
+| `title` | string | 笔记标题 |
+| `content` | string | 正文（markdown） |
+| `note_type` | string | 笔记类型，见下表 |
+| `source` | string | 来源 |
+| `tags` | array | 标签列表，每项包含 `id`、`name`、`type` |
+| `topics` | array | 所属知识库列表，每项包含 `id`、`name` |
+| `is_child_note` | bool | 是否为子笔记 |
+| `children_count` | int | 子笔记数量 |
+| `parent_id` | int64 | 父笔记 ID（是子笔记时才有） |
+| `created_at` | string | 创建时间 |
+| `updated_at` | string | 更新时间 |
 
 **翻页方式**：将响应的 `cursor` 字段直接传入下次请求的 `cursor` 参数即可，无需任何转换。
 
@@ -64,19 +90,47 @@ GET https://openapi.biji.com/open/api/v1/resource/note/detail?id={note_id}
 }
 ```
 
-**字段说明**：
-- `note_id` (string) - 笔记 ID 的字符串格式，便于 AI Agent 解析，避免 int64 精度问题
-- `children_ids` (string[]) - 子笔记 ID 列表（字符串格式），仅当有子笔记时返回
+详情响应字段（`data.note` 下）：
 
-**图片附件**：`attachments[]` 中每个图片包含：
-- `url` - 缩略图 URL（720px 压缩）
-- `original_url` - 原图 URL（无压缩，适合需要高清图的场景）
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `note_id` | string | 笔记 ID（字符串，推荐使用） |
+| `id` | int64 | 笔记 ID（整数，向后兼容） |
+| `title` | string | 标题 |
+| `content` | string | 正文（markdown） |
+| `note_type` | string | 笔记类型 |
+| `source` | string | 来源 |
+| `entry_type` | string | 录入方式：ai / manual |
+| `tags` | array | 标签列表，每项包含 `id`、`name`、`type` |
+| `topics` | array | 所属知识库，每项包含 `id`、`name` |
+| `is_child_note` | bool | 是否为子笔记 |
+| `children_count` | int | 子笔记数量 |
+| `children_ids` | string[] | 子笔记 ID 列表（有子笔记时才返回） |
+| `parent_id` | int64 | 父笔记 ID（是子笔记时才有） |
+| `attachments` | array | 附件列表，见下表 |
+| `audio` | object | 音频信息（音频笔记才有） |
+| `web_page` | object | 网页信息（链接笔记才有） |
+| `share_id` | string | 分享 ID |
+| `version` | int | 版本号 |
+| `created_at` | string | 创建时间 |
+| `updated_at` | string | 更新时间 |
 
-**正文原图**：传 `image_quality=original` 时，`content` 中的 markdown 图片链接会返回原图（去掉 OSS 压缩参数）。
+**`attachments[]` 字段**：
 
-**详情独有字段**（列表不返回）：`audio.original`、`audio.play_url`、`audio.duration`、`web_page.content`、`web_page.url`、`web_page.excerpt`、`attachments[]`、`children_ids`。
+| 字段 | 说明 |
+|------|------|
+| `type` | 类型：image / audio / link / pdf |
+| `url` | 地址（图片为 720px 缩略图） |
+| `original_url` | 原图地址（仅图片类型） |
+| `title` | 标题 |
+| `size` | 文件大小 |
+| `duration` | 时长（音频/视频） |
 
-完整字段说明见 [api-details.md](api-details.md#笔记详情独有字段)。
+**`audio` 字段**：`play_url`、`duration`（秒）、`transcript`（转录文本）、`original`（原始文本）
+
+**`web_page` 字段**：`url`、`domain`、`excerpt`（摘要）、`favicon`、`content`（链接原文）
+
+**正文原图**：传 `image_quality=original` 时，`content` 中的 markdown 图片链接返回原图（无压缩参数）。
 
 ---
 
