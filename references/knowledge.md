@@ -223,6 +223,40 @@ GET https://openapi.biji.com/open/api/v1/resource/knowledge/live/detail?topic_id
 
 返回完整内容，包含 `post_summary`（AI 摘要）和 `post_media_text`（原文转写）。
 
+### 添加直播订阅
+
+把一个直播频道添加到知识库，后续直播结束后将自动 AI 处理并出现在列表中。
+
+```
+POST https://openapi.biji.com/open/api/v1/resource/knowledge/live/follow
+Content-Type: application/json
+```
+
+请求体：
+```json
+{
+  "topic_id": "vnrOAaGY",
+  "link": "https://m.dedao.cn/live/xxxxx"
+}
+```
+
+参数说明：
+- `topic_id` (string, **必填**) — 知识库 ID
+- `link` (string, **必填**) — 得到 App 直播链接
+
+> ⚠️ **目前仅支持得到 App 直播**。
+
+响应：
+```json
+{
+  "follow_id": 12345,
+  "url": "https://m.dedao.cn/live/xxxxx",
+  "platform": "dedao",
+  "type": "live",
+  "created_at": "2026-04-16 10:00:00"
+}
+```
+
 ---
 
 ## 展示模板

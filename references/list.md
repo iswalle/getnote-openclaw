@@ -179,6 +179,40 @@ Content-Type: application/json
 
 ---
 
+## 笔记分享
+
+生成笔记的公开分享链接，需要 `note.content.read` scope。
+
+```
+POST https://openapi.biji.com/open/api/v1/resource/note/sharing
+Content-Type: application/json
+```
+
+请求体：
+```json
+{
+  "note_id": "1234567890123456789",
+  "share_exclude_audio": true
+}
+```
+
+参数说明：
+- `note_id` (string, **必填**) — 要分享的笔记 ID（**字符串格式**）
+- `share_exclude_audio` (bool, 可选) — 是否排除音频内容，默认 false
+
+响应：
+```json
+{
+  "note_id": "1234567890123456789",
+  "share_id": "rBzdMlXrzgYVM",
+  "share_url": "https://biji.com/note/share_note/rBzdMlXrzgYVM"
+}
+```
+
+> ✅ 对同一笔记多次调用，返回同一个 `share_url`（幂等）。
+
+---
+
 ## 展示模板
 
 列表展示：
