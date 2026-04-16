@@ -236,22 +236,22 @@ Content-Type: application/json
 ```json
 {
   "topic_id": "vnrOAaGY",
-  "link": "https://live.bilibili.com/xxxxx",
-  "platform": "bilibili"
+  "link": "https://m.dedao.cn/live/xxxxx"
 }
 ```
 
 参数说明：
 - `topic_id` (string, **必填**) — 知识库 ID
-- `link` (string, **必填**) — 直播链接
-- `platform` (string, 可选) — 平台（可自动推断）
+- `link` (string, **必填**) — 得到 App 直播链接
+
+> ⚠️ **目前仅支持得到 App 直播**。
 
 响应：
 ```json
 {
   "follow_id": 12345,
-  "url": "https://live.bilibili.com/xxxxx",
-  "platform": "bilibili",
+  "url": "https://m.dedao.cn/live/xxxxx",
+  "platform": "dedao",
   "type": "live",
   "created_at": "2026-04-16 10:00:00"
 }
