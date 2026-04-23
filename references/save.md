@@ -4,6 +4,8 @@
 
 新建文本、链接、图片三种类型的笔记。文本笔记同步完成；链接和图片笔记是异步任务，需轮询进度。
 
+> 🔗 **笔记内链识别**：若用户发送的 URL 为 `https://biji.com/note/{note_id}` 格式，这是 Get笔记正文内的笔记内链，应直接调用 `get_note` 查看详情，**而不是保存为链接笔记**。除非用户明确说要保存。
+
 ---
 
 ## 新建笔记
@@ -31,7 +33,9 @@ Content-Type: application/json
 详细字段说明见 [api-details.md](api-details.md#新建笔记字段说明)。
 
 - `plain_text`：同步返回，立即完成，响应中包含 `note_id`（字符串）
-- `link` / `img_text`：返回 `task_id`，**必须轮询** `/task/progress`
+- `link`（**分享链接**）：若 `link_url` 为 `biji.com/note/share_note/*` 或 `d.biji.com/*` 短链，**同步返回**，响应中直接包含 `note_id`、`title`、`created_at`、`updated_at`，**无需轮询**
+- `link`（**普通链接**）：返回 `task_id`，**必须轮询** `/task/progress`
+- `img_text`：返回 `task_id`，**必须轮询** `/task/progress`
 
 ---
 
@@ -59,6 +63,31 @@ Content-Type: application/json
 ## 链接笔记完整流程
 
 > ⚠️ **必须遵循的体验流程**
+
+> ⚠️ **分享链接与普通链接行为不同**，请先判断再决定是否需要轮询。
+
+**情况 A：分享链接**（`link_url` 为 `https://biji.com/note/share_note/{id}` 或 `d.biji.com/*` 短链）
+
+**步骤 1**：提交保存
+```
+POST https://openapi.biji.com/open/api/v1/resource/note/save {note_type:"link", link_url:"https://biji.com/note/share_note/xxx"}
+```
+
+同步返回，**无需轮询**：
+```json
+{
+  "data": {
+    "note_id": "1907962187788341186",
+    "title": "笔记标题",
+    "created_at": "2026-04-23 15:04:18",
+    "updated_at": "2026-04-23 15:04:18"
+  }
+}
+```
+
+---
+
+**情况 B：普通链接**
 
 **步骤 1**：提交任务
 ```

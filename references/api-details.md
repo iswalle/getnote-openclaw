@@ -101,7 +101,7 @@
 |------|------|------|------|
 | `title` | string | 否 | 笔记标题 |
 | `content` | string | 否 | Markdown 格式正文 |
-| `note_type` | string | 否 | 笔记类型，默认 `plain_text`：<br>• `plain_text` - 纯文本（同步）<br>• `link` - 链接笔记（异步，须轮询）<br>• `img_text` - 图片笔记（异步，须轮询） |
+| `note_type` | string | 否 | 笔记类型，默认 `plain_text`：<br>• `plain_text` - 纯文本（同步）<br>• `link` - 链接笔记：分享链接（`biji.com/note/share_note/*` 或 `d.biji.com/*`）同步直接返回 `note_id`；普通链接异步，需轮询<br>• `img_text` - 图片笔记（异步，须轮询） |
 | `tags` | string[] | 否 | 标签名称列表 |
 | `parent_id` | int64 | 否 | 父笔记 ID，创建子笔记时填写，默认 0 |
 | `link_url` | string | link 类型必填 | 要保存的链接 URL |
@@ -109,7 +109,8 @@
 
 **返回说明**：
 - `plain_text`：同步返回，`data.note_id` 即为笔记 ID
-- `link` / `img_text`：返回 `data.task_id`，需轮询 `/task/progress` 至 `status=success` 或 `failed`
+- `link`（分享链接）：同步返回，`data.note_id`、`data.title`、`data.created_at`、`data.updated_at`，无需轮询
+- `link`（普通链接） / `img_text`：返回 `data.task_id`，需轮询 `/task/progress` 至 `status=success` 或 `failed`
 
 ---
 
