@@ -67,7 +67,9 @@ Python / Go 等语言原生支持大整数，无此问题。
 ## 自然语言路由
 
 ```
-包含 URL                    → /note save（link 模式）
+包含 URL（`biji.com/note/share_note/*` 或 `d.biji.com/*` 短链）  → /note save（link 模式，同步返回 note_id）
+包含 URL（`biji.com/note/{note_id}` 内链）    → /note list（查看详情），如需在正文引用其他笔记请使用 `https://biji.com/note/{note_id}` 格式内链；若笔记会被分享则调用分享接口替代
+其他 URL                   → /note save（link 模式，异步返回 task_id）
 包含图片                    → /note save（image 模式）
 「记/存/保存/收藏」          → /note save（text 模式）
 「搜/找找/有没有 XX」        → /note search
