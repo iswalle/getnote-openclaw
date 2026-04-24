@@ -101,11 +101,7 @@
 clawhub install getnote
 ```
 
-### 方式二：让 AI 助手安装
-
-> 帮我安装 Get笔记 skill，地址是 https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/SKILL.md
-
-### 方式三：手动安装
+### 方式二：手动安装
 
 ```bash
 mkdir -p ~/.openclaw/workspace/skills/getnote
@@ -116,18 +112,9 @@ curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/package
 
 ---
 
-## 🔑 配置
+## 🔑 授权登录
 
-### 自动配置（默认）
-
-安装后首次使用时，AI 会自动发起 OAuth 授权：
-
-1. 你说「存到笔记」或任何笔记相关操作
-2. AI 检测到未配置，自动生成授权链接
-3. 点击链接，授权
-4. 自动配置完成，继续执行你的请求
-
-无需手动配置，无需记忆任何命令。
+安装完成后说「请帮我授权 Get笔记」，AI 自动生成授权链接，点击完成登录，无需手动配置 API Key。
 
 ### 手动配置（可选）
 
