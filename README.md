@@ -203,7 +203,13 @@ curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/package
 >
 > 🤖 找到 5 条日志，你这周：产品设计 12h、客户沟通 6h、开会 4h……
 
-**写内链的方式很简单**，在任何笔记正文里提到另一条笔记时，告诉 AI 要内链到哪条，AI 会自动获取对应的 `biji.com/note/{note_id}` 链接插入正文。
+**内链格式**：在笔记正文里用 `https://biji.com/note/{note_id}` 引用其他笔记。示例：
+
+```
+参考上次的讨论：https://biji.com/note/1234567890000000001
+```
+
+告诉 AI 要内链到哪条笔记，AI 会自动获取对应 note_id 插入。
 
 ---
 
