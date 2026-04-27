@@ -68,7 +68,7 @@ Python / Go 等语言原生支持大整数，无此问题。
 
 ```
 包含 URL（`biji.com/note/share_note/*` 或 `d.biji.com/*` 短链）  → /note save（link 模式，同步返回 note_id）
-包含 URL（`biji.com/note/{note_id}` 内链）    → /note list（查看详情），如需在正文引用其他笔记请使用 `https://biji.com/note/{note_id}` 格式内链；若笔记会被分享则调用分享接口替代
+包含 URL（`biji.com/note/{note_id}` 内链）    → /note list（查看详情），如需在正文引用其他笔记请使用 `https://biji.com/note/{note_id}` 格式内链（**默认用内链，除非用户明确要求分享**）
 其他 URL                   → /note save（link 模式，异步返回 task_id）
 包含图片                    → /note save（image 模式）
 「记/存/保存/收藏」          → /note save（text 模式）
