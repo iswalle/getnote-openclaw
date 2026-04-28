@@ -22,7 +22,7 @@ GET https://openapi.biji.com/open/api/v1/resource/note/list?cursor=0
 | `notes` | array | 笔记列表 |
 | `has_more` | bool | 是否还有更多 |
 | `cursor` | string | 下一页游标（**推荐**，直接传入下次请求的 `cursor` 参数） |
-| `next_cursor` | int | 下一页游标（向后兼容） |
+| `next_cursor` | int | 下一页游标（此字段保留向后兼容，建议使用 cursor 字段翻页） |
 | `total` | int | 本次返回条数（每次固定 20 条） |
 
 `notes[]` 列表项字段：
@@ -30,7 +30,7 @@ GET https://openapi.biji.com/open/api/v1/resource/note/list?cursor=0
 | 字段 | 类型 | 说明 |
 |------|------|------|
 | `note_id` | string | 笔记 ID（字符串，推荐使用） |
-| `id` | int64 | 笔记 ID（整数，向后兼容） |
+| `id` | int64 | 笔记 ID（响应中为 int，JavaScript 需注意精度；note_id 字段为 string） |
 | `title` | string | 笔记标题 |
 | `content` | string | 正文（markdown） |
 | `note_type` | string | 笔记类型，见下表 |
@@ -95,7 +95,7 @@ GET https://openapi.biji.com/open/api/v1/resource/note/detail?id={note_id}
 | 字段 | 类型 | 说明 |
 |------|------|------|
 | `note_id` | string | 笔记 ID（字符串，推荐使用） |
-| `id` | int64 | 笔记 ID（整数，向后兼容） |
+| `id` | int64 | 笔记 ID（响应中为 int，JavaScript 需注意精度；note_id 字段为 string） |
 | `title` | string | 标题 |
 | `content` | string | 正文（markdown） |
 | `note_type` | string | 笔记类型 |
@@ -144,7 +144,7 @@ Content-Type: application/json
 请求体：
 ```json
 {
-  "note_id": 123456789,
+  "note_id": "123456789",
   "title": "新标题",
   "content": "新的 Markdown 内容",
   "tags": ["标签1", "标签2"]
@@ -152,7 +152,7 @@ Content-Type: application/json
 ```
 
 参数说明：
-- `note_id` (int64, **必填**) - 要更新的笔记 ID
+- `note_id` (string, **必填**) - 要更新的笔记 ID
 - `title` (string, 可选) - 新标题，不传则不更新
 - `content` (string, 可选) - 新内容，不传则不更新
 - `tags` (string[], 可选) - 新标签列表，**替换**原有标签（不传则保持原标签）
@@ -172,7 +172,7 @@ Content-Type: application/json
 
 请求体：
 ```json
-{"note_id": 123456789}
+{"note_id": "123456789"}
 ```
 
 笔记移入回收站，需要 `note.content.trash` scope。

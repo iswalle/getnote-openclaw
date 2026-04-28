@@ -164,7 +164,7 @@ GET https://openapi.biji.com/open/api/v1/resource/knowledge/bloggers?topic_id={t
 
 | 字段 | 说明 |
 |------|------|
-| follow_id | 订阅关系 ID，**查博主内容时必用** |
+| follow_id | string | 订阅关系 ID（int64 精度原因，以字符串返回），**查博主内容时必用** |
 | account_name | 博主名称 |
 | account_icon | 博主头像 |
 | platform | 平台（如 DEDAO）|
@@ -249,7 +249,7 @@ Content-Type: application/json
 响应：
 ```json
 {
-  "follow_id": 12345,
+  "follow_id": "12345",
   "url": "https://m.dedao.cn/live/xxxxx",
   "platform": "dedao",
   "type": "live",

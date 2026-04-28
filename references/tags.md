@@ -16,10 +16,14 @@ Content-Type: application/json
 请求体：
 ```json
 {
-  "note_id": 123456789,
+  "note_id": "123456789",
   "tags": ["工作", "重要"]
 }
 ```
+
+参数说明：
+- `note_id` (string, **必填**) - 笔记 ID
+- `tags` (string[], **必填**) - 要添加的标签名列表
 
 返回：`note_id`（string）+ `tags[]` 数组，每项包含：
 - `id`：标签 ID（**删除时传入此值作为 `tag_id`**）
@@ -46,12 +50,14 @@ Content-Type: application/json
 请求体：
 ```json
 {
-  "note_id": 123456789,
+  "note_id": "123456789",
   "tag_id": "123"
 }
 ```
 
-> `tag_id` 来自 `tags/add` 返回或 `GET /note/detail` 中 `tags[].id` 字段。
+参数说明：
+- `note_id` (string, **必填**) - 笔记 ID
+- `tag_id` (string, **必填**) - 要删除的标签 ID（来自 `tags/add` 返回或 `GET /note/detail` 中 `tags[].id`）
 
 ⚠️ `system` 类型标签不允许删除，尝试删除会返回错误。
 
