@@ -222,4 +222,4 @@ curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/package
 
 ## License
 
-MIT · Published on [ClawHub](https://clawhub.ai)
+MIT-0 · Published on [ClawHub](https://clawhub.ai)
