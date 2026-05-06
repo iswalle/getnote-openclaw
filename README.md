@@ -1,6 +1,6 @@
 # Get笔记 Skill
 
-[![License: MIT-0](https://img.shields.io/badge/License-MIT--0-blue.svg)](https://opensource.org/licenses/MIT-0)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 让 AI 成为你的第二大脑。随时记录，需要时召回。
 
@@ -222,4 +222,4 @@ curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/package
 
 ## License
 
-MIT-0 (MIT No Attribution) · Published on [ClawHub](https://clawhub.ai)
+MIT · Published on [ClawHub](https://clawhub.ai)
