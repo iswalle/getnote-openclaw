@@ -27,15 +27,5 @@
   ],
   "clawhub": {
     "acceptLicenseTerms": true
-  },
-  "openclaw": {
-    "minVersion": "0.1.0",
-    "baseUrl": "https://openapi.biji.com",
-    "requires": {},
-    "optionalEnv": [
-      "GETNOTE_API_KEY",
-      "GETNOTE_CLIENT_ID",
-      "GETNOTE_OWNER_ID"
-    ]
   }
 }
