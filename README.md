@@ -1,4 +1,4 @@
-# Get笔记 Skill
+# 得到大脑（Get笔记）Skill
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
