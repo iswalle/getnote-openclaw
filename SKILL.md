@@ -1,13 +1,13 @@
 ---
-name: Get笔记
+name: 得到大脑（Get笔记）
 description: |
-  Get笔记 - 保存、搜索、管理个人笔记和知识库。
+  得到大脑（Get笔记）- 保存、搜索、管理个人笔记和知识库。
 
   **当以下情况时使用此 Skill**：
   (1) 用户要保存内容到笔记：发链接、发图片、说「记一下」「存到笔记」「保存」「收藏」
   (2) 用户要搜索或查看笔记：「搜一下」「找找笔记」「最近存了什么」「看看原文」
   (3) 用户要管理知识库或标签：「加到知识库」「建知识库」「加标签」「删标签」
-  (4) 用户要配置 Get笔记：「配置笔记」「连接 Get笔记」
+  (4) 用户要配置 得到大脑（Get笔记）：「配置笔记」「连接 Get笔记」
 metadata: {"openclaw": {"requires": {}, "optionalEnv": ["GETNOTE_API_KEY", "GETNOTE_CLIENT_ID", "GETNOTE_OWNER_ID"], "baseUrl": "https://openapi.biji.com", "homepage": "https://biji.com"}}
 ---
 
