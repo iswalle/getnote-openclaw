@@ -30,7 +30,7 @@
 
 | reason | 说明 |
 |--------|------|
-| not_member | 非会员，引导开通：https://www.biji.com/checkout?product_alias=6AydVpYeKl |
+| not_member | 非会员，引导开通：https://www.biji.com/checkout?product_alias=9Ab36BB3ZD&spm=wangye |
 | qps_global | 全局 QPS 超限 |
 | qps_bucket | 桶级 QPS 超限 |
 | quota_day | 当日配额用尽 |

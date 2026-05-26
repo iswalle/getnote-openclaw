@@ -139,7 +139,7 @@ curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/package
 
 > 💡 `GETNOTE_OWNER_ID` 可选，配置后只有你能操作笔记（群聊安全）
 
-> 💡 需要 [Get笔记会员](https://www.biji.com/checkout?product_alias=6AydVpYeKl) 才能使用 API
+> 💡 需要 [Get笔记会员](https://www.biji.com/checkout?product_alias=9Ab36BB3ZD&spm=wangye) 才能使用 API
 
 ---
 
@@ -216,7 +216,7 @@ curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/package
 - [Get笔记官网](https://biji.com)
 - [开放平台](https://www.biji.com/openapi)
 - [ClawHub](https://clawhub.ai/iswalle/getnote)
-- [开通会员](https://www.biji.com/checkout?product_alias=6AydVpYeKl)
+- [开通会员](https://www.biji.com/checkout?product_alias=9Ab36BB3ZD&spm=wangye)
 
 ---
 

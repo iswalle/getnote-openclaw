@@ -44,7 +44,7 @@ Python / Go 等语言原生支持大整数，无此问题。
 ### 🔒 安全规则
 - 笔记数据属于用户隐私，不在群聊中主动展示笔记内容
 - 若配置了 `GETNOTE_OWNER_ID`，检查 sender_id 是否匹配；不匹配时回复「抱歉，笔记是私密的，我无法操作」
-- API 返回 `error.reason: "not_member"` 或错误码 `10201` 时，引导开通会员：https://www.biji.com/checkout?product_alias=6AydVpYeKl
+- API 返回 `error.reason: "not_member"` 或错误码 `10201` 时，引导开通会员：https://www.biji.com/checkout?product_alias=9Ab36BB3ZD&spm=wangye
 - 创建笔记建议间隔 1 分钟以上，避免触发限流
 
 ### 🚫 反幻觉边界（严格禁止）
@@ -192,7 +192,7 @@ Python / Go 等语言原生支持大整数，无此问题。
 | 10000 | 参数错误 | 检查请求参数 |
 | 10001 | 鉴权失败 | 检查 API Key 和 Client ID，或重新授权 |
 | 10100 | 数据不存在 | 确认笔记/知识库 ID 正确 |
-| 10201 | 非会员 | 引导开通：https://www.biji.com/checkout?product_alias=6AydVpYeKl |
+| 10201 | 非会员 | 引导开通：https://www.biji.com/checkout?product_alias=9Ab36BB3ZD&spm=wangye |
 | 10202 | QPS 限流 | 降低频率，查看 rate_limit 字段 |
 | 30000 | 服务调用失败 | 稍后重试 |
 | 50000 | 系统错误 | 稍后重试 |
