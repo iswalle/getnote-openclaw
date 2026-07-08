@@ -23,7 +23,7 @@ GET https://openapi.biji.com/open/api/v1/resource/note/list?cursor=0
 | `has_more` | bool | 是否还有更多 |
 | `cursor` | string | 下一页游标（**推荐**，直接传入下次请求的 `cursor` 参数） |
 | `next_cursor` | int | 下一页游标（此字段保留向后兼容，建议使用 cursor 字段翻页） |
-| `total` | int | 本次返回条数（每次固定 20 条） |
+| `total` | int | 列表总数（全部笔记的总条数，非本页返回条数） |
 
 `notes[]` 列表项字段：
 

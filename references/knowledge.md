@@ -166,9 +166,9 @@ GET https://openapi.biji.com/open/api/v1/resource/knowledge/bloggers?topic_id={t
 |------|------|
 | follow_id | string | 订阅关系 ID（int64 精度原因，以字符串返回），**查博主内容时必用** |
 | account_name | 博主名称 |
-| account_icon | 博主头像 |
-| platform | 平台（如 DEDAO）|
-| account_url | 博主主页链接 |
+| account_avatar | 博主头像 |
+| platform | 平台（自由值，如 douyin / DEDAO）|
+| follow_link | 博主主页 / 关注链接 |
 | follow_time | 订阅时间（YYYY-MM-DD HH:MM:SS）|
 
 ### 博主内容列表

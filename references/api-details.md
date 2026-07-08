@@ -110,13 +110,13 @@
 **返回说明**：
 - `plain_text`：同步返回，`data.note_id` 即为笔记 ID
 - `link`（分享链接）：同步返回，`data.note_id`、`data.title`、`data.created_at`、`data.updated_at`，无需轮询
-- `link`（普通链接） / `img_text`：返回 `data.task_id`，需轮询 `/task/progress` 至 `status=success` 或 `failed`
+- `link`（普通链接） / `img_text`：异步任务，返回 `data.tasks[]` 数组（每项含 `task_id`、`url`），task_id 在 `data.tasks[0].task_id`（**非** `data.task_id`），需轮询 `/task/progress` 至 `status=success` 或 `failed`。完整流程见 [save.md](save.md)
 
 ---
 
 ## 图片上传凭证返回字段
 
-`GET /open/api/v1/resource/image/upload_token?mime_type=jpg&count=1` 返回 `data.tokens[]`，每个 token 包含：
+`GET /open/api/v1/resource/image/upload_token?mime_type=jpg&count=1` 返回**单个对象直挂 `data`**（非数组），包含：
 
 | 字段 | 说明 |
 |------|------|
@@ -128,6 +128,7 @@
 | `callback` | 回调参数（Base64 编码，必须包含在上传请求中） |
 | `access_url` | 上传成功后的文件访问地址，**创建图片笔记时填入 `image_urls`** |
 | `oss_content_type` | 上传时需设置的 Content-Type（与 mime_type 对应） |
+| `expire` | 凭证过期时间（Unix 时间戳，秒） |
 
 ⚠️ `mime_type` 必须与实际文件格式一致，否则 OSS 签名验证失败。
 
@@ -191,27 +192,28 @@
 
 ## 召回结果字段说明
 
+> 响应结构：`data.results[]`，每项字段如下（笔记召回与知识库召回同构）。
+
 ### 笔记召回 (recall) 返回字段
 
 | 字段 | 说明 |
 |------|------|
-| id | 笔记 ID |
 | note_id | 笔记 ID（字符串格式）|
+| note_type | 笔记类型（大写枚举：NOTE / FILE / BLOGGER / LIVE / URL / DEDAO）|
 | title | 标题 |
 | content | 摘要内容 |
-| note_type | 笔记类型 |
-| tags | 标签列表 |
 | created_at | 创建时间 |
 
 ### 知识库召回 (recall/knowledge) 返回字段
 
+与笔记召回（recall）同构，字段一致：
+
 | 字段 | 说明 |
 |------|------|
-| id | 内容 ID |
-| content_type | 内容类型：note / blogger / live |
+| note_id | 内容 ID（字符串格式）|
+| note_type | 类型（大写枚举：NOTE / FILE / BLOGGER / LIVE / URL / DEDAO）|
 | title | 标题 |
-| summary | 摘要 |
-| source_type | 来源类型 |
+| content | 摘要内容 |
 | created_at | 创建时间 |
 
 ---
