@@ -181,7 +181,7 @@ Content-Type: application/json
 
 ## 笔记分享
 
-生成笔记的公开分享链接，需要 `note.content.read` scope。
+生成笔记的公开分享链接，需要 `note.sharing.write` scope。
 
 ```
 POST https://openapi.biji.com/open/api/v1/resource/note/sharing

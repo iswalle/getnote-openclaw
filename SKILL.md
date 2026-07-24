@@ -17,9 +17,9 @@ metadata: {"openclaw": {"requires": {}, "optionalEnv": ["GETNOTE_API_KEY", "GETN
 
 ### 🌐 Base URL
 ```
-https://openapi.biji.com
+${GETNOTE_API_URL:-https://openapi.biji.com}
 ```
-所有 API 请求必须使用此 Base URL，不要使用 `biji.com` 或其他地址。
+默认使用 `https://openapi.biji.com`。仅在用户或运行环境明确配置 `GETNOTE_API_URL` 时使用覆盖值；不要把网页域名 `biji.com` 当成 API 地址。
 
 ### 🔑 认证
 请求头：
@@ -35,7 +35,9 @@ Scope 权限：`note.content.read`（读取）、`note.content.write`（写入�
 
 **正确做法**：始终把 ID 当字符串处理，在 `JSON.parse` 之前替换：
 ```javascript
-const safe = text.replace(/"(id|note_id|parent_id|follow_id|live_id)"\s*:\s*(\d+)/g, '"$1":"$2"');
+const safe = text
+  .replace(/"(id|note_id|parent_id|follow_id|live_id|next_cursor)"\s*:\s*(\d{16,})/g, '"$1":"$2"')
+  .replace(/([:[,]\s*)(-?\d{16,})(?=\s*[,}\]])/g, '$1"$2"');
 // 注：next_cursor 已不需要处理，翻页请直接使用响应中的 cursor（string）字段
 const data = JSON.parse(safe);
 ```
@@ -52,6 +54,7 @@ Python / Go 等语言原生支持大整数，无此问题。
 - **禁止跳过轮询**：链接/图片笔记返回 `task_id` 后，**必须**轮询 `/task/progress` 直到 `success` 或 `failed`，不得假设任务已完成
 - **禁止伪造 API 响应**：不得在未实际调用 API 的情况下告诉用户「已保存」「已删除」
 - **禁止忽略错误码**：API 返回 `success: false` 时必须处理，不得静默吞掉
+- **禁止只看 HTTP 状态码**：即使 HTTP 为 200，只要 `success: false` 就是失败；优先依据 `error.reason` 和 `error.retryable` 决定是否重试
 - **禁止混淆内链和分享链接**：`biji.com/note/{id}` 是内链（仅笔记主人可见），`share_note/{id}` 是分享链接（公开可访问），两者不可互换
 
 ### 🔄 失败重试策略
@@ -179,9 +182,13 @@ Python / Go 等语言原生支持大整数，无此问题。
 {
   "success": false,
   "error": {
-    "code": 10001,
-    "message": "unauthorized",
-    "reason": "not_member"
+    "code": 10000,
+    "message": "参数错误",
+    "reason": "invalid_request",
+    "retryable": false,
+    "field": "parent_id",
+    "constraint": "non_negative_decimal_integer",
+    "expected_type": "decimal string or JSON integer"
   },
   "request_id": "xxx"
 }
@@ -190,8 +197,12 @@ Python / Go 等语言原生支持大整数，无此问题。
 | 错误码 | 说明 | 处理方式 |
 |--------|------|---------|
 | 10000 | 参数错误 | 检查请求参数 |
-| 10001 | 鉴权失败 | 检查 API Key 和 Client ID，或重新授权 |
-| 10100 | 数据不存在 | 确认笔记/知识库 ID 正确 |
+| 10004 | 未授权 | 检查 API Key 和 Client ID，或重新授权 |
+| 10100 | 通用数据不存在 | 确认资源 ID 正确 |
+| 10500 | 笔记不存在 | 确认 note_id 正确，禁止编造 ID |
+| 10502 | 幂等键冲突 | 同一个键只能对应完全相同的请求 |
+| 10503 | 相同请求处理中 | 保持请求不变，稍后使用同一幂等键重试 |
+| 10504 | 幂等服务暂不可用 | 保持请求不变，稍后使用同一幂等键重试 |
 | 10201 | 非会员 | 引导开通：https://www.biji.com/checkout?product_alias=9Ab36BB3ZD&spm=wangye |
 | 10202 | QPS 限流 | 降低频率，查看 rate_limit 字段 |
 | 30000 | 服务调用失败 | 稍后重试 |
