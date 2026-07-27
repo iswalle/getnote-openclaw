@@ -142,7 +142,7 @@ curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/package
 
 > 💡 `GETNOTE_API_URL` 可选，仅在明确联调测试环境时覆盖；默认无需配置
 
-> 💡 需要 [Get笔记会员](https://www.biji.com/checkout?product_alias=9Ab36BB3ZD&spm=wangye) 才能使用 API
+> 💡 需要 [Get笔记会员](https://www.biji.com/checkout?product_alias=9Ab36BB3ZD&spm=openapi_skill) 才能使用 API
 
 ---
 
@@ -225,7 +225,7 @@ curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/package
 - [Get笔记官网](https://biji.com)
 - [开放平台](https://www.biji.com/openapi)
 - [ClawHub](https://clawhub.ai/iswalle/getnote)
-- [开通会员](https://www.biji.com/checkout?product_alias=9Ab36BB3ZD&spm=wangye)
+- [开通会员](https://www.biji.com/checkout?product_alias=9Ab36BB3ZD&spm=openapi_skill)
 
 ---
 
