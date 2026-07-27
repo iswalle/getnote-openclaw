@@ -4,11 +4,13 @@
 
 在笔记中进行语义召回，支持全局搜索和指定知识库搜索。无需拉取全部数据，直接返回相关片段。
 
+> 🔐 **隐私说明**：仅在用户明确要求搜索自己的得到大脑笔记或知识库时调用。搜索词会发送到 `https://openapi.biji.com`；知识库搜索还会发送目标知识库 ID。搜索词可能包含个人或工作敏感信息，不得因普通对话中的「搜一下」「找找」自动触发。
+
 ---
 
 ## 全局语义搜索
 
-> 适用场景：「搜一下」「找找我哪些笔记提到了 XX」
+> 适用场景：「在我的得到大脑笔记里搜索 XX」「找找我的笔记里哪些内容提到了 XX」
 
 **所需 scope**: `note.recall.read`
 
@@ -50,7 +52,7 @@ Content-Type: application/json
 
 ## 知识库语义搜索
 
-> 适用场景：「在我的 XX 知识库搜一下 XX」
+> 适用场景：「在我的得到大脑 XX 知识库里搜索 XX」
 
 **所需 scope**: `note.topic.recall.read`
 
@@ -95,10 +97,10 @@ Content-Type: application/json
 
 ## 示例对话
 
-> 用户：「找找我哪些笔记提到了大模型 API」
+> 用户：「在我的得到大脑笔记里找找哪些内容提到了大模型 API」
 > → `POST /recall` `{ "query": "大模型 API", "top_k": 3 }`
 
-> 用户：「在我的 AI 学习知识库里搜一下 RAG」
+> 用户：「在我的得到大脑 AI 学习知识库里搜索 RAG」
 > → 先调 `/knowledge/list` 找到对应知识库的 `topic_id`，再 `POST /recall/knowledge` `{ "topic_id": "xxx", "query": "RAG", "top_k": 3 }`
 
 ---

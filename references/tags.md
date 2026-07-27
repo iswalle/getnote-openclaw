@@ -42,6 +42,8 @@ Content-Type: application/json
 
 ## 删除标签
 
+> ⚠️ **必须确认**：调用接口前展示笔记标题和要删除的标签名称，只有用户明确确认后才能执行；不得删除 `system` 类型标签。
+
 ```
 POST https://openapi.biji.com/open/api/v1/resource/note/tags/delete
 Content-Type: application/json

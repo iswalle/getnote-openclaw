@@ -11,5 +11,9 @@
 # Logs
 *.log
 
+# Python
+__pycache__/
+*.py[cod]
+
 # Config (may contain API keys)
 config.json

@@ -31,18 +31,7 @@ import time
 import json
 import urllib.request
 import urllib.error
-import os
-
-def oauth_token_url() -> str:
-    base = os.environ.get("GETNOTE_API_URL", "https://openapi.biji.com").rstrip("/")
-    if base.endswith("/open/api/v1"):
-        return f"{base}/oauth/token"
-    if base.endswith("/open"):
-        return f"{base}/api/v1/oauth/token"
-    return f"{base}/open/api/v1/oauth/token"
-
-
-API_URL = oauth_token_url()
+API_URL = "https://openapi.biji.com/open/api/v1/oauth/token"
 DEFAULT_CLIENT_ID = "cli_a1b2c3d4e5f6789012345678abcdef90"
 INTERVAL = 5       # 轮询间隔（秒）
 MAX_ATTEMPTS = 120 # 最大尝试次数（5秒 * 120 = 10分钟）
