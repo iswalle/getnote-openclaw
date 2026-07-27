@@ -132,8 +132,6 @@ Content-Type: application/json
 
 ## 从知识库移除笔记
 
-> ⚠️ **必须确认**：调用接口前展示知识库名称和要移除的笔记标题，说明只会解除知识库归属、不会删除笔记；只有用户明确确认后才能执行。
-
 ```
 POST https://openapi.biji.com/open/api/v1/resource/knowledge/note/remove
 Content-Type: application/json

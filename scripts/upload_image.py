@@ -28,7 +28,19 @@ except ImportError:
     sys.exit(1)
 
 
-BASE_URL = "https://openapi.biji.com/open/api/v1/resource"
+def resource_base_url() -> str:
+    """Resolve production or explicitly overridden OpenAPI resource base."""
+    base = os.environ.get("GETNOTE_API_URL", "https://openapi.biji.com").rstrip("/")
+    if base.endswith("/open/api/v1/resource"):
+        return base
+    if base.endswith("/open/api/v1"):
+        return f"{base}/resource"
+    if base.endswith("/open"):
+        return f"{base}/api/v1/resource"
+    return f"{base}/open/api/v1/resource"
+
+
+BASE_URL = resource_base_url()
 DEFAULT_CLIENT_ID = "cli_a1b2c3d4e5f6789012345678abcdef90"
 
 
