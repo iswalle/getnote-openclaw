@@ -16,10 +16,15 @@
 | 错误码 | 说明 |
 |--------|------|
 | 10000 | 参数错误 |
-| 10001 | 鉴权失败 |
-| 10100 | 数据不存在（笔记不存在等）|
+| 10004 | 未授权 / API Key 无效 |
+| 10100 | 通用数据不存在 |
 | 10201 | 非会员 |
 | 10202 | QPS 限流 |
+| 10500 | 笔记不存在 |
+| 10501 | 请求参数错误 |
+| 10502 | 幂等键已用于不同请求 |
+| 10503 | 相同幂等请求正在处理 |
+| 10504 | 幂等服务暂不可用 |
 | 30000 | 服务调用失败 |
 | 42900 | 配额限流 |
 | 50000 | 系统错误 |
@@ -30,11 +35,26 @@
 
 | reason | 说明 |
 |--------|------|
-| not_member | 非会员，引导开通：https://www.biji.com/checkout?product_alias=9Ab36BB3ZD&spm=wangye |
+| not_member | 非会员，引导开通：https://www.biji.com/checkout?product_alias=9Ab36BB3ZD&spm=openapi_skill |
 | qps_global | 全局 QPS 超限 |
 | qps_bucket | 桶级 QPS 超限 |
 | quota_day | 当日配额用尽 |
 | quota_month | 当月配额用尽 |
+| note_not_found | 笔记不存在 |
+| invalid_request | 参数或字段约束不满足 |
+| idempotency_conflict | 幂等键已绑定另一份请求，必须更换键或恢复原请求 |
+| idempotency_in_progress | 同一请求处理中，可稍后原样重试 |
+| idempotency_unavailable | 幂等服务暂不可用，可稍后原样重试 |
+
+失败响应仍可能使用 HTTP 200，必须检查 `success`。`error` 保留历史 `code/message`，并新增：
+
+| 字段 | 说明 |
+|---|---|
+| `reason` | 稳定的机器可读原因，程序应优先判断它 |
+| `retryable` | 是否可在不修改请求的情况下安全重试 |
+| `field` | 可安全识别时返回的错误字段 |
+| `constraint` | 稳定的字段约束 |
+| `expected_type` | 推荐输入类型或格式 |
 
 ---
 
@@ -103,7 +123,9 @@
 | `content` | string | 否 | Markdown 格式正文 |
 | `note_type` | string | 否 | 笔记类型，默认 `plain_text`：<br>• `plain_text` - 纯文本（同步）<br>• `link` - 链接笔记：分享链接（`biji.com/note/share_note/*` 或 `d.biji.com/*`）同步直接返回 `note_id`；普通链接异步，需轮询<br>• `img_text` - 图片笔记（异步，须轮询） |
 | `tags` | string[] | 否 | 标签名称列表 |
-| `parent_id` | int64 | 否 | 父笔记 ID，创建子笔记时填写，默认 0 |
+| `topic_id` | string | 否 | 目标知识库 ID，支持 DEFAULT / BOOKSPACE / CUSTOMER 三类自有知识库 |
+| `parent_id` | decimal string 或 JSON integer | 否 | 父笔记 ID，推荐十进制字符串；创建子笔记时填写，可在同一父笔记下创建多篇 |
+| `client_request_id` | string | 否 | 幂等键（1-128 ASCII 字符）；也可使用 `Idempotency-Key` 请求头 |
 | `link_url` | string | link 类型必填 | 要保存的链接 URL |
 | `image_urls` | string[] | img_text 类型必填 | 图片访问地址列表，使用上传凭证中的 `access_url` |
 
@@ -152,6 +174,9 @@
 | note.content.trash | 笔记移入回收站 |
 | topic.blogger.read | 获取知识库订阅博主 |
 | topic.live.read | 获取知识库订阅直播 |
+| topic.live.write | 订阅直播到知识库 |
+| note.sharing.write | 设置笔记公开分享 |
+| note.recorder.read | 读取企业录音卡笔记（仅企业代授权） |
 
 ---
 

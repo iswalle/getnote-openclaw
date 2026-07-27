@@ -28,7 +28,19 @@ except ImportError:
     sys.exit(1)
 
 
-BASE_URL = "https://openapi.biji.com/open/api/v1/resource"
+def resource_base_url() -> str:
+    """Resolve production or explicitly overridden OpenAPI resource base."""
+    base = os.environ.get("GETNOTE_API_URL", "https://openapi.biji.com").rstrip("/")
+    if base.endswith("/open/api/v1/resource"):
+        return base
+    if base.endswith("/open/api/v1"):
+        return f"{base}/resource"
+    if base.endswith("/open"):
+        return f"{base}/api/v1/resource"
+    return f"{base}/open/api/v1/resource"
+
+
+BASE_URL = resource_base_url()
 DEFAULT_CLIENT_ID = "cli_a1b2c3d4e5f6789012345678abcdef90"
 
 
@@ -174,10 +186,11 @@ def main():
         print(f"访问 URL: {image_url}")
         print()
         print("💡 创建图片笔记:")
-        print(f'   curl -X POST "https://openapi.biji.com/open/api/v1/resource/note/save?task_id=..."')
+        print(f'   curl -X POST "{BASE_URL}/note/save"')
         print(f'     -H "Authorization: $GETNOTE_API_KEY"')
+        print(f'     -H "X-Client-ID: $GETNOTE_CLIENT_ID"')
         print(f'     -H "Content-Type: application/json"')
-        print(f'     -d \'{{"type":"img_text","image_urls":["{image_url}"]}}\'')
+        print(f'     -d \'{{"note_type":"img_text","image_urls":["{image_url}"],"client_request_id":"replace-with-stable-request-id"}}\'')
         
     except Exception as e:
         print(f"错误: {e}")

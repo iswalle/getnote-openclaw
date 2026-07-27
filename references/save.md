@@ -24,18 +24,25 @@ Content-Type: application/json
   "content": "Markdown 内容",
   "note_type": "plain_text",
   "tags": ["标签1", "标签2"],
-  "parent_id": 0,
+  "topic_id": "QYADXzWn",
+  "parent_id": "1916020531058082912",
+  "client_request_id": "agent-session-42-save-1",
   "link_url": "https://...",
   "image_urls": ["https://..."]
 }
 ```
+
+- `topic_id`：可选，直接把新笔记加入目标知识库；先调用知识库列表并按 `name` / `scope` 选择
+- `parent_id`：可选，必须优先传十进制字符串；用于创建子笔记，同一父笔记可以创建多篇子笔记
+- `client_request_id`：可选幂等键（1-128 个 ASCII 字符）；网络重试时复用同一个值，不得重新生成
+- 也可用 `Idempotency-Key` 请求头传幂等键。若 Header 与 Body 同时传，二者必须完全相同
 
 详细字段说明见 [api-details.md](api-details.md#新建笔记字段说明)。
 
 - `plain_text`：同步返回，立即完成，响应中包含 `note_id`（字符串）
 - `link`（**分享链接**）：若 `link_url` 为 `biji.com/note/share_note/*` 或 `d.biji.com/*` 短链，**同步返回**，响应中直接包含 `note_id`、`title`、`created_at`、`updated_at`，**无需轮询**
 - `link`（**普通链接**）：返回 `task_id`，**必须轮询** `/task/progress`
-- `img_text`：返回 `task_id`，**必须轮询** `/task/progress`
+- `img_text`：返回 `data.tasks[0].task_id`，**必须轮询** `/task/progress`
 
 ---
 
@@ -54,7 +61,7 @@ Content-Type: application/json
 返回：
 - `status`: `pending` | `processing` | `success` | `failed`
 - `note_id`: 成功时返回笔记 ID（**字符串**）；任务进行中时值为 `"0"`，需过滤
-- `error_msg`: 失败时返回错误信息
+- `error_msg`: 仅 `failed` 时返回错误信息；`pending` / `processing` / `success` 不应据此判断失败
 
 **建议 10-30 秒间隔轮询，直到 success 或 failed**。
 
@@ -156,7 +163,7 @@ GET https://openapi.biji.com/open/api/v1/resource/image/upload_token?mime_type=j
 ```
 POST https://openapi.biji.com/open/api/v1/resource/note/save {note_type:"img_text", image_urls:[access_url]}
 ```
-拿到 task_id 后，**立即发消息给用户**：
+从 `data.tasks[0].task_id` 取任务 ID，**立即发消息给用户**：
 > ✅ 图片已保存，正在识别内容，稍后告诉你结果...
 
 **步骤 4**：后台轮询
