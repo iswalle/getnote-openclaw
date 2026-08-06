@@ -1,211 +1,124 @@
 ---
-name: 得到大脑（Get笔记）
-description: |
-  得到大脑（Get笔记）- 保存、搜索、管理个人笔记和知识库。
-
-  **当以下情况时使用此 Skill**：
-  (1) 用户要保存内容到笔记：发链接、发图片、说「记一下」「存到笔记」「保存」「收藏」
-  (2) 用户要搜索或查看笔记：「搜一下」「找找笔记」「最近存了什么」「看看原文」
-  (3) 用户要管理知识库或标签：「加到知识库」「建知识库」「加标签」「删标签」
-  (4) 用户要配置 得到大脑（Get笔记）：「配置笔记」「连接得到大脑（Get笔记）」
-metadata: {"openclaw": {"requires": {}, "optionalEnv": ["GETNOTE_API_KEY", "GETNOTE_CLIENT_ID", "GETNOTE_OWNER_ID"], "baseUrl": "https://openapi.biji.com", "homepage": "https://biji.com"}}
+name: getnote
+description: 使用得到大脑保存、查询、查看、整理笔记和知识库。用户说“记一下”“保存这个链接/图片”“最近有哪些笔记”“帮我找笔记”“查看这条笔记”“整理到知识库”或需要连接得到大脑时使用。所有真实操作必须通过 getnote CLI 完成，禁止自己拼接 OpenAPI 请求或编造执行结果。
+metadata:
+  {
+    "openclaw":
+      {
+        "emoji": "🧠",
+        "requires": { "bins": ["getnote"] },
+        "install":
+          [
+            {
+              "id": "node",
+              "kind": "node",
+              "package": "@getnote/cli",
+              "bins": ["getnote"],
+              "label": "安装得到大脑 CLI",
+            },
+          ],
+      },
+  }
 ---
 
-# 得到大脑（Get笔记）Skill
+# 得到大脑
 
-## ⚠️ Agent 必读约束
+你负责理解用户想做什么；`getnote` CLI 负责确定地执行。不要直接调用 OpenAPI，不要自己处理 API Key、雪花 ID、图片上传或异步轮询。
 
-### 🌐 Base URL
-```
-${GETNOTE_API_URL:-https://openapi.biji.com}
-```
-默认使用 `https://openapi.biji.com`。仅在用户或运行环境明确配置 `GETNOTE_API_URL` 时使用覆盖值；不要把网页域名 `biji.com` 当成 API 地址。
+## 首次使用
 
-### 🔑 认证
-请求头：
-- `Authorization: $GETNOTE_API_KEY`（格式：`gk_live_xxx`）
-- `X-Client-ID: $GETNOTE_CLIENT_ID`（格式：`cli_xxx`）
+1. 先运行 `getnote doctor -o json`。
+2. 如果系统找不到 `getnote`，或当前版本没有 `doctor`，先向用户说明“需要安装或升级得到大脑执行组件”；用户确认后运行 `npm install -g @getnote/cli@latest`，再重新检查。OpenClaw 若已按 metadata 自动补齐依赖，则不重复安装。
+3. 如果 `auth` 未通过，运行 `getnote auth login`，把 CLI 输出的授权方式交给用户完成。
+4. 再运行 `getnote doctor -o json`。只有 `auth` 与 `api` 均通过，才能声称连接成功。
+5. 如需确认当前版本支持什么，运行 `getnote capabilities -o json`。
 
-**每次调用 API 前先检查 `$GETNOTE_API_KEY` 是否存在**。若不存在，提示用户运行 `/note config` 完成配置，配置完成后再继续执行用户原本的请求。
+不得向用户索要或展示 API Key。不得把“已安装 Skill”说成“已完成账号授权”。
 
-Scope 权限：`note.content.read`（读取）、`note.content.write`（写入）、`note.recall.read`（搜索）。完整列表见 [references/api-details.md](references/api-details.md#scope-权限列表)。
+## 执行约定
 
-### 🔢 笔记 ID 处理规则（重要！）
-笔记 ID 是 **64 位整数（int64）**，超出 JavaScript `Number.MAX_SAFE_INTEGER`，直接 `JSON.parse` 会**静默丢失精度**。
+- 机器可读调用统一添加 `-o json`；以 JSON 中的 `success` 和错误信息为准。
+- 笔记 ID 始终当字符串原样传给 CLI，不转成浮点数。
+- 保存成功后必须返回 CLI 给出的 `note_url`；没有 `note_url` 时只报告真实状态，不自行拼链接。
+- 搜索和列表结果必须保留标题、笔记 ID 与 `note_url`，方便用户核对和打开。
+- 用户未明确要公开分享时，只返回私有笔记链接，不调用 `note share`。
+- 删除、覆盖正文、取消分享等不可逆或高风险操作，执行前向用户确认。
+- API 或任务失败时说明真实原因；不要用模型推测补全结果，也不要把“处理中”说成“已完成”。
 
-**正确做法**：始终把 ID 当字符串处理，在 `JSON.parse` 之前替换：
-```javascript
-const safe = text
-  .replace(/"(id|note_id|parent_id|follow_id|live_id|next_cursor)"\s*:\s*(\d{16,})/g, '"$1":"$2"')
-  .replace(/([:[,]\s*)(-?\d{16,})(?=\s*[,}\]])/g, '$1"$2"');
-// 注：next_cursor 已不需要处理，翻页请直接使用响应中的 cursor（string）字段
-const data = JSON.parse(safe);
-```
-Python / Go 等语言原生支持大整数，无此问题。
+## 最常用操作
 
-### 🔒 安全规则
-- 笔记数据属于用户隐私，不在群聊中主动展示笔记内容
-- 若配置了 `GETNOTE_OWNER_ID`，检查 sender_id 是否匹配；不匹配时回复「抱歉，笔记是私密的，我无法操作」
-- API 返回 `error.reason: "not_member"` 或错误码 `10201` 时，引导开通会员：https://www.biji.com/checkout?product_alias=9Ab36BB3ZD&spm=openapi_skill
-- 创建笔记建议间隔 1 分钟以上，避免触发限流
+### 保存
 
-### 🚫 反幻觉边界（严格禁止）
-- **禁止编造 note_id**：所有 note_id 必须来自 API 响应，不得凭空构造或推测
-- **禁止跳过轮询**：链接/图片笔记返回 `task_id` 后，**必须**轮询 `/task/progress` 直到 `success` 或 `failed`，不得假设任务已完成
-- **禁止伪造 API 响应**：不得在未实际调用 API 的情况下告诉用户「已保存」「已删除」
-- **禁止忽略错误码**：API 返回 `success: false` 时必须处理，不得静默吞掉
-- **禁止只看 HTTP 状态码**：即使 HTTP 为 200，只要 `success: false` 就是失败；优先依据 `error.reason` 和 `error.retryable` 决定是否重试
-- **禁止混淆内链和分享链接**：`biji.com/note/{id}` 是内链（仅笔记主人可见），`share_note/{id}` 是分享链接（公开可访问），两者不可互换
-
-### 🔄 失败重试策略
-
-**异步任务失败**（链接/图片保存）：
-1. `/task/progress` 返回 `status: "failed"` 时，向用户报告失败原因（`error_msg`）
-2. 自动重试一次：用相同参数重新调用 `/note/save`，获取新 `task_id` 并重新轮询
-3. 二次失败则停止，告知用户「保存失败，请稍后重试或检查链接是否可访问」
-
-**网络/服务错误**（HTTP 5xx 或超时）：
-1. 等待 5 秒后重试一次
-2. 仍然失败则报告错误，附上 `request_id` 方便排查
-
-**限流**（错误码 `10202` 或 HTTP 429）：
-1. 读取响应中的 `rate_limit.retry_after` 字段
-2. 等待指定秒数后重试
-3. 无 `retry_after` 时默认等待 10 秒
-
----
-
-## 执行流程概览
-
-```
-用户意图 → 路由匹配 → 读取 references 文档 → 构造 API 请求 → 执行
-                                                                   ↓
-                                              ┌─ 同步操作 ──→ 验证响应 → 返回结果
-                                              │
-                                              └─ 异步操作 ──→ 轮询进度 ──→ success → 返回结果
-                                                                 ↓            ↓
-                                                            10-30s 间隔    failed → 自动重试(1次)
-                                                                              ↓
-                                                                         二次失败 → 报告用户
+```bash
+getnote save "用户给出的文字、URL 或本地图片路径" -o json
 ```
 
-**关键原则**：
-- **模型输出 ≠ 最终结果**：API 调用后必须验证响应，确认 `success: true` 且数据完整
-- **状态来自 API**：所有笔记状态（是否存在、内容、标签等）以 API 返回为准，不依赖上下文记忆
-- **最小操作原则**：更新笔记时只传需要修改的字段，不重写整篇内容
+可选参数：
 
----
+- `--title "标题"`
+- `--tag "标签"`，可重复
+- `--topic-id "知识库ID"`
+- `--parent-id "父笔记ID"`
+- `--idempotency-key "本次稳定请求标识"`
 
-## 指令路由表
+同一次保存重试必须复用相同的 `--idempotency-key`。不要把多段长内容硬塞进命令行；长内容优先使用 CLI 已支持的安全输入方式。
 
-> 匹配指令后，用 **read 工具**读取对应的 `references/xxx.md` 获取完整 API 文档。
+### 最近笔记
 
-| 指令 | 角色 | 说明 | 详细文档 |
-|------|------|------|---------|
-| `/note save` 或「记一下」| 📝 速记员 | 保存文本/链接/图片笔记（含异步轮询流程） | [references/save.md](references/save.md) |
-| `/note search` 或「搜一下」| 🔍 搜索官 | 全局语义搜索 + 知识库语义搜索 | [references/search.md](references/search.md) |
-| `/note list` 或「最近的笔记」| 📋 整理师 | 浏览列表、查看详情、更新、删除 | [references/list.md](references/list.md) |
-| `/note kb` 或「知识库」| 📚 图书管理员 | 知识库 CRUD + 博主订阅 + 直播订阅 | [references/knowledge.md](references/knowledge.md) |
-| `/note tag` 或「加标签」| 🏷️ 标签员 | 添加/删除标签 | [references/tags.md](references/tags.md) |
-| `/note config` 或「配置笔记」| ⚙️ 配置 | 配置 API Key 和 Client ID | [references/oauth.md](references/oauth.md) |
-
----
-
-## 自然语言路由
-
-```
-包含 URL（`biji.com/note/share_note/*` 或 `d.biji.com/*` 短链）  → /note save（link 模式，同步返回 note_id）
-包含 URL（`biji.com/note/{note_id}` 内链）    → /note list（查看详情），如需在正文引用其他笔记请使用 `https://biji.com/note/{note_id}` 格式内链（**默认用内链，除非用户明确要求分享**）
-其他 URL                   → /note save（link 模式，异步返回 task_id）
-包含图片                    → /note save（image 模式）
-「记/存/保存/收藏」          → /note save（text 模式）
-「搜/找找/有没有 XX」        → /note search
-「最近/列表/看看/查笔记」    → /note list
-「改/更新/编辑笔记」         → /note list（更新笔记）
-「知识库」相关              → /note kb
-「标签」相关                → /note tag
-「配置/授权/连接笔记」       → /note config
+```bash
+getnote notes --limit 20 -o json
 ```
 
-**决策原则**：优先匹配最具体的意图。有 URL 就是 `/save link`，有图片就是 `/save image`，不确定时询问用户。
+用户指定数量时使用 `--limit`。需要下一页时使用返回的字符串 `cursor`，不要使用旧式 `since_id`。
 
----
+### 查看详情
 
-## API 路由表
-
-> ⚠️ **构造请求时必须使用下表中的完整路径**，Base URL 为 `https://openapi.biji.com`。如果收到 404，说明路径不对，请对照此表检查。
-
-### 笔记
-
-| 方法 | 路径 | 说明 | 详细文档 |
-|------|------|------|----------|
-| POST | `/open/api/v1/resource/note/save` | 新建笔记（文本/链接/图片） | [save.md](references/save.md) |
-| POST | `/open/api/v1/resource/note/task/progress` | 查询异步任务进度 | [save.md](references/save.md) |
-| GET  | `/open/api/v1/resource/note/list` | 笔记列表（分页） | [list.md](references/list.md) |
-| GET  | `/open/api/v1/resource/note/detail` | 笔记详情 | [list.md](references/list.md) |
-| POST | `/open/api/v1/resource/note/update` | 更新笔记 | [list.md](references/list.md) |
-| POST | `/open/api/v1/resource/note/delete` | 删除笔记 | [list.md](references/list.md) |
-| POST | `/open/api/v1/resource/note/sharing` | 创建笔记分享链接 | [list.md](references/list.md) |
-| POST | `/open/api/v1/resource/note/tags/add` | 添加标签 | [tags.md](references/tags.md) |
-| POST | `/open/api/v1/resource/note/tags/delete` | 删除标签 | [tags.md](references/tags.md) |
-| GET  | `/open/api/v1/resource/image/upload_token` | 获取图片上传凭证 | [save.md](references/save.md) |
+```bash
+getnote note "笔记ID" -o json
+```
 
 ### 搜索
 
-| 方法 | 路径 | 说明 | 详细文档 |
-|------|------|------|----------|
-| POST | `/open/api/v1/resource/recall` | 全局语义搜索 | [search.md](references/search.md) |
-| POST | `/open/api/v1/resource/recall/knowledge` | 知识库语义搜索 | [search.md](references/search.md) |
-
-### 知识库
-
-| 方法 | 路径 | 说明 | 详细文档 |
-|------|------|------|----------|
-| GET  | `/open/api/v1/resource/knowledge/list` | 我的知识库列表 | [knowledge.md](references/knowledge.md) |
-| GET  | `/open/api/v1/resource/knowledge/subscribe/list` | 订阅知识库列表 | [knowledge.md](references/knowledge.md) |
-| POST | `/open/api/v1/resource/knowledge/create` | 创建知识库 | [knowledge.md](references/knowledge.md) |
-| GET  | `/open/api/v1/resource/knowledge/notes` | 知识库笔记列表 | [knowledge.md](references/knowledge.md) |
-| POST | `/open/api/v1/resource/knowledge/note/batch-add` | 添加笔记到知识库 | [knowledge.md](references/knowledge.md) |
-| POST | `/open/api/v1/resource/knowledge/note/remove` | 从知识库移除笔记 | [knowledge.md](references/knowledge.md) |
-| GET  | `/open/api/v1/resource/knowledge/bloggers` | 知识库博主列表 | [knowledge.md](references/knowledge.md) |
-| GET  | `/open/api/v1/resource/knowledge/blogger/contents` | 博主内容列表 | [knowledge.md](references/knowledge.md) |
-| GET  | `/open/api/v1/resource/knowledge/blogger/content/detail` | 博主内容详情 | [knowledge.md](references/knowledge.md) |
-| GET  | `/open/api/v1/resource/knowledge/lives` | 知识库直播列表 | [knowledge.md](references/knowledge.md) |
-| GET  | `/open/api/v1/resource/knowledge/live/detail` | 直播详情 | [knowledge.md](references/knowledge.md) |
-| POST | `/open/api/v1/resource/knowledge/live/follow` | 关注直播 | [knowledge.md](references/knowledge.md) |
-
----
-
-## 通用错误处理
-
-```json
-{
-  "success": false,
-  "error": {
-    "code": 10000,
-    "message": "参数错误",
-    "reason": "invalid_request",
-    "retryable": false,
-    "field": "parent_id",
-    "constraint": "non_negative_decimal_integer",
-    "expected_type": "decimal string or JSON integer"
-  },
-  "request_id": "xxx"
-}
+```bash
+getnote search "用户要找的内容" --limit 10 -o json
 ```
 
-| 错误码 | 说明 | 处理方式 |
-|--------|------|---------|
-| 10000 | 参数错误 | 检查请求参数 |
-| 10004 | 未授权 | 检查 API Key 和 Client ID，或重新授权 |
-| 10100 | 通用数据不存在 | 确认资源 ID 正确 |
-| 10500 | 笔记不存在 | 确认 note_id 正确，禁止编造 ID |
-| 10502 | 幂等键冲突 | 同一个键只能对应完全相同的请求 |
-| 10503 | 相同请求处理中 | 保持请求不变，稍后使用同一幂等键重试 |
-| 10504 | 幂等服务暂不可用 | 保持请求不变，稍后使用同一幂等键重试 |
-| 10201 | 非会员 | 引导开通：https://www.biji.com/checkout?product_alias=9Ab36BB3ZD&spm=openapi_skill |
-| 10202 | QPS 限流 | 降低频率，查看 rate_limit 字段 |
-| 30000 | 服务调用失败 | 稍后重试 |
-| 50000 | 系统错误 | 稍后重试 |
+限定知识库时添加 `--kb "知识库ID"`。
 
-详细错误码和限流结构见 [references/api-details.md](references/api-details.md)。
+## 其他能力
+
+需要更新、删除、分享、标签或知识库操作时，先运行对应命令的 `--help`，再按 CLI 的真实参数执行：
+
+```bash
+getnote note --help
+getnote tag --help
+getnote kbs --help
+getnote kb --help
+```
+
+不要根据记忆猜参数。完整且稳定的命令参考见 [references/commands.md](references/commands.md)。
+
+## 回复用户的格式
+
+成功时简洁说明：
+
+```text
+已保存《标题》
+查看笔记：https://www.biji.com/note/真实ID
+```
+
+列表或搜索时按相关性或时间列出，最多先展示用户要求的数量；每条都带标题和真实链接。
+
+失败时说明：
+
+1. 哪一步失败；
+2. CLI 返回的原因；
+3. 用户可以采取的下一步；
+4. 有 `request_id` 时一并保留，便于排查。
+
+## 严格禁止
+
+- 禁止使用 `curl`、Python 或 JavaScript 绕过 CLI 直连得到大脑 OpenAPI。
+- 禁止编造 note_id、note_url、标题、保存成功或搜索结果。
+- 禁止在群聊中主动展开用户的私密笔记正文。
+- 禁止为了“看起来成功”而吞掉错误或跳过异步任务完成确认。
