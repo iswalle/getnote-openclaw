@@ -19,6 +19,15 @@
 | **🎤 查看原文** | 按需读取链接原文、录音转写和笔记详情，不把摘要假装成原文 |
 | **🔗 笔记内链与分享** | 用笔记内链串联内容；只有明确确认后才创建公开分享链接 |
 
+### 完整能力范围
+
+- **保存与维护**：保存文字、长文、链接和图片，查看异步任务，继续更新正文、标题和标签；
+- **查找与阅读**：最近笔记、语义搜索、笔记详情、链接原文、录音转写、附件、时间线和快捷笔记；
+- **知识整理**：默认、书籍、客户档案和团队知识库，目录创建/移动/删除，以及把笔记加入指定目录；
+- **内容订阅**：订阅抖音博主，查看博主内容，也保留直播订阅与直播总结能力；
+- **关系与协作**：父子笔记、笔记内链、私有链接和经用户确认后的公开分享；
+- **可靠执行**：字符串雪花 ID、长文本安全输入、异步完成态、幂等重试、结构化错误和环境正确链接。
+
 ## 💡 常见使用场景
 
 ### 随手记录
@@ -106,9 +115,16 @@ Skill 负责教会 AI 如何使用，CLI 负责真正执行。已经安装 CLI �
 | 保存文字、链接或图片 | `getnote save` |
 | 查看最近笔记 | `getnote notes` |
 | 查看笔记详情 | `getnote note` |
+| 读取链接原文或文字原文 | `getnote note original` |
+| 读取录音、会议或课堂转写 | `getnote note transcript` |
+| 列出图片、音频和文件附件 | `getnote note attachments` |
+| 读取录音或会议时间线 | `getnote note timeline` |
+| 读取录音快捷笔记 | `getnote note quick-note` |
 | 搜索笔记 | `getnote search` |
 | 查看自有 / 订阅知识库 | `getnote kbs` / `getnote kbs-sub` |
 | 管理知识库 | `getnote kb` |
+| 管理知识库文件夹 | `getnote kb directories` / `directory-create` / `directory-update` / `directory-delete` |
+| 订阅抖音博主 | `getnote kb blogger-follow` |
 | 管理标签 | `getnote tag` |
 | 查看配额 | `getnote quota` |
 | 登录与诊断 | `getnote auth` / `getnote doctor` |
@@ -134,7 +150,10 @@ getnote kb --help
 
 创建时还支持：
 
-- 保存到普通（DEFAULT）、书籍（BOOKSPACE）或客户档案（CUSTOMER）知识库；
+- 保存到普通（DEFAULT）、书籍（BOOKSPACE）、客户档案（CUSTOMER）或团队（TEAMSPACE）知识库；
+- 浏览和管理知识库文件夹，并在加入笔记时直接选择目标文件夹；
+- 在知识库中订阅抖音博主，继续读取博主内容列表、摘要与原文；
+- 直接读取笔记附件、录音/会议时间线和快捷笔记，不必让 AI 从完整详情中猜字段；
 - 使用字符串父笔记 ID 创建子笔记；
 - 使用幂等键避免网络重试造成重复笔记；
 - 返回与当前环境一致的私有笔记链接。

@@ -60,6 +60,7 @@ for command in (
     "note delete",
     "note share",
     "kb remove",
+    "kb directory-delete",
 ):
     if confirmation_flags.get(command) != "--yes":
         fail(f"CLI does not expose the --yes confirmation contract for {command}")
@@ -67,8 +68,25 @@ for command in (
 if guarantees.get("safe_long_input") != ["--content-file", "--stdin"]:
     fail("CLI does not expose both safe long-input paths")
 
-if guarantees.get("knowledge_scopes") != ["DEFAULT", "BOOKSPACE", "CUSTOMER"]:
-    fail("CLI does not preserve DEFAULT, BOOKSPACE and CUSTOMER knowledge scopes")
+if guarantees.get("knowledge_scopes") != ["DEFAULT", "BOOKSPACE", "CUSTOMER", "TEAMSPACE"]:
+    fail("CLI does not expose all four knowledge scopes")
+
+if guarantees.get("knowledge_features") != [
+    "directories",
+    "add_to_directory",
+    "douyin_blogger_subscription",
+]:
+    fail("CLI does not expose the complete knowledge-management contract")
+
+if guarantees.get("note_detail_views") != [
+    "summary",
+    "original",
+    "transcript",
+    "attachments",
+    "timeline",
+    "quick_note",
+]:
+    fail("CLI does not expose all first-class note detail views")
 
 limits = guarantees.get("limits", {})
 if limits.get("search_results") != 10 or limits.get("kb_note_batch") != 20:

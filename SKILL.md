@@ -42,14 +42,30 @@ metadata:
 | 查询异步保存任务 | `getnote task` |
 | 查看最近笔记 | `getnote notes` |
 | 查看笔记详情 | `getnote note` |
+| 直接读取链接原文、文字原文或录音转写 | `getnote note original` / `getnote note transcript` |
+| 读取附件、录音/会议时间线或快捷笔记 | `getnote note attachments` / `getnote note timeline` / `getnote note quick-note` |
 | 修改、删除或公开分享 | `getnote note update` / `getnote note delete` / `getnote note share` |
 | 语义搜索 | `getnote search` |
 | 自有或订阅知识库 | `getnote kbs` / `getnote kbs-sub` |
 | 查看、创建或维护知识库 | `getnote kb`；继续操作前运行 `getnote kb --help` |
+| 浏览、创建、移动或删除知识库目录 | `getnote kb directories` / `getnote kb directory-create` / `getnote kb directory-update` / `getnote kb directory-delete` |
+| 把笔记加入指定知识库目录 | `getnote kb add`；需要目录时按 `--help` 使用目录参数 |
+| 订阅抖音博主 | `getnote kb blogger-follow` |
 | 查看、添加或删除标签 | `getnote tag`；继续操作前运行 `getnote tag --help` |
 | 查看配额 | `getnote quota` |
 | 登录、状态和退出 | `getnote auth` |
 | 诊断、版本和升级 | `getnote doctor` / `getnote version` / `getnote update` |
+
+## 自然语言路由优先级
+
+按最具体的意图匹配，避免把不同任务都降级成搜索或完整详情：
+
+1. 用户给出本地图片并要求保存，走图片保存；给出网页 URL 并要求保存，走链接保存；其余“记一下”走文字保存。具体参数从 `getnote save --help` 读取。
+2. “最近、列表、有哪些笔记”走 `getnote notes`；“找、搜、关于某主题”走 `getnote search`；已给出笔记 ID 或私有笔记链接时走 `getnote note`。
+3. “原文”结合笔记类型判断：网页或文字笔记走 `getnote note original`，录音、会议或课堂走 `getnote note transcript`；不确定类型时先读取详情再选择，不能拿摘要冒充原文。
+4. “附件、图片、音频或文件”走 `getnote note attachments`；“时间点、分段、时间线”走 `getnote note timeline`；“快捷笔记”走 `getnote note quick-note`。
+5. “放进某知识库/某文件夹”先读取真实知识库和目录，再执行加入；团队、书籍、客户档案和默认知识库均以 CLI 返回的 `scope` 为准。
+6. 用户给出抖音博主主页并要求持续订阅，走 `getnote kb blogger-follow`；只想找某条博主内容时先查询，不创建订阅。
 
 ## 执行规则
 
@@ -60,8 +76,10 @@ metadata:
 5. 链接和图片保存必须等待 CLI 给出最终状态；处理中不能说成保存成功。
 6. 同一次创建的安全重试复用原 `--idempotency-key`；状态不确定时先核实，不要重复写入。
 7. 不擅自添加知识库、父笔记、标签或公开分享参数。
-8. CLI 失败时保留真实原因和 `request_id`，只在明确可重试时重试。
-9. 不向用户索要或展示 API Key、Authorization、Cookie 或完整凭证。
+8. 用户提到团队知识库、书籍或客户档案时，先从 CLI 返回的 `scope` 和真实列表中选择，不要假设只有默认知识库。
+9. CLI 失败时保留真实原因和 `request_id`，只在明确可重试时重试。
+10. 不向用户索要或展示 API Key、Authorization、Cookie 或完整凭证。
+11. 会议待办当前仍属于总结正文，不要声称存在结构化待办字段。
 
 ## 必须确认
 
