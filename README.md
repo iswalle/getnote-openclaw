@@ -8,6 +8,21 @@
 - `@getnote/cli`：负责授权、参数校验、图片上传、异步轮询、错误恢复和真实结果。
 - OpenAPI：仍是统一的数据与权限底座，但不再让模型直接拼请求。
 
+与把 CLI 运行时代码直接打进 Skill 的方案不同，本仓库只维护意图导航、操作边界和结果解释，运行时统一使用独立发布的 `@getnote/cli`。这样独立 Skill、CLI 内置原子 Skills 和人工命令行不会各自维护一套 API 实现。
+
+## Skill 结构
+
+- `SKILL.md`：总入口、意图路由、确认规则和执行协议；
+- `references/connection-and-upgrade.md`：安装、授权、诊断和升级；
+- `references/note-operations.md`：保存、列表、详情、修改、删除和分享；
+- `references/search-and-results.md`：语义搜索和结果展示；
+- `references/knowledge-bases.md`：自有、订阅知识库、博主与直播；
+- `references/tags-and-quota.md`：标签与配额；
+- `references/errors-and-output.md`：结构化结果、错误和安全重试；
+- `references/commands.md`：CLI contract 2.0 的完整命令索引。
+
+正文只保留跨任务都要遵守的规则，执行具体任务时再读取对应 reference，避免一次把所有命令和参数塞给模型。
+
 ## 安装
 
 ### WorkBuddy
@@ -43,4 +58,4 @@ getnote capabilities -o json
 getnote doctor -o json
 ```
 
-当前 2.0 分支用于本地联调，尚未发布到 ClawHub。
+Skill 2.0 要求 `@getnote/cli` 版本不低于 1.4.0，并以 CLI 输出的 contract 2.0 为执行契约。发布前必须同时验证 CLI、Skill 和真实账号只读调用。

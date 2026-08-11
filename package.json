@@ -1,6 +1,6 @@
 {
   "name": "getnote",
-  "version": "2.0.0-rc.1",
+  "version": "2.0.0",
   "description": "得到大脑 Skill 2.0 — Skill 理解意图，CLI 确定执行，稳定保存、查询和整理笔记。",
   "license": "MIT-0",
   "author": "get-notes@luojilab.com",
