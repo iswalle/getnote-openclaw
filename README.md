@@ -12,16 +12,12 @@
 
 ## Skill 结构
 
-- `SKILL.md`：总入口、意图路由、确认规则和执行协议；
-- `references/connection-and-upgrade.md`：安装、授权、诊断和升级；
-- `references/note-operations.md`：保存、列表、详情、修改、删除和分享；
-- `references/search-and-results.md`：语义搜索和结果展示；
-- `references/knowledge-bases.md`：自有、订阅知识库、博主与直播；
-- `references/tags-and-quota.md`：标签与配额；
-- `references/errors-and-output.md`：结构化结果、错误和安全重试；
-- `references/commands.md`：CLI contract 2.0 的完整命令索引。
+- `SKILL.md`：唯一运行时文档，只保留意图路由、执行规则和安全边界；
+- `scripts/verify_cli_contract.py`：开发时检查 Skill 提到的命令是否真实存在；
+- `.github/workflows/validate.yml`：PR 阶段使用已发布 CLI 自动执行契约检查；
+- `.clawhubignore`：发布时排除 README、开发脚本和仓库配置，最终 Skill 包只包含 `SKILL.md` 与许可证。
 
-正文只保留跨任务都要遵守的规则，执行具体任务时再读取对应 reference，避免一次把所有命令和参数塞给模型。
+命令参数、输出字段和可用子命令不在 Skill 中复制，统一以 CLI 的 `--help` 与 `capabilities` 为事实源。
 
 ## 安装
 
@@ -54,7 +50,7 @@ getnote doctor -o json
 
 ```bash
 python3 /Users/walle/.codex/skills/.system/skill-creator/scripts/quick_validate.py .
-getnote capabilities -o json
+python3 scripts/verify_cli_contract.py
 getnote doctor -o json
 ```
 
