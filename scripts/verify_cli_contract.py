@@ -43,6 +43,37 @@ except json.JSONDecodeError as exc:
 if capabilities.get("contract_version") != "2.0":
     fail(f"expected contract 2.0, got {capabilities.get('contract_version')!r}")
 
+guarantees = capabilities.get("guarantees", {})
+for key in (
+    "ids_as_strings",
+    "structured_business_errors",
+    "final_async_save_result",
+    "environment_note_url",
+    "image_format_validation",
+):
+    if guarantees.get(key) is not True:
+        fail(f"CLI does not guarantee {key}")
+
+confirmation_flags = guarantees.get("confirmation_flags", {})
+for command in (
+    "note update content_or_tags",
+    "note delete",
+    "note share",
+    "kb remove",
+):
+    if confirmation_flags.get(command) != "--yes":
+        fail(f"CLI does not expose the --yes confirmation contract for {command}")
+
+if guarantees.get("safe_long_input") != ["--content-file", "--stdin"]:
+    fail("CLI does not expose both safe long-input paths")
+
+if guarantees.get("knowledge_scopes") != ["DEFAULT", "BOOKSPACE", "CUSTOMER"]:
+    fail("CLI does not preserve DEFAULT, BOOKSPACE and CUSTOMER knowledge scopes")
+
+limits = guarantees.get("limits", {})
+if limits.get("search_results") != 10 or limits.get("kb_note_batch") != 20:
+    fail("CLI does not preserve search and knowledge-base batch limits")
+
 available = {
     command
     for commands in capabilities.get("commands", {}).values()
