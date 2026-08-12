@@ -1,5 +1,6 @@
 README.md
 package.json
 .github/
-scripts/
+scripts/*.py
+scripts/README.md
 dist/

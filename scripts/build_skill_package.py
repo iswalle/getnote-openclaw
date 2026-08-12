@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Build the minimal uploadable GetNote Skill archive.
+"""Build the uploadable GetNote Skill archive.
 
-The archive intentionally contains only runtime Skill files.  Developer
-scripts, GitHub workflows and human-facing README material remain in the
-repository and are excluded from the package uploaded to an AI host.
+The archive contains the main Skill, five domain Skills and the runtime
+installer. Developer-only validation scripts, GitHub workflows and README
+material remain in the repository and are not shipped to an AI host.
 """
 
 from __future__ import annotations
@@ -24,6 +24,9 @@ def main() -> int:
     STAGE.mkdir(parents=True)
     shutil.copy2(ROOT / "SKILL.md", STAGE / "SKILL.md")
     shutil.copytree(ROOT / "skills", STAGE / "skills")
+    runtime_scripts = STAGE / "scripts"
+    runtime_scripts.mkdir()
+    shutil.copy2(ROOT / "scripts" / "install.sh", runtime_scripts / "install.sh")
 
     if ARCHIVE.exists():
         ARCHIVE.unlink()

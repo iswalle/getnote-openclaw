@@ -6,28 +6,18 @@ metadata:
     "openclaw":
       {
         "emoji": "🧠",
-        "requires": { "bins": ["getnote"] },
-        "install":
-          [
-            {
-              "id": "node",
-              "kind": "node",
-              "package": "@getnote/cli",
-              "bins": ["getnote", "gnote"],
-              "label": "安装得到大脑执行组件",
-            },
-          ],
+        "requires": { "bins": ["node", "npm"] },
       },
   }
 ---
 
 # 得到大脑
 
-本 Skill 是得到大脑的总入口，负责安装官方执行组件、连接账号、选择正确的领域 Skill，并在领域任务之间保持统一的安全边界。不要自行拼 OpenAPI 请求，也不要把领域命令重新堆回主 Skill。
+本 Skill 是得到大脑的总入口，负责安装和升级官方执行组件、连接账号、选择正确的领域 Skill，并在领域任务之间保持统一的安全边界。不要自行拼 OpenAPI 请求，也不要把领域命令重新堆回主 Skill。
 
 ## 首次使用
 
-1. 运行 `command -v getnote`。缺少官方执行组件时先检查 Node.js 20+，然后由 Agent 执行 `npm install -g @getnote/cli@latest`；不要把依赖安装甩给用户手工完成。
+1. 运行 `bash scripts/install.sh --ensure`。它会检查 Node.js、确保官方 `@getnote/cli` 可执行；缺失时由 Agent 安装，不把依赖安装甩给用户手工完成。
 2. 执行 `getnote version` 和 `getnote auth status`。尚未授权时运行 `getnote auth login` 并让用户只在浏览器确认；不得索要 API Key、Cookie 或 Authorization。
 3. 执行 `getnote doctor -o json`。只有 `success=true` 且 `cli`、`auth`、`api` 三项通过，才能说已经连接。
 4. 独立 Skill 包已经包含 5 个领域 Skill。对于 Codex、Claude Code、Cursor 等本地 Agent，可运行 `getnote setup` 把 CLI 同源的领域 Skill 注册到平台；不要重复安装另一套实现。
@@ -57,4 +47,4 @@ metadata:
 
 ## 用户要求更新
 
-用户说“帮我更新得到大脑”已经构成更新授权。自动完成可处理的更新、同步领域 Skill、运行诊断并验证读取能力；只有平台必须人工确认时才让用户完成唯一必要的点击。
+用户说“帮我更新得到大脑”已经构成更新授权。运行 `bash scripts/install.sh --update`，它会升级 CLI 并刷新当前 Skill 包；随后同步领域 Skill、运行诊断并验证读取能力。只有平台必须人工确认时才让用户完成唯一必要的点击。

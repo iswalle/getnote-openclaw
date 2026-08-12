@@ -133,7 +133,8 @@ main_text = MAIN_SKILL.read_text(encoding="utf-8")
 if "/open/api/" in main_text:
     fail("main Skill must not contain OpenAPI paths")
 for required in (
-    "npm install -g @getnote/cli@latest",
+    "bash scripts/install.sh --ensure",
+    "bash scripts/install.sh --update",
     "getnote auth login",
     "getnote doctor -o json",
 ):
@@ -147,12 +148,25 @@ for path in DOMAIN_SKILLS:
 if not DOMAIN_SKILLS:
     fail("no domain Skills found")
 
+runtime_installer = ROOT / "scripts" / "install.sh"
+if not runtime_installer.is_file():
+    fail("independent Skill is missing scripts/install.sh")
+installer_text = runtime_installer.read_text(encoding="utf-8")
+for required in ("@getnote/cli", "--ensure", "--update", "getnote version"):
+    if required not in installer_text:
+        fail(f"runtime installer is missing {required!r}")
+
 mentioned: set[str] = set()
 for skill_path in DOMAIN_SKILLS:
     skill_text = skill_path.read_text(encoding="utf-8")
     if "/open/api/" in skill_text:
         fail(f"{skill_path} must not contain OpenAPI paths")
-    if "结果与回复格式" not in skill_text and "命令结果与回复格式" not in skill_text and "结果与下一步" not in skill_text:
+    if (
+        "结果与回复格式" not in skill_text
+        and "命令结果与回复格式" not in skill_text
+        and "结果与下一步" not in skill_text
+        and "命令结果与用户呈现" not in skill_text
+    ):
         fail(f"{skill_path} does not define per-command result guidance")
     for match in re.finditer(r"`(?:getnote|gnote)\s+([^`]+)`", skill_text):
         tokens = match.group(1).split()
