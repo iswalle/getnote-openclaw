@@ -41,8 +41,8 @@ try:
 except json.JSONDecodeError as exc:
     fail(f"capabilities is not JSON: {exc}")
 
-if capabilities.get("contract_version") != "2.0":
-    fail(f"expected contract 2.0, got {capabilities.get('contract_version')!r}")
+if capabilities.get("contract_version") != "2.1":
+    fail(f"expected contract 2.1, got {capabilities.get('contract_version')!r}")
 
 result_contracts = capabilities.get("result_contracts", {})
 for key in (
@@ -114,6 +114,11 @@ available = {
     for commands in capabilities.get("commands", {}).values()
     for command in commands
 }
+command_results = capabilities.get("command_results", {})
+for command in sorted(available - {"auth", "tag"}):
+    result = command_results.get(command)
+    if not isinstance(result, dict) or not result.get("success_fields"):
+        fail(f"CLI does not expose per-command result contract for {command!r}")
 aliases = capabilities.get("command_aliases", {})
 if aliases.get("gnote") != "getnote" or aliases.get("kb dir") != "kb directories":
     fail("CLI does not expose the compact gnote / kb dir aliases")
@@ -147,8 +152,8 @@ for skill_path in DOMAIN_SKILLS:
     skill_text = skill_path.read_text(encoding="utf-8")
     if "/open/api/" in skill_text:
         fail(f"{skill_path} must not contain OpenAPI paths")
-    if "## 结果契约" not in skill_text:
-        fail(f"{skill_path} does not define a result contract")
+    if "结果与回复格式" not in skill_text and "命令结果与回复格式" not in skill_text and "结果与下一步" not in skill_text:
+        fail(f"{skill_path} does not define per-command result guidance")
     for match in re.finditer(r"`(?:getnote|gnote)\s+([^`]+)`", skill_text):
         tokens = match.group(1).split()
         if not tokens or tokens[0].startswith(("<", "--")):
@@ -175,6 +180,8 @@ if uncovered:
     fail("CLI commands missing from domain Skills: " + ", ".join(uncovered))
 
 for command in sorted(mentioned):
+    if command not in {"auth", "tag"} and command not in command_results:
+        fail(f"documented command has no per-command result contract: {command}")
     result = run(*command.split(), "--help")
     if result.returncode != 0:
         fail(f"{command} --help exited {result.returncode}: {result.stdout.strip()}")
@@ -182,5 +189,5 @@ for command in sorted(mentioned):
         fail(f"{command} has incomplete help")
 
 print(
-    f"contract 2.0 verified: {len(mentioned)} documented command paths all exist"
+    f"contract 2.1 verified: {len(mentioned)} documented command paths, result contracts and help all exist"
 )

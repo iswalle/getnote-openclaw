@@ -13,3 +13,6 @@
 
 # Config (may contain API keys)
 config.json
+
+# Generated upload archive. GitHub Release uploads this asset from CI.
+dist/
