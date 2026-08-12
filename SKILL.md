@@ -23,14 +23,15 @@ metadata:
 
 # 得到大脑
 
-本 Skill 是得到大脑的总入口，只负责三件事：连接账号、选择正确的领域 Skill、在领域任务之间保持统一的安全边界。不要在这里维护完整命令表或自行拼 OpenAPI 请求。
+本 Skill 是得到大脑的总入口，负责安装官方执行组件、连接账号、选择正确的领域 Skill，并在领域任务之间保持统一的安全边界。不要自行拼 OpenAPI 请求，也不要把领域命令重新堆回主 Skill。
 
 ## 首次使用
 
-1. 缺少执行组件时自动安装，不要求用户理解 CLI、npm 或依赖关系。
-2. 尚未授权时启动浏览器授权；不得向用户索要 API Key、Cookie 或 Authorization。
-3. 安装或升级后运行 `getnote setup`，把 CLI 内置的 5 个领域 Skill 同步到当前 AI；平台无法注册多个 Skill 时，继续使用本包内完全一致的领域文件。
-4. 用户允许时保存一条测试笔记；只有返回真实标题和可打开的笔记链接才算完成。
+1. 运行 `command -v getnote`。缺少官方执行组件时先检查 Node.js 20+，然后由 Agent 执行 `npm install -g @getnote/cli@latest`；不要把依赖安装甩给用户手工完成。
+2. 执行 `getnote version` 和 `getnote auth status`。尚未授权时运行 `getnote auth login` 并让用户只在浏览器确认；不得索要 API Key、Cookie 或 Authorization。
+3. 执行 `getnote doctor -o json`。只有 `success=true` 且 `cli`、`auth`、`api` 三项通过，才能说已经连接。
+4. 独立 Skill 包已经包含 5 个领域 Skill。对于 Codex、Claude Code、Cursor 等本地 Agent，可运行 `getnote setup` 把 CLI 同源的领域 Skill 注册到平台；不要重复安装另一套实现。
+5. 先运行 `getnote notes --limit 1 -o json` 做无写入验收。只有用户同意时才保存测试笔记，而且必须返回真实标题、字符串笔记 ID 和可打开的 `note_url` 才算完成。
 
 ## 路由
 
@@ -46,7 +47,8 @@ metadata:
 
 ## 统一规则
 
-- 所有真实操作由得到大脑执行组件完成；参数不确定时读取对应命令帮助。
+- 所有真实操作由官方 `getnote` CLI 完成；参数不确定时读取对应命令 `--help`，机器调用统一加 `-o json`。
+- 退出码非 0 一律是失败。成功结果读取 `success=true` 和领域 Skill 指定的 `data` 字段；失败结果读取 `error.code/message/reason/retryable` 和可选 `request_id`，不能根据自然语言猜成功。
 - ID 始终按字符串原样传递；链接只使用真实返回值，不自行拼接域名。
 - 写操作结果不确定时先查询原任务或最近结果，禁止盲目重复创建。
 - 删除、覆盖、替换全部标签、公开分享和批量移出必须先确认。

@@ -44,6 +44,21 @@ except json.JSONDecodeError as exc:
 if capabilities.get("contract_version") != "2.0":
     fail(f"expected contract 2.0, got {capabilities.get('contract_version')!r}")
 
+result_contracts = capabilities.get("result_contracts", {})
+for key in (
+    "common_success",
+    "common_error",
+    "save",
+    "task",
+    "notes",
+    "note",
+    "search",
+    "knowledge",
+    "tags",
+):
+    if not result_contracts.get(key):
+        fail(f"CLI does not expose result contract {key}")
+
 guarantees = capabilities.get("guarantees", {})
 for key in (
     "ids_as_strings",
@@ -112,6 +127,13 @@ for alias, canonical in aliases.items():
 main_text = MAIN_SKILL.read_text(encoding="utf-8")
 if "/open/api/" in main_text:
     fail("main Skill must not contain OpenAPI paths")
+for required in (
+    "npm install -g @getnote/cli@latest",
+    "getnote auth login",
+    "getnote doctor -o json",
+):
+    if required not in main_text:
+        fail(f"main Skill is missing installation or verification step: {required}")
 for path in DOMAIN_SKILLS:
     expected_link = f"skills/{path.parent.name}/SKILL.md"
     if expected_link not in main_text:
@@ -125,6 +147,8 @@ for skill_path in DOMAIN_SKILLS:
     skill_text = skill_path.read_text(encoding="utf-8")
     if "/open/api/" in skill_text:
         fail(f"{skill_path} must not contain OpenAPI paths")
+    if "## 结果契约" not in skill_text:
+        fail(f"{skill_path} does not define a result contract")
     for match in re.finditer(r"`(?:getnote|gnote)\s+([^`]+)`", skill_text):
         tokens = match.group(1).split()
         if not tokens or tokens[0].startswith(("<", "--")):
