@@ -1,8 +1,8 @@
 {
   "name": "getnote",
   "version": "2.0.0",
-  "description": "得到大脑 Skill 2.0 — Skill 理解意图，CLI 确定执行，稳定保存、查询和整理笔记。",
-  "license": "MIT-0",
+  "description": "把得到大脑装进常用 AI，用自然语言保存、查询和整理笔记。",
+  "license": "MIT",
   "author": "get-notes@luojilab.com",
   "homepage": "https://biji.com",
   "repository": {

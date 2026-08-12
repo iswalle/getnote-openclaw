@@ -85,6 +85,7 @@ if guarantees.get("note_detail_views") != [
     "attachments",
     "timeline",
     "quick_note",
+    "meeting_todos",
 ]:
     fail("CLI does not expose all first-class note detail views")
 
