@@ -85,7 +85,7 @@ AI 会确认目标知识库和写入权限后创建订阅，之后可以继续�
 
 如果你使用的 AI 支持“上传 Skill 压缩包”，可下载 [得到大脑 Skill 安装包](https://github.com/iswalle/getnote-openclaw/releases/latest/download/getnote-skill.zip) 后直接上传。
 
-安装包包含运行所需的主 Skill、5 个领域 Skill 和官方 CLI 安装器；上传后把这句话发给 AI：
+安装包包含运行所需的主 Skill、5 份领域参考和官方 CLI 安装器；上传后把这句话发给 AI：
 
 > 帮我安装这个得到大脑 Skill，自动安装官方 CLI、完成授权，并保存一条测试笔记确认可以正常使用。
 

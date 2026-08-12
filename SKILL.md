@@ -20,20 +20,20 @@ metadata:
 1. 运行 `bash scripts/install.sh --ensure`。它会检查 Node.js、确保官方 `@getnote/cli` 可执行；缺失时由 Agent 安装，不把依赖安装甩给用户手工完成。
 2. 执行 `getnote version` 和 `getnote auth status`。尚未授权时运行 `getnote auth login` 并让用户只在浏览器确认；不得索要 API Key、Cookie 或 Authorization。
 3. 执行 `getnote doctor -o json`。只有 `success=true` 且 `cli`、`auth`、`api` 三项通过，才能说已经连接。
-4. 独立 Skill 包已经包含 5 个领域 Skill。对于 Codex、Claude Code、Cursor 等本地 Agent，可运行 `getnote setup` 把 CLI 同源的领域 Skill 注册到平台；不要重复安装另一套实现。
+4. 独立 Skill 包已经包含 5 份领域参考。对于 Codex、Claude Code、Cursor 等本地 Agent，可运行 `getnote setup` 把 CLI 内置的领域 Skill 注册到平台；不要重复安装另一套实现。
 5. 先运行 `getnote notes --limit 1 -o json` 做无写入验收。只有用户同意时才保存测试笔记，而且必须返回真实标题、字符串笔记 ID 和可打开的 `note_url` 才算完成。
 
 ## 路由
 
-匹配用户意图后，必须读取并遵循对应领域 Skill：
+匹配用户意图后，必须读取并遵循对应领域参考：
 
-- 登录、连接、配额、诊断和更新：[`skills/getnote-auth/SKILL.md`](skills/getnote-auth/SKILL.md)
-- 保存、查看、修改、分享和深层内容：[`skills/getnote-note/SKILL.md`](skills/getnote-note/SKILL.md)
-- 按主题或自然语言查找笔记：[`skills/getnote-search/SKILL.md`](skills/getnote-search/SKILL.md)
-- 知识库、文件夹、博主订阅和直播：[`skills/getnote-kb/SKILL.md`](skills/getnote-kb/SKILL.md)
-- 查看、添加和删除标签：[`skills/getnote-tag/SKILL.md`](skills/getnote-tag/SKILL.md)
+- 登录、连接、配额、诊断和更新：[`references/auth.md`](references/auth.md)
+- 保存、查看、修改、分享和深层内容：[`references/note.md`](references/note.md)
+- 按主题或自然语言查找笔记：[`references/search.md`](references/search.md)
+- 知识库、文件夹、博主订阅和直播：[`references/kb.md`](references/kb.md)
+- 查看、添加和删除标签：[`references/tag.md`](references/tag.md)
 
-一个任务涉及多个领域时，按实际步骤依次读取对应 Skill。例如“找到最近的客户反馈并放进客户档案”先读搜索，再读知识库。
+一个任务涉及多个领域时，按实际步骤依次读取对应参考。例如“找到最近的客户反馈并放进客户档案”先读搜索，再读知识库。
 
 ## 统一规则
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build the uploadable GetNote Skill archive.
 
-The archive contains the main Skill, five domain Skills and the runtime
+The archive contains the main Skill, five domain references and the runtime
 installer. Developer-only validation scripts, GitHub workflows and README
 material remain in the repository and are not shipped to an AI host.
 """
@@ -23,7 +23,7 @@ def main() -> int:
         shutil.rmtree(STAGE)
     STAGE.mkdir(parents=True)
     shutil.copy2(ROOT / "SKILL.md", STAGE / "SKILL.md")
-    shutil.copytree(ROOT / "skills", STAGE / "skills")
+    shutil.copytree(ROOT / "references", STAGE / "references")
     runtime_scripts = STAGE / "scripts"
     runtime_scripts.mkdir()
     shutil.copy2(ROOT / "scripts" / "install.sh", runtime_scripts / "install.sh")

@@ -75,13 +75,18 @@ refresh_skill_package() {
   if [ -n "$skill_file" ]; then
     package_root="$(dirname "$skill_file")"
   fi
-  if [ -z "$package_root" ] || [ ! -f "$package_root/scripts/install.sh" ] || [ ! -d "$package_root/skills" ]; then
+  if [ -z "$package_root" ] || [ ! -f "$package_root/scripts/install.sh" ] || [ ! -d "$package_root/references" ]; then
     info "已升级 CLI；下载的 Skill 包结构无效，当前 Skill 保持不变。"
     rm -rf "$tmp_dir"
     return 0
   fi
   cp "$package_root/SKILL.md" "$SKILL_DIR/SKILL.md"
-  cp -R "$package_root/skills/." "$SKILL_DIR/skills/"
+  # 2.0 将领域资料统一放在 references；清理旧包遗留的 skills，避免 Agent 读取过期说明。
+  if [ -d "$SKILL_DIR/skills" ]; then
+    rm -rf "$SKILL_DIR/skills"
+  fi
+  mkdir -p "$SKILL_DIR/references"
+  cp -R "$package_root/references/." "$SKILL_DIR/references/"
   cp "$package_root/scripts/install.sh" "$SKILL_DIR/scripts/install.sh"
   chmod +x "$SKILL_DIR/scripts/install.sh"
   rm -rf "$tmp_dir"

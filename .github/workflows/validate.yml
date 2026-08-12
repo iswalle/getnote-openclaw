@@ -34,8 +34,10 @@ jobs:
       - name: Verify domain Skills stay aligned with CLI
         env:
           GETNOTE_CLI_SKILLS_DIR: ${{ github.workspace }}/getnote-cli/skills
-        run: python3 scripts/sync_cli_skills.py --check
-      - name: Verify CLI contract
-        env:
           GETNOTE_CLI: /tmp/getnote
         run: python3 scripts/verify_cli_contract.py
+      - name: Validate packaged Skill structure
+        run: |
+          python3 scripts/build_skill_package.py
+          unzip -Z1 dist/getnote-skill.zip | sed 's#^getnote-skill/##' | sed '/^$/d; /\/$/d' | sort > /tmp/package-files.txt
+          test "$(cat /tmp/package-files.txt)" = $'SKILL.md\nreferences/auth.md\nreferences/kb.md\nreferences/note.md\nreferences/search.md\nreferences/tag.md\nscripts/install.sh'

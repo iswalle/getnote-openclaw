@@ -13,7 +13,8 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 MAIN_SKILL = ROOT / "SKILL.md"
-DOMAIN_SKILLS = sorted((ROOT / "skills").glob("getnote-*/SKILL.md"))
+DOMAIN_REFERENCES = sorted((ROOT / "references").glob("*.md"))
+CLI_SKILLS = ROOT.parent / "getnote-cli" / "skills"
 CLI = os.environ.get("GETNOTE_CLI", "getnote")
 
 
@@ -30,6 +31,15 @@ def run(*args: str) -> subprocess.CompletedProcess[str]:
 def fail(message: str) -> None:
     print(f"contract check failed: {message}", file=sys.stderr)
     raise SystemExit(1)
+
+
+def skill_body(path: Path) -> str:
+    """Return a CLI Skill body without its agent-only YAML front matter."""
+    text = path.read_text(encoding="utf-8")
+    if not text.startswith("---\n"):
+        return text
+    _, _, body = text.split("---\n", 2)
+    return body
 
 
 capability_result = run("capabilities", "-o", "json")
@@ -140,13 +150,28 @@ for required in (
 ):
     if required not in main_text:
         fail(f"main Skill is missing installation or verification step: {required}")
-for path in DOMAIN_SKILLS:
-    expected_link = f"skills/{path.parent.name}/SKILL.md"
+for path in DOMAIN_REFERENCES:
+    expected_link = f"references/{path.name}"
     if expected_link not in main_text:
         fail(f"main Skill does not route to {expected_link}")
 
-if not DOMAIN_SKILLS:
-    fail("no domain Skills found")
+if not DOMAIN_REFERENCES:
+    fail("no domain references found")
+
+reference_sources = {
+    "auth.md": "getnote-auth",
+    "kb.md": "getnote-kb",
+    "note.md": "getnote-note",
+    "search.md": "getnote-search",
+    "tag.md": "getnote-tag",
+}
+if {path.name for path in DOMAIN_REFERENCES} != set(reference_sources):
+    fail("independent Skill references do not match the five supported domains")
+for reference_name, cli_skill_name in reference_sources.items():
+    reference = ROOT / "references" / reference_name
+    cli_skill = CLI_SKILLS / cli_skill_name / "SKILL.md"
+    if not cli_skill.is_file() or reference.read_text(encoding="utf-8") != skill_body(cli_skill):
+        fail(f"reference {reference_name} drifted from CLI Skill {cli_skill_name}")
 
 runtime_installer = ROOT / "scripts" / "install.sh"
 if not runtime_installer.is_file():
@@ -157,17 +182,17 @@ for required in ("@getnote/cli", "--ensure", "--update", "getnote version"):
         fail(f"runtime installer is missing {required!r}")
 
 mentioned: set[str] = set()
-for skill_path in DOMAIN_SKILLS:
-    skill_text = skill_path.read_text(encoding="utf-8")
+for reference_path in DOMAIN_REFERENCES:
+    skill_text = reference_path.read_text(encoding="utf-8")
     if "/open/api/" in skill_text:
-        fail(f"{skill_path} must not contain OpenAPI paths")
+        fail(f"{reference_path} must not contain OpenAPI paths")
     if (
         "结果与回复格式" not in skill_text
         and "命令结果与回复格式" not in skill_text
         and "结果与下一步" not in skill_text
         and "命令结果与用户呈现" not in skill_text
     ):
-        fail(f"{skill_path} does not define per-command result guidance")
+        fail(f"{reference_path} does not define per-command result guidance")
     for match in re.finditer(r"`(?:getnote|gnote)\s+([^`]+)`", skill_text):
         tokens = match.group(1).split()
         if not tokens or tokens[0].startswith(("<", "--")):
