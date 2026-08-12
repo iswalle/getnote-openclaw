@@ -9,6 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: iswalle/getnote-cli
+          path: getnote-cli
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
@@ -17,5 +21,9 @@ jobs:
           python-version: "3.12"
       - name: Install released CLI
         run: npm install -g @getnote/cli@latest
+      - name: Verify domain Skills stay aligned with CLI
+        env:
+          GETNOTE_CLI_SKILLS_DIR: ${{ github.workspace }}/getnote-cli/skills
+        run: python3 scripts/sync_cli_skills.py --check
       - name: Verify CLI contract
         run: python3 scripts/verify_cli_contract.py

@@ -12,7 +12,8 @@ import sys
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SKILL = ROOT / "SKILL.md"
+MAIN_SKILL = ROOT / "SKILL.md"
+DOMAIN_SKILLS = sorted((ROOT / "skills").glob("getnote-*/SKILL.md"))
 CLI = os.environ.get("GETNOTE_CLI", "getnote")
 
 
@@ -98,28 +99,56 @@ available = {
     for commands in capabilities.get("commands", {}).values()
     for command in commands
 }
+aliases = capabilities.get("command_aliases", {})
+if aliases.get("gnote") != "getnote" or aliases.get("kb dir") != "kb directories":
+    fail("CLI does not expose the compact gnote / kb dir aliases")
 
-skill_text = SKILL.read_text(encoding="utf-8")
-mentioned: set[str] = set()
-for match in re.finditer(r"`getnote\s+([^`]+)`", skill_text):
-    tokens = match.group(1).split()
-    if not tokens or tokens[0].startswith(("<", "--")):
+for alias, canonical in aliases.items():
+    if alias == "gnote":
         continue
-    for length in range(min(3, len(tokens)), 0, -1):
-        candidate = " ".join(tokens[:length])
-        if candidate in available:
-            mentioned.add(candidate)
-            break
+    if canonical not in available:
+        fail(f"alias {alias!r} points to unknown command {canonical!r}")
 
-    else:
-        fail(f"documented command is absent from capabilities: getnote {match.group(1)}")
+main_text = MAIN_SKILL.read_text(encoding="utf-8")
+if "/open/api/" in main_text:
+    fail("main Skill must not contain OpenAPI paths")
+for path in DOMAIN_SKILLS:
+    expected_link = f"skills/{path.parent.name}/SKILL.md"
+    if expected_link not in main_text:
+        fail(f"main Skill does not route to {expected_link}")
+
+if not DOMAIN_SKILLS:
+    fail("no domain Skills found")
+
+mentioned: set[str] = set()
+for skill_path in DOMAIN_SKILLS:
+    skill_text = skill_path.read_text(encoding="utf-8")
+    if "/open/api/" in skill_text:
+        fail(f"{skill_path} must not contain OpenAPI paths")
+    for match in re.finditer(r"`(?:getnote|gnote)\s+([^`]+)`", skill_text):
+        tokens = match.group(1).split()
+        if not tokens or tokens[0].startswith(("<", "--")):
+            continue
+        for length in range(min(3, len(tokens)), 0, -1):
+            candidate = " ".join(tokens[:length])
+            canonical = aliases.get(candidate, candidate)
+            if canonical in available:
+                mentioned.add(canonical)
+                break
+        else:
+            fail(f"documented command is absent from capabilities: {match.group(0)}")
 
 missing = sorted(mentioned - available)
 if missing:
     fail(f"commands missing from capabilities: {', '.join(missing)}")
 
-if not mentioned:
-    fail("no getnote commands found in SKILL.md")
+uncovered = sorted(
+    command
+    for command in available - mentioned
+    if not any(item.startswith(command + " ") for item in mentioned)
+)
+if uncovered:
+    fail("CLI commands missing from domain Skills: " + ", ".join(uncovered))
 
 for command in sorted(mentioned):
     result = run(*command.split(), "--help")
