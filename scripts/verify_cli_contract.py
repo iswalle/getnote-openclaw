@@ -94,8 +94,8 @@ for command in (
 if guarantees.get("safe_long_input") != ["--content-file", "--stdin"]:
     fail("CLI does not expose both safe long-input paths")
 
-if guarantees.get("knowledge_scopes") != ["DEFAULT", "BOOKSPACE", "CUSTOMER", "TEAMSPACE", "AITEAMSPACE"]:
-    fail("CLI does not expose all five knowledge scopes")
+if guarantees.get("knowledge_scopes") != ["DEFAULT", "BOOKSPACE", "CUSTOMER", "TEAMSPACE"]:
+	fail("CLI does not expose all four public knowledge scopes")
 
 if guarantees.get("knowledge_features") != [
     "directories",
