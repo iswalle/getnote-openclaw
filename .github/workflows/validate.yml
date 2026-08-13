@@ -30,7 +30,8 @@ jobs:
         with:
           python-version: "3.12"
       - name: Build matching CLI
-        run: go build -o /tmp/getnote ./getnote-cli
+        working-directory: getnote-cli
+        run: go build -o /tmp/getnote .
       - name: Verify domain Skills stay aligned with CLI
         env:
           GETNOTE_CLI_SKILLS_DIR: ${{ github.workspace }}/getnote-cli/skills
