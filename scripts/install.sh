@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # GetNote Skill runtime installer.
-# --ensure: make the official CLI available without upgrading an existing CLI.
+# --ensure: install or align the official CLI with the current latest release.
 # --update: upgrade the CLI and refresh this Skill package from the latest release.
 
 set -euo pipefail
@@ -40,14 +40,21 @@ if [ "$NODE_VERSION" -lt "$MIN_NODE_MAJOR" ]; then
   fail "当前 Node.js 主版本为 ${NODE_VERSION}，需要 ${MIN_NODE_MAJOR}+。"
 fi
 
-if ! command -v getnote >/dev/null 2>&1; then
-  info "正在安装官方得到大脑 CLI…"
-  npm install -g "${PACKAGE_NAME}@latest"
-elif [ "$MODE" = "update" ]; then
+# 始终从官方 npm 包校准 CLI。不能仅凭 PATH 中存在同名 `getnote`
+# 就认定它是官方组件；npm 重复安装不会读写 ~/.getnote 授权凭证。
+if [ "$MODE" = "update" ]; then
   info "正在升级官方得到大脑 CLI…"
-  npm install -g "${PACKAGE_NAME}@latest"
 else
-  info "已检测到官方得到大脑 CLI。"
+  info "正在检查并安装官方得到大脑 CLI…"
+fi
+npm install -g "${PACKAGE_NAME}@latest"
+
+# npm may install into a prefix whose bin directory is not yet in this
+# process's PATH (common in desktop Agents and WorkBuddy sandboxes).
+NPM_PREFIX="$(npm prefix -g 2>/dev/null || true)"
+if [ -n "$NPM_PREFIX" ] && [ -d "$NPM_PREFIX/bin" ]; then
+  PATH="$NPM_PREFIX/bin:$PATH"
+  export PATH
 fi
 
 command -v getnote >/dev/null 2>&1 || fail "CLI 安装后仍不可执行，请检查 npm 全局 bin 是否已加入 PATH。"
@@ -85,6 +92,7 @@ refresh_skill_package() {
   if [ -d "$SKILL_DIR/skills" ]; then
     rm -rf "$SKILL_DIR/skills"
   fi
+  rm -rf "$SKILL_DIR/references"
   mkdir -p "$SKILL_DIR/references"
   cp -R "$package_root/references/." "$SKILL_DIR/references/"
   cp "$package_root/scripts/install.sh" "$SKILL_DIR/scripts/install.sh"

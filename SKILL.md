@@ -1,6 +1,6 @@
 ---
 name: getnote
-description: 把得到大脑连接到当前 AI，并把用户的保存、查询、搜索、知识库和标签需求路由给对应领域 Skill。用户说“安装/连接/更新得到大脑”“记一下”“帮我找笔记”“整理到知识库”或“管理标签”时使用。
+description: 把得到大脑连接到当前 AI，并通过官方 CLI 保存、查询、搜索和整理用户的真实笔记。用户说“安装/连接/更新得到大脑”“记一下/保存链接或图片”“最近有哪些笔记/帮我找笔记”“查看原文或录音转写”“整理到知识库或文件夹”“订阅抖音博主”或“管理标签”时使用。
 metadata:
   {
     "openclaw":
@@ -17,10 +17,10 @@ metadata:
 
 ## 首次使用
 
-1. 运行 `bash scripts/install.sh --ensure`。它会检查 Node.js、确保官方 `@getnote/cli` 可执行；缺失时由 Agent 安装，不把依赖安装甩给用户手工完成。
+1. 定位本 `SKILL.md` 同目录下的 `scripts/install.sh`，运行 `bash <该路径>/scripts/install.sh --ensure`。它会检查 Node.js、确保官方 `@getnote/cli` 可执行；缺失时由 Agent 安装，不把依赖安装甩给用户手工完成。不要假设当前工作目录就是 Skill 目录。
 2. 执行 `getnote version` 和 `getnote auth status`。尚未授权时运行 `getnote auth login` 并让用户只在浏览器确认；不得索要 API Key、Cookie 或 Authorization。
 3. 执行 `getnote doctor -o json`。只有 `success=true` 且 `cli`、`auth`、`api` 三项通过，才能说已经连接。
-4. 独立 Skill 包已经包含 5 份领域参考。对于 Codex、Claude Code、Cursor 等本地 Agent，可运行 `getnote setup` 把 CLI 内置的领域 Skill 注册到平台；不要重复安装另一套实现。
+4. 独立 Skill 包已经包含 5 份领域参考，当前平台直接使用它们，不再运行 `getnote setup` 重复安装 CLI 内置 Skill。只有用户单独安装 CLI、没有导入本 Skill 包时，才由 CLI 的 `setup` 为本机 Agent 安装同源的领域 Skill。
 5. 先运行 `getnote notes --limit 1 -o json` 做无写入验收。只有用户同意时才保存测试笔记，而且必须返回真实标题、字符串笔记 ID 和可打开的 `note_url` 才算完成。
 
 ## 路由
@@ -47,4 +47,4 @@ metadata:
 
 ## 用户要求更新
 
-用户说“帮我更新得到大脑”已经构成更新授权。运行 `bash scripts/install.sh --update`，它会升级 CLI 并刷新当前 Skill 包；随后同步领域 Skill、运行诊断并验证读取能力。只有平台必须人工确认时才让用户完成唯一必要的点击。
+用户说“帮我更新得到大脑”已经构成更新授权。定位本 `SKILL.md` 同目录下的安装器并运行 `bash <该路径>/scripts/install.sh --update`，它会升级 CLI 并刷新当前独立 Skill 包；随后运行诊断并验证读取能力。重复安装不得删除 `~/.getnote` 中的授权凭证。只有平台必须人工确认时才让用户完成唯一必要的点击。

@@ -143,8 +143,8 @@ main_text = MAIN_SKILL.read_text(encoding="utf-8")
 if "/open/api/" in main_text:
     fail("main Skill must not contain OpenAPI paths")
 for required in (
-    "bash scripts/install.sh --ensure",
-    "bash scripts/install.sh --update",
+    "scripts/install.sh --ensure",
+    "scripts/install.sh --update",
     "getnote auth login",
     "getnote doctor -o json",
 ):
@@ -180,6 +180,22 @@ installer_text = runtime_installer.read_text(encoding="utf-8")
 for required in ("@getnote/cli", "--ensure", "--update", "getnote version"):
     if required not in installer_text:
         fail(f"runtime installer is missing {required!r}")
+
+readme = (ROOT / "README.md").read_text(encoding="utf-8")
+if readme.count("### 方式") != 2:
+    fail("README must expose exactly two installation methods")
+for required in (
+    "https://github.com/iswalle/getnote-openclaw",
+    "releases/download/v2.0.0/getnote-skill.zip",
+    "不会清除已经保存的授权凭证",
+    "### v2.0.0",
+):
+    if required not in readme:
+        fail(f"README is missing user-facing installation information: {required}")
+
+builder_text = (ROOT / "scripts" / "build_skill_package.py").read_text(encoding="utf-8")
+if 'ROOT / "README.md"' not in builder_text:
+    fail("uploadable Skill archive must include the human-readable README")
 
 mentioned: set[str] = set()
 for reference_path in DOMAIN_REFERENCES:

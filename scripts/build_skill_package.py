@@ -23,6 +23,7 @@ def main() -> int:
         shutil.rmtree(STAGE)
     STAGE.mkdir(parents=True)
     shutil.copy2(ROOT / "SKILL.md", STAGE / "SKILL.md")
+    shutil.copy2(ROOT / "README.md", STAGE / "README.md")
     shutil.copytree(ROOT / "references", STAGE / "references")
     runtime_scripts = STAGE / "scripts"
     runtime_scripts.mkdir()
