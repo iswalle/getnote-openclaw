@@ -193,7 +193,7 @@ if readme.count("### 方式") != 2:
     fail("README must expose exactly two installation methods")
 for required in (
     "https://github.com/iswalle/getnote-openclaw",
-    "https://github.com/iswalle/getnote-openclaw/releases/latest/download/getnote-skill.zip",
+    "https://github.com/iswalle/getnote-openclaw/releases/latest",
     "不会清除已经保存的授权凭证",
     "**v2.0.0**",
 ):
