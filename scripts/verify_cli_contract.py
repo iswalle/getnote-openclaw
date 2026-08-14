@@ -14,7 +14,12 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 MAIN_SKILL = ROOT / "SKILL.md"
 DOMAIN_REFERENCES = sorted((ROOT / "references").glob("*.md"))
-CLI_SKILLS = ROOT.parent / "getnote-cli" / "skills"
+CLI_SKILLS = Path(
+    os.environ.get(
+        "GETNOTE_CLI_SKILLS_DIR",
+        str(ROOT.parent / "getnote-cli" / "skills"),
+    )
+)
 CLI = os.environ.get("GETNOTE_CLI", "getnote")
 
 
