@@ -1,15 +1,12 @@
 ---
 name: getnote
+version: 2.0.0
 description: 把得到大脑连接到当前 AI，并通过官方 CLI 保存、查询、搜索和整理用户的真实笔记。用户说“安装/连接/更新得到大脑”“记一下/保存链接或图片”“最近有哪些笔记/帮我找笔记”“查看原文或录音转写”“整理到知识库或文件夹”“订阅抖音博主”或“管理标签”时使用。
 metadata:
-  {
-    "version": "2.0.0",
-    "openclaw":
-      {
-        "emoji": "🧠",
-        "requires": { "bins": ["node", "npm"] },
-      },
-  }
+  openclaw:
+    emoji: "🧠"
+    requires:
+      bins: ["node", "npm"]
 ---
 
 # 得到大脑

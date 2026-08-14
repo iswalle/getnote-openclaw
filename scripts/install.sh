@@ -88,7 +88,7 @@ const preferred = assets.find((item) => item.name === "getnote-skill.zip")
   || assets.find((item) => /^getnote-skill-[0-9][0-9A-Za-z._-]*\.zip$/.test(item.name || ""));
 if (preferred && preferred.browser_download_url) process.stdout.write(preferred.browser_download_url);
 ' "$release_json")"
-      local_version="$(sed -n 's/.*"version": "\([0-9][0-9.]*\)".*/\1/p' "$SKILL_DIR/SKILL.md" | head -n 1)"
+      local_version="$(sed -n 's/^version: \([0-9][0-9.]*\)$/\1/p' "$SKILL_DIR/SKILL.md" | head -n 1)"
       if [ -n "$local_version" ] && [ -n "$remote_version" ] && ! node -e '
 const current = process.argv[1].split(".").map(Number);
 const remote = process.argv[2].split(".").map(Number);

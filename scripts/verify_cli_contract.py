@@ -140,8 +140,8 @@ for alias, canonical in aliases.items():
         fail(f"alias {alias!r} points to unknown command {canonical!r}")
 
 main_text = MAIN_SKILL.read_text(encoding="utf-8")
-if '"version": "2.0.0"' not in main_text:
-    fail("main Skill metadata must expose version 2.0.0")
+if "version: 2.0.0" not in main_text:
+    fail("main Skill must expose version 2.0.0")
 if "/open/api/" in main_text:
     fail("main Skill must not contain OpenAPI paths")
 for required in (
@@ -188,9 +188,9 @@ if readme.count("### 方式") != 2:
     fail("README must expose exactly two installation methods")
 for required in (
     "https://github.com/iswalle/getnote-openclaw",
-    "https://github.com/iswalle/getnote-openclaw/releases/latest",
+    "https://github.com/iswalle/getnote-openclaw/releases/latest/download/getnote-skill.zip",
     "不会清除已经保存的授权凭证",
-    "### v2.0.0",
+    "**v2.0.0**",
 ):
     if required not in readme:
         fail(f"README is missing user-facing installation information: {required}")

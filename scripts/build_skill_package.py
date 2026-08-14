@@ -21,8 +21,8 @@ VERSION = "2.0.0"
 
 def main() -> int:
     skill_text = (ROOT / "SKILL.md").read_text(encoding="utf-8")
-    if f'"version": "{VERSION}"' not in skill_text:
-        raise RuntimeError("Skill metadata version and package version are inconsistent")
+    if f"version: {VERSION}" not in skill_text:
+        raise RuntimeError("Skill version and package version are inconsistent")
     if STAGE.exists():
         shutil.rmtree(STAGE)
     STAGE.mkdir(parents=True)
