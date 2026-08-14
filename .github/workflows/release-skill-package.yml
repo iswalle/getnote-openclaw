@@ -28,11 +28,12 @@ jobs:
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
           ASSET="dist/getnote-skill-${VERSION}.zip"
+          TITLE="得到大脑 Skill ${VERSION}"
           if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
-            gh release edit "$GITHUB_REF_NAME" --title "得到大脑 Skill"
+            gh release edit "$GITHUB_REF_NAME" --title "$TITLE"
             gh release upload "$GITHUB_REF_NAME" "$ASSET" --clobber
           else
             gh release create "$GITHUB_REF_NAME" "$ASSET" \
-              --title "得到大脑 Skill" \
+              --title "$TITLE" \
               --generate-notes
           fi
