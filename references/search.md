@@ -1,116 +1,59 @@
-# 语义搜索
 
-## 概述
+# 得到大脑搜索
 
-在笔记中进行语义召回，支持全局搜索和指定知识库搜索。无需拉取全部数据，直接返回相关片段。
+通过官方 `getnote` CLI 搜索真实笔记。不要自己拼 OpenAPI 请求、笔记 ID 或访问链接。机器调用使用 `-o json`；只有退出码为 0 且 JSON 的 `success=true` 才是业务成功。
 
----
+## 何时使用
 
-## 全局语义搜索
+- “找找、搜一下、关于某主题、我之前记过什么”：使用 `getnote search`。
+- “最近有哪些笔记、按保存时间列出来”：交给笔记 Skill 的 `getnote notes`，不要把列表误当语义搜索。
+- 用户选中某一条后，再交给笔记 Skill 用 `getnote note <note_id>` 读取详情；搜索阶段不自动修改、移动、分享或创建笔记。
 
-> 适用场景：「搜一下」「找找我哪些笔记提到了 XX」
+## 执行步骤
 
-**所需 scope**: `note.recall.read`
+1. 用户没有指定知识库时，直接执行 `getnote search <query> --limit <1-10> -o json`。默认上限是 10，不能自行放大。
+2. 用户指定知识库名称时，先执行 `getnote kbs -o json`，用返回的真实 `topic_id` 和 `scope` 匹配；同名、多个团队知识库或意图不明确时必须让用户选择。
+3. 已确认知识库后执行 `getnote search <query> --kb <topic_id> --limit <1-10> -o json`。
+4. 只从返回值读取标题、摘要、字符串 `note_id` 和真实 `note_url`。没有 `note_id/note_url` 的非笔记结果可以展示内容，但不能伪造“打开笔记”链接。
+5. 同一篇笔记可能因命中多个片段出现多次。面向用户列“几篇笔记”时必须按字符串 `note_id` 去重；若去重后不足用户要求的数量，可在上限 10 内增大 `--limit` 重搜，仍不足时如实返回实际数量。
 
-```
-POST https://openapi.biji.com/open/api/v1/resource/recall
-Content-Type: application/json
-```
+## 命令结果与用户呈现
 
-请求体：
-```json
-{
-  "query": "搜索关键词",
-  "top_k": 3
-}
-```
+### 搜索
 
-| 参数 | 类型 | 说明 |
-|------|------|------|
-| query | string, 必填 | 搜索关键词或语义描述 |
-| top_k | int, 可选 | 返回数量，默认 **3**，最大 **10** |
-
-返回结构（结果已按相关度**从高到低**排序）：
-
-```json
-{
-  "results": [
-    {
-      "note_id": "1896830231705320746",
-      "note_type": "NOTE",
-      "title": "笔记标题",
-      "content": "笔记内容片段",
-      "created_at": "2025-12-24 15:20:15"
-    }
-  ]
-}
+```bash
+getnote search "支付流程" --limit 10 -o json
+getnote search "客户反馈" --kb <topic_id> --limit 5 -o json
 ```
 
----
+成功 JSON 的稳定字段：
 
-## 知识库语义搜索
+| 字段 | 含义 | Agent 如何使用 |
+|---|---|---|
+| `success` | 业务是否成功 | 只有 `true` 才继续呈现结果。 |
+| `data.results[]` | 搜索结果 | 空数组是一次成功的“未找到”，不是失败。 |
+| `data.results[].title` | 笔记标题 | 列表主标题；为空时如实显示“未命名笔记”。 |
+| `data.results[].note_id` | 笔记雪花 ID | 始终作为字符串原样传入后续 `note` 命令。 |
+| `data.results[].note_url` | 真实笔记链接 | 只有非空时才给用户“打开笔记”。 |
+| `data.results[].content` | 命中摘要或正文片段 | 只摘取与问题相关的短片段，不能冒充全文。 |
+| `data.results[].score` | 相关性分数 | 仅用于内部排序，不向用户虚构“准确率”。 |
 
-> 适用场景：「在我的 XX 知识库搜一下 XX」
+成功时按相关性给出编号列表，例如：
 
-**所需 scope**: `note.topic.recall.read`
-
+```text
+找到 3 条相关笔记：
+1. 《支付流程优化想法》——“用户等待时增加进度提示…”
+   打开：<真实 note_url>
+2. 《客户支付反馈》——“…”
+   打开：<真实 note_url>
+你想看哪一条的详情或原文？
 ```
-POST https://openapi.biji.com/open/api/v1/resource/recall/knowledge
-Content-Type: application/json
-```
 
-请求体：
-```json
-{
-  "topic_id": "qnNX75j0",
-  "query": "搜索关键词",
-  "top_k": 3
-}
-```
+若 `data.results=[]`，回复“没有找到相关笔记；可以换关键词、时间范围或指定知识库再试”，不要说“接口失败”，也不要自动扩大检索范围、创建笔记或调用模型编造结果。
 
-| 参数 | 类型 | 说明 |
-|------|------|------|
-| topic_id | string, 必填 | 知识库 ID（来自 `/knowledge/list` 的 `topic_id` 字段） |
-| query | string, 必填 | 搜索关键词或语义描述 |
-| top_k | int, 可选 | 返回数量，默认 **3**，最大 **10** |
+## 失败、隐私与后续动作
 
-返回结构同全局搜索。
-
----
-
-## 召回结果字段说明
-
-| 字段 | 说明 |
-|------|------|
-| note_id | 笔记 ID（string）；**仅 `NOTE` 类型有值**，其余类型均为空 |
-| note_type | 内容类型：`NOTE` / `FILE` / `BLOGGER` / `LIVE` / `URL` / `DEDAO` |
-| title | 笔记/文档标题 |
-| content | 相关内容片段 |
-| created_at | 创建/发布时间（YYYY-MM-DD HH:MM:SS）|
-| page_no | `FILE` 类型时表示文件页码，其余类型省略 |
-
-> **后续操作**：`NOTE` 类型可调详情接口获取全文，其余类型只能展示召回片段。
-
----
-
-## 示例对话
-
-> 用户：「找找我哪些笔记提到了大模型 API」
-> → `POST /recall` `{ "query": "大模型 API", "top_k": 3 }`
-
-> 用户：「在我的 AI 学习知识库里搜一下 RAG」
-> → 先调 `/knowledge/list` 找到对应知识库的 `topic_id`，再 `POST /recall/knowledge` `{ "topic_id": "xxx", "query": "RAG", "top_k": 3 }`
-
----
-
-## 展示模板
-
-搜索完成后：
-> 🔍 找到 {N} 条相关笔记：
->
-> 1. **{title}** （{created_at}）
->    {content 片段}
->
-> 2. ...
->
-> （`NOTE` 类型可回复「看原文」获取完整内容）
+- `success=false` 或退出码非 0：回复失败步骤、`error.message` / `error.reason`、是否 `retryable` 和可选 `request_id`；不要将 HTTP 成功或空输出说成搜索成功。
+- 若 CLI 提示“搜索服务响应超时”，这是检索未完成，不是“没有结果”。建议稍后重试，或缩小关键词、指定知识库后再试；不要伪造空列表。
+- 检索结果可能包含私密正文。群聊或共享会话默认只展示标题、必要摘要和真实链接；用户明确要求后再展开全文。
+- 用户选中结果后，复用返回的字符串 `note_id`，再读取 `getnote note <note_id> -o json`；不要从 URL 截取或转换为数字。

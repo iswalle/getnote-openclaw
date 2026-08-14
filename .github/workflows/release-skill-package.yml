@@ -1,0 +1,27 @@
+name: 发布 Skill 安装包
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 打包上传版 Skill
+        run: python3 scripts/build_skill_package.py
+      - name: 发布 GitHub Release 附件
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          gh release create "$GITHUB_REF_NAME" \
+            dist/getnote-skill.zip \
+            "dist/getnote-skill-${VERSION}.zip" \
+            --title "得到大脑 Skill ${GITHUB_REF_NAME}" \
+            --generate-notes

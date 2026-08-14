@@ -95,64 +95,38 @@
 
 ## 📦 安装
 
-### 方式一：通过 ClawHub 安装（推荐）
+只保留两种安装方式，任选一种即可。
 
-```bash
-clawhub install getnote
-```
+### 方式一：把一句话发给 AI（推荐）
 
-### 方式二：手动安装
+把下面这句话发给 WorkBuddy、Claude、Codex 或其他能够安装 Skill 的 AI：
 
-```bash
-mkdir -p ~/.openclaw/workspace/skills/getnote
-cd ~/.openclaw/workspace/skills/getnote
-curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/SKILL.md -o SKILL.md
-curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/package.json -o package.json
-```
+> 请从 GitHub 仓库 https://github.com/iswalle/getnote-openclaw 安装得到大脑 Skill。请读取 SKILL.md，自动完成所需依赖安装，引导我在浏览器授权，并读取最近一条笔记确认可以正常使用。
+
+AI 会自动安装官方 CLI 并引导授权。需要登录时，只在打开的得到大脑网页中确认，不要在聊天里发送 API Key、Cookie 或其他账号凭证。
+
+### 方式二：下载 Skill 安装包
+
+下载 [得到大脑 Skill 2.0 安装包](https://github.com/iswalle/getnote-openclaw/releases/latest/download/getnote-skill.zip)，直接拖进 AI 的聊天框，然后说：
+
+> 请解压并安装这个得到大脑 Skill，按照 SKILL.md 自动安装官方 CLI，引导我完成授权，并读取最近一条笔记确认可以正常使用。
+
+安装包已经包含主 Skill、五个领域参考和自动安装脚本，不需要再下载 GitHub 源码。首次使用需要 Node.js 20 或更高版本和可访问 npm 的网络。
 
 ---
 
 ## 🔑 授权登录
 
-安装完成后说「请帮我授权 Get笔记」，AI 自动生成授权链接，点击完成登录，无需手动配置 API Key。
+首次使用时，AI 会打开得到大脑授权页面。你只需在浏览器确认，不需要手动复制 API Key。
 
-### 手动配置（可选）
+安装完成后，AI 会依次确认：
 
-1. 前往 **[Get笔记开放平台](https://www.biji.com/openapi)** 获取 API Key 和 Client ID
-2. 在 `~/.openclaw/openclaw.json` 中添加：
+1. 得到大脑 CLI 可以运行；
+2. 已在浏览器完成账号授权；
+3. 可以读取当前账号的笔记；
+4. 当前 AI 已加载保存、搜索、知识库和标签能力。
 
-```json
-{
-  "skills": {
-    "entries": {
-      "getnote": {
-        "apiKey": "gk_live_xxx",
-        "env": {
-          "GETNOTE_CLIENT_ID": "cli_xxx",
-          "GETNOTE_OWNER_ID": "ou_xxx",
-          "GETNOTE_API_URL": "https://openapi.biji.com"
-        }
-      }
-    }
-  }
-}
-```
-
-> 💡 `GETNOTE_OWNER_ID` 可选，配置后只有你能操作笔记（群聊安全）
-
-> 💡 `GETNOTE_API_URL` 可选，仅在明确联调测试环境时覆盖；默认无需配置
-
-> 💡 需要 [Get笔记会员](https://www.biji.com/checkout?product_alias=9Ab36BB3ZD&spm=openapi_skill) 才能使用 API
-
----
-
-## 🔐 安全说明
-
-> ⚠️ **隐私保护**：笔记是你的私密数据，AI 会严格校验身份。
-
-- 配置 `GETNOTE_OWNER_ID` 后，只有你能操作笔记
-- 群聊中其他人无法通过 AI 读取你的笔记
-- **不要在聊天中发送 API Key**，请手动配置到环境变量
+默认先读取最近一条笔记验收，不会擅自创建测试内容。重复安装或更新只覆盖程序和 Skill 文件，不会清除已经保存的授权凭证。
 
 ---
 
@@ -173,11 +147,24 @@ curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/package
 
 创建笔记支持：
 
-- 指定 `topic_id`，直接存入普通（DEFAULT）、书籍（BOOKSPACE）或客户档案（CUSTOMER）知识库
-- 指定字符串 `parent_id` 创建子笔记
-- 指定 `client_request_id` 或 `Idempotency-Key`，避免网络重试重复创建
+- 指定知识库，直接存入普通、书籍、客户档案或有写权限的团队知识库；
+- 选择知识库文件夹，把笔记直接归档到指定位置；
+- 指定字符串父笔记 ID 创建子笔记；
+- 使用幂等请求避免网络重试造成重复创建。
 
-> 💡 语音类笔记可读取 AI 摘要和转写原文，需调用详情接口获取。
+语音和会议笔记还能独立读取摘要、转写原文、附件、时间线、快捷笔记和会议待办。
+
+---
+
+## 📚 知识库与整理
+
+你可以直接对 AI 说：
+
+> 在“产品研究”知识库里新建“竞品”文件夹，把刚才那篇笔记放进去。
+
+> 把这个抖音博主订阅到“行业观察”知识库。
+
+AI 会先读取真实知识库、文件夹和权限，再执行操作，不会根据名称猜 ID。默认知识库、书籍、客户档案和团队知识库都会按当前账号实际权限展示。
 
 ---
 
@@ -199,13 +186,29 @@ curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/package
 >
 > 🤖 找到 5 条日志，你这周：产品设计 12h、客户沟通 6h、开会 4h……
 
-**内链格式**：在笔记正文里用 `https://biji.com/note/{note_id}` 引用其他笔记。示例：
+**内链格式**：在笔记正文里用 `https://biji.com/note/{note_id}` 引用其他笔记。告诉 AI 要内链到哪条笔记，AI 会自动找到真实 ID 并插入。
 
-```
-参考上次的讨论：https://biji.com/note/1234567890000000001
-```
+---
 
-告诉 AI 要内链到哪条笔记，AI 会自动获取对应 note_id 插入。
+## 🔄 更新
+
+直接对 AI 说：
+
+> 帮我把得到大脑更新到最新版，并检查是否能正常读取和保存笔记。
+
+AI 会更新 Skill 和官方 CLI，并重新检查连接。重复安装或更新不会清除已经保存的授权凭证。
+
+---
+
+## 🔐 安全说明
+
+> ⚠️ **隐私保护**：笔记是你的私密数据，AI 会严格校验身份。
+
+- 默认返回只有当前账号能打开的私有笔记链接；
+- 群聊和共享会话中不会主动展开私密笔记全文；
+- 删除、覆盖、替换全部标签和公开分享前会先确认；
+- 不会要求你在聊天中发送 API Key、Cookie 或 Authorization；
+- 失败会说明真实原因和下一步，并保留 `request_id` 方便排查。
 
 ---
 
@@ -213,6 +216,7 @@ curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/package
 
 | 日期 | 版本 | 新能力 | 适合怎么用 |
 |------|------|--------|------------|
+| 2026-08-14 | **v2.0.0** | 1. 通过官方 CLI 稳定执行<br>2. 支持知识库文件夹、团队知识库和抖音博主订阅<br>3. 链接和图片等待生成完成后再返回<br>4. 一句话安装或上传安装包 | 1. 直接对常用 AI 说“安装得到大脑”<br>2. 用自然语言保存、搜索和整理笔记，不再猜 API 参数<br>3. 把笔记准确归档到指定知识库和文件夹 |
 | 2026-04-23 | **v1.8.0** | 1. 笔记内链<br>2. 保存分享链接自动变笔记 | 1. 用内链串联每天的工作日志和项目笔记，实践时间日志法<br>2. 收到别人发来的分享链接直接存入笔记 |
 | 2026-04-16 | **v1.7.0** | 1. 生成笔记分享链接<br>2. 知识库订阅得到直播 | 1. 把笔记一键分享给朋友<br>2. 在知识库里订阅得到直播课，直播结束后 AI 摘要自动入库 |
 | 2026-03-26 | **v1.5.6** | 获取我订阅的知识库，支持语义搜索 | 开通了某个知识库，可以直接问 AI：「在我订阅的 XXX 知识库里搜一下时间管理」 |
@@ -231,4 +235,4 @@ curl -sL https://raw.githubusercontent.com/iswalle/getnote-openclaw/main/package
 
 ## License
 
-MIT-0 · Published on [ClawHub](https://clawhub.ai)
+MIT

@@ -1,0 +1,44 @@
+name: Validate Skill contract
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout matching CLI contract
+        shell: bash
+        run: |
+          BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+          git clone --depth 1 https://github.com/iswalle/getnote-cli.git getnote-cli
+          if git ls-remote --exit-code --heads https://github.com/iswalle/getnote-cli.git "$BRANCH" >/dev/null 2>&1; then
+            git -C getnote-cli fetch --depth 1 origin "$BRANCH"
+            git -C getnote-cli checkout FETCH_HEAD
+          fi
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: getnote-cli/go.mod
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build matching CLI
+        working-directory: getnote-cli
+        run: go build -o /tmp/getnote .
+      - name: Verify domain Skills stay aligned with CLI
+        env:
+          GETNOTE_CLI_SKILLS_DIR: ${{ github.workspace }}/getnote-cli/skills
+          GETNOTE_CLI: /tmp/getnote
+        run: python3 scripts/verify_cli_contract.py
+      - name: Validate packaged Skill structure
+        run: |
+          python3 scripts/build_skill_package.py
+          unzip -Z1 dist/getnote-skill.zip | sed 's#^getnote-skill/##' | sed '/^$/d; /\/$/d' | sort > /tmp/package-files.txt
+          test "$(cat /tmp/package-files.txt)" = $'SKILL.md\nreferences/auth.md\nreferences/kb.md\nreferences/note.md\nreferences/search.md\nreferences/tag.md\nscripts/install.sh'
