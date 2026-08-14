@@ -194,6 +194,7 @@ if readme.count("### 方式") != 2:
 for required in (
     "https://github.com/iswalle/getnote-openclaw",
     "https://github.com/iswalle/getnote-openclaw/releases/latest",
+    "getnote-skill-2.0.0.zip",
     "不会清除已经保存的授权凭证",
     "**v2.0.0**",
 ):
@@ -203,8 +204,10 @@ for required in (
 builder_text = (ROOT / "scripts" / "build_skill_package.py").read_text(encoding="utf-8")
 if 'ROOT / "README.md"' in builder_text:
     fail("uploadable Skill archive must contain runtime Skill files only")
-if 'f"getnote-skill-{VERSION}.zip"' not in builder_text:
+if 'ARCHIVE = DIST / f"getnote-skill-{VERSION}.zip"' not in builder_text:
     fail("builder must create a versioned Skill package")
+if 'shutil.copy2(ARCHIVE, versioned_archive)' in builder_text:
+    fail("builder must not create duplicate stable and versioned packages")
 
 mentioned: set[str] = set()
 for reference_path in DOMAIN_REFERENCES:

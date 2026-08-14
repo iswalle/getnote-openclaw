@@ -40,5 +40,5 @@ jobs:
       - name: Validate packaged Skill structure
         run: |
           python3 scripts/build_skill_package.py
-          unzip -Z1 dist/getnote-skill.zip | sed 's#^getnote-skill/##' | sed '/^$/d; /\/$/d' | sort > /tmp/package-files.txt
+          unzip -Z1 dist/getnote-skill-2.0.0.zip | sed 's#^getnote-skill/##' | sed '/^$/d; /\/$/d' | sort > /tmp/package-files.txt
           test "$(cat /tmp/package-files.txt)" = $'SKILL.md\nreferences/auth.md\nreferences/kb.md\nreferences/note.md\nreferences/search.md\nreferences/tag.md\nscripts/install.sh'

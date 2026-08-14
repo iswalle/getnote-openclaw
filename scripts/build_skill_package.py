@@ -15,8 +15,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
 STAGE = DIST / "getnote-skill"
-ARCHIVE = DIST / "getnote-skill.zip"
 VERSION = "2.0.0"
+ARCHIVE = DIST / f"getnote-skill-{VERSION}.zip"
+LEGACY_ARCHIVE = DIST / "getnote-skill.zip"
 
 
 def main() -> int:
@@ -32,15 +33,12 @@ def main() -> int:
     runtime_scripts.mkdir()
     shutil.copy2(ROOT / "scripts" / "install.sh", runtime_scripts / "install.sh")
 
+    if LEGACY_ARCHIVE.exists():
+        LEGACY_ARCHIVE.unlink()
     if ARCHIVE.exists():
         ARCHIVE.unlink()
     shutil.make_archive(str(ARCHIVE.with_suffix("")), "zip", DIST, STAGE.name)
-    versioned_archive = DIST / f"getnote-skill-{VERSION}.zip"
-    if versioned_archive.exists():
-        versioned_archive.unlink()
-    shutil.copy2(ARCHIVE, versioned_archive)
     print(ARCHIVE)
-    print(versioned_archive)
     return 0
 
 

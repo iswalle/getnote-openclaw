@@ -107,7 +107,7 @@ AI 会自动安装官方 CLI 并引导授权。需要登录时，只在打开的
 
 ### 方式二：下载 Skill 安装包
 
-打开 [得到大脑 Skill 发布页](https://github.com/iswalle/getnote-openclaw/releases/latest)，在最新版的 Assets 中下载 `getnote-skill.zip`，直接拖进 AI 的聊天框，然后说：
+打开 [得到大脑 Skill 发布页](https://github.com/iswalle/getnote-openclaw/releases/latest)，在最新版的 Assets 中下载 `getnote-skill-2.0.0.zip`，直接拖进 AI 的聊天框，然后说：
 
 > 请解压并安装这个得到大脑 Skill，按照 SKILL.md 自动安装官方 CLI，引导我完成授权，并读取最近一条笔记确认可以正常使用。
 
