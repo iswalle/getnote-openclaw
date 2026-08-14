@@ -194,7 +194,7 @@ if readme.count("### 方式") != 2:
 for required in (
     "https://github.com/iswalle/getnote-openclaw",
     "https://github.com/iswalle/getnote-openclaw/releases/latest",
-    "getnote-skill-2.0.0.zip",
+    "下载最新版 ZIP",
     "不会清除已经保存的授权凭证",
     "**v2.0.0**",
 ):
