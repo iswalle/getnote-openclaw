@@ -8,7 +8,7 @@ set -euo pipefail
 
 PACKAGE_NAME="@getnote/cli"
 MIN_NODE_MAJOR=20
-RELEASE_URL_DEFAULT="https://github.com/iswalle/getnote-openclaw/releases/latest/download/getnote-skill.zip"
+RELEASE_API_DEFAULT="https://api.github.com/repos/iswalle/getnote-openclaw/releases/latest"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SKILL_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -61,8 +61,9 @@ command -v getnote >/dev/null 2>&1 || fail "CLI 安装后仍不可执行，请�
 info "CLI: $(getnote version 2>&1 | head -n 1)"
 
 refresh_skill_package() {
-  local release_url tmp_dir archive package_root skill_file
-  release_url="${GETNOTE_SKILL_RELEASE_URL:-$RELEASE_URL_DEFAULT}"
+  local release_url release_api release_json remote_version local_version tmp_dir archive package_root skill_file
+  release_url="${GETNOTE_SKILL_RELEASE_URL:-}"
+  release_api="${GETNOTE_SKILL_RELEASE_API:-$RELEASE_API_DEFAULT}"
   tmp_dir="$(mktemp -d "${TMPDIR:-/tmp}/getnote-skill-update.XXXXXX")"
   archive="$tmp_dir/getnote-skill.zip"
 
@@ -71,7 +72,41 @@ refresh_skill_package() {
     rm -rf "$tmp_dir"
     return 0
   fi
-  if ! curl -fsSL --connect-timeout 15 --max-time 90 "$release_url" -o "$archive"; then
+  if [ -z "$release_url" ]; then
+    release_json="$tmp_dir/release.json"
+    if curl -fsSL --connect-timeout 15 --max-time 30 "$release_api" -o "$release_json"; then
+      remote_version="$(node -e '
+const fs = require("fs");
+const release = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+process.stdout.write(String(release.tag_name || "").replace(/^v/, ""));
+' "$release_json")"
+      release_url="$(node -e '
+const fs = require("fs");
+const release = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+const assets = release.assets || [];
+const preferred = assets.find((item) => item.name === "getnote-skill.zip")
+  || assets.find((item) => /^getnote-skill-[0-9][0-9A-Za-z._-]*\.zip$/.test(item.name || ""));
+if (preferred && preferred.browser_download_url) process.stdout.write(preferred.browser_download_url);
+' "$release_json")"
+      local_version="$(sed -n 's/.*"version": "\([0-9][0-9.]*\)".*/\1/p' "$SKILL_DIR/SKILL.md" | head -n 1)"
+      if [ -n "$local_version" ] && [ -n "$remote_version" ] && ! node -e '
+const current = process.argv[1].split(".").map(Number);
+const remote = process.argv[2].split(".").map(Number);
+for (let index = 0; index < Math.max(current.length, remote.length); index += 1) {
+  const left = current[index] || 0;
+  const right = remote[index] || 0;
+  if (right > left) process.exit(0);
+  if (right < left) process.exit(1);
+}
+process.exit(0);
+' "$local_version" "$remote_version"; then
+        info "已升级 CLI；线上 Skill ${remote_version} 早于当前 ${local_version}，当前 Skill 保持不变。"
+        rm -rf "$tmp_dir"
+        return 0
+      fi
+    fi
+  fi
+  if [ -z "$release_url" ] || ! curl -fsSL --connect-timeout 15 --max-time 90 "$release_url" -o "$archive"; then
     info "已升级 CLI；暂时没有可下载的新版 Skill 包，当前 Skill 保持不变。"
     rm -rf "$tmp_dir"
     return 0

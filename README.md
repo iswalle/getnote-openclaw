@@ -26,17 +26,19 @@
 
 把下面这句话发给 WorkBuddy、Claude、Codex 或其他能安装 Skill 的 AI：
 
-> 请安装 GitHub 仓库 https://github.com/iswalle/getnote-openclaw 中的得到大脑 Skill。请读取其中的 SKILL.md，自动安装官方 CLI，引导我在浏览器完成授权，并检查是否能正常读取笔记。
+> 请从 GitHub 仓库 https://github.com/iswalle/getnote-openclaw 安装得到大脑 Skill。请读取 SKILL.md，自动完成所需依赖安装，引导我在浏览器授权，并读取最近一条笔记确认可以正常使用。
 
 AI 会完成安装和检查。需要登录时，只在打开的得到大脑网页中确认，不要在聊天里发送 API Key、Cookie 或其他账号凭证。
 
 ### 方式二：下载 Skill 安装包
 
-下载 [得到大脑 Skill 安装包](https://github.com/iswalle/getnote-openclaw/releases/download/v2.0.0/getnote-skill.zip)，直接拖进 AI 的聊天框，然后说：
+打开 [最新版下载页面](https://github.com/iswalle/getnote-openclaw/releases/latest)，在 **Assets** 中下载 `getnote-skill.zip`，直接拖进 AI 的聊天框，然后说：
 
 > 请解压并安装这个得到大脑 Skill，按照 SKILL.md 自动安装官方 CLI，引导我完成授权，并检查是否能正常读取笔记。
 
-安装包已经包含主 Skill、五个领域说明和自动安装脚本，不需要再下载 GitHub 源码。首次使用需要 Node.js 20 或更高版本和可访问 npm 的网络；Skill 会自动安装 CLI，不会替系统安装 Node.js。
+安装包已经包含运行所需的主 Skill、五个领域参考和自动安装脚本，不需要再下载 GitHub 源码。首次使用需要 Node.js 20 或更高版本和可访问 npm 的网络；AI 会自动安装官方 CLI，但不会擅自改动系统的 Node.js。
+
+> 当前在开发分支查看 README 时，请使用本次交付的 `getnote-skill-2.0.0.zip` 内测包。正式发布后，上面的“最新版下载页面”会提供同内容的安装包，不再绑定容易失效的写死版本地址。
 
 ## 安装成功是什么样
 
@@ -94,6 +96,8 @@ AI 会先读取你真实可用的知识库、文件夹和权限，不会根据�
 > 帮我把得到大脑更新到最新版，并检查是否能正常读取和保存笔记。
 
 AI 会更新 Skill 和官方 CLI，并重新检查连接。重复安装或更新不会清除已经保存的授权凭证。
+
+如果只是再次执行同一句安装指令，也会覆盖更新程序文件，但会保留当前账号已经完成的授权。
 
 ## 隐私和安全
 

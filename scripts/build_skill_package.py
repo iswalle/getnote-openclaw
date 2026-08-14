@@ -16,14 +16,17 @@ ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
 STAGE = DIST / "getnote-skill"
 ARCHIVE = DIST / "getnote-skill.zip"
+VERSION = "2.0.0"
 
 
 def main() -> int:
+    skill_text = (ROOT / "SKILL.md").read_text(encoding="utf-8")
+    if f'"version": "{VERSION}"' not in skill_text:
+        raise RuntimeError("Skill metadata version and package version are inconsistent")
     if STAGE.exists():
         shutil.rmtree(STAGE)
     STAGE.mkdir(parents=True)
     shutil.copy2(ROOT / "SKILL.md", STAGE / "SKILL.md")
-    shutil.copy2(ROOT / "README.md", STAGE / "README.md")
     shutil.copytree(ROOT / "references", STAGE / "references")
     runtime_scripts = STAGE / "scripts"
     runtime_scripts.mkdir()
@@ -32,7 +35,12 @@ def main() -> int:
     if ARCHIVE.exists():
         ARCHIVE.unlink()
     shutil.make_archive(str(ARCHIVE.with_suffix("")), "zip", DIST, STAGE.name)
+    versioned_archive = DIST / f"getnote-skill-{VERSION}.zip"
+    if versioned_archive.exists():
+        versioned_archive.unlink()
+    shutil.copy2(ARCHIVE, versioned_archive)
     print(ARCHIVE)
+    print(versioned_archive)
     return 0
 
 

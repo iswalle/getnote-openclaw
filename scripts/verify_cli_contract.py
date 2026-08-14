@@ -140,6 +140,8 @@ for alias, canonical in aliases.items():
         fail(f"alias {alias!r} points to unknown command {canonical!r}")
 
 main_text = MAIN_SKILL.read_text(encoding="utf-8")
+if '"version": "2.0.0"' not in main_text:
+    fail("main Skill metadata must expose version 2.0.0")
 if "/open/api/" in main_text:
     fail("main Skill must not contain OpenAPI paths")
 for required in (
@@ -186,7 +188,7 @@ if readme.count("### 方式") != 2:
     fail("README must expose exactly two installation methods")
 for required in (
     "https://github.com/iswalle/getnote-openclaw",
-    "releases/download/v2.0.0/getnote-skill.zip",
+    "https://github.com/iswalle/getnote-openclaw/releases/latest",
     "不会清除已经保存的授权凭证",
     "### v2.0.0",
 ):
@@ -194,8 +196,10 @@ for required in (
         fail(f"README is missing user-facing installation information: {required}")
 
 builder_text = (ROOT / "scripts" / "build_skill_package.py").read_text(encoding="utf-8")
-if 'ROOT / "README.md"' not in builder_text:
-    fail("uploadable Skill archive must include the human-readable README")
+if 'ROOT / "README.md"' in builder_text:
+    fail("uploadable Skill archive must contain runtime Skill files only")
+if 'f"getnote-skill-{VERSION}.zip"' not in builder_text:
+    fail("builder must create a versioned Skill package")
 
 mentioned: set[str] = set()
 for reference_path in DOMAIN_REFERENCES:
