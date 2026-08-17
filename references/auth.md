@@ -3,17 +3,16 @@
 
 负责把“用户想用得到大脑”推进到真正可执行的状态。不要只说“已安装”：CLI 可执行、账号已授权、API 可读三项都通过才算连接成功。
 
-## 首次安装闭环
+## 首次连接闭环
 
 按顺序执行，已经满足的步骤直接跳过：
 
-1. 若当前来自独立 GetNote Skill 包，先运行 `bash scripts/install.sh --ensure`。它负责检查 Node.js 20+ 并确保官方 CLI 存在；不要因为 Skill 已安装就假设 CLI 存在。
-2. 若当前环境只有 CLI 内置 Skill、没有上述安装器，则用 `command -v getnote` 检查 CLI；缺失时检查 `node --version` 和 `npm --version`，再自动执行 `npm install -g @getnote/cli@latest`。这是 Agent 的工作，不要求用户手工复制命令；只有系统弹出安装授权时才请用户确认。
-3. 执行 `getnote version`，必须能够正常启动。
-4. 执行 `getnote auth status`。未登录时运行 `getnote auth login`，让用户只在浏览器中确认，不索要 API Key、Cookie 或 Authorization。
-5. 执行 `getnote doctor -o json`。只有 `success=true`，且 `checks` 中 `cli`、`auth`、`api` 均为 `ok=true`，才能宣布连接完成。
-6. 在 Codex、Claude Code 或 Cursor 等本地 Agent 中，执行 `getnote setup` 同步 5 个领域 Skill；如果当前平台已经由独立 Skill 包携带这些领域 Skill，或 CLI 明确提示未检测到受支持平台，不把这一步失败误报成账号连接失败。
-7. 先用 `getnote notes --limit 1 -o json` 做无写入验收。只有用户同意创建测试内容时，才保存测试笔记。
+1. 用 `command -v getnote` 检查官方 CLI。缺失时停止任务并让平台使用 `SKILL.md` 中声明的 `@getnote/cli` 安装项；不要自行运行 npm、下载脚本或修改 Skill 文件。
+2. 执行 `getnote version`，必须能够正常启动。
+3. 执行 `getnote auth status`。未登录时运行 `getnote auth login`，让用户只在浏览器中确认，不索要 API Key、Cookie 或 Authorization。
+4. 执行 `getnote doctor -o json`。只有 `success=true`，且 `checks` 中 `cli`、`auth`、`api` 均为 `ok=true`，才能宣布连接完成。
+5. 独立 Skill 已携带领域参考，不运行 `getnote setup` 改写本机 Skill。只有用户明确要求为其他本机 Agent 同步 CLI 内置 Skill 时才执行该命令，并说明它会写入对应 Agent 的 Skill 目录。
+6. 先用 `getnote notes --limit 1 -o json` 做无写入验收。只有用户同意创建测试内容时，才保存测试笔记。
 
 ## 日常路由
 
@@ -49,14 +48,14 @@
 
 所有命令以退出码为第一判断：退出码非 0 即失败。使用 `-o json` 的 API 与本地错误均返回 `success=false`、`data=null`、`error.code/message/reason/retryable` 和可选 `request_id`；不能把 HTTP 200 或“命令运行过”当成成功。
 
-## 更新闭环
+## CLI 更新闭环
 
-用户说“帮我更新得到大脑”已经构成更新授权：
+用户明确要求升级得到大脑 CLI 后执行：
 
-1. 若当前来自独立 GetNote Skill 包，执行 `bash scripts/install.sh --update`。它升级 CLI，并在有新版发布包时刷新主 Skill 和五个领域 Skill。
-2. 若当前环境只有 CLI 内置 Skill，执行 `getnote update --check`；有新版本时执行 `getnote update`，若 CLI 明确提示 npm 安装方式，则用 `npm install -g @getnote/cli@latest`。
+1. 只有用户明确要求升级 CLI 时才执行 `getnote update --check`；有新版本时执行 `getnote update`。
+2. 如果 CLI 明确要求由包管理器升级，停止并让用户通过平台声明的 `@getnote/cli` 安装项完成，不直接执行 npm。
 3. 执行 `getnote version` 和 `getnote doctor -o json`。
-4. 执行 `getnote setup` 同步内置领域 Skill；技能市场托管的独立 Skill 需要平台更新时，只让用户完成唯一必要的点击。
+4. 不运行 `getnote setup`，也不覆盖当前独立 Skill；Skill 更新由 ClawHub/OpenClaw 管理。
 5. 用最近笔记读取做验收，再告诉用户版本、诊断结果和仍需动作。
 
 ## 安全与恢复

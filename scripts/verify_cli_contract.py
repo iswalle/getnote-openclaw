@@ -145,13 +145,13 @@ for alias, canonical in aliases.items():
         fail(f"alias {alias!r} points to unknown command {canonical!r}")
 
 main_text = MAIN_SKILL.read_text(encoding="utf-8")
-if "version: 2.0.0" not in main_text:
-    fail("main Skill must expose version 2.0.0")
+if "version: 2.0.1" not in main_text:
+    fail("main Skill must expose version 2.0.1")
 if "/open/api/" in main_text:
     fail("main Skill must not contain OpenAPI paths")
 for required in (
-    "scripts/install.sh --ensure",
-    "scripts/install.sh --update",
+    'bins: ["getnote"]',
+    'package: "@getnote/cli"',
     "getnote auth login",
     "getnote doctor -o json",
 ):
@@ -175,18 +175,18 @@ reference_sources = {
 if {path.name for path in DOMAIN_REFERENCES} != set(reference_sources):
     fail("independent Skill references do not match the five supported domains")
 for reference_name, cli_skill_name in reference_sources.items():
+    # The independent package has platform-managed dependency installation and
+    # deliberately keeps auth lifecycle instructions separate from CLI-bundled
+    # Skill installation instructions.
+    if reference_name == "auth.md":
+        continue
     reference = ROOT / "references" / reference_name
     cli_skill = CLI_SKILLS / cli_skill_name / "SKILL.md"
     if not cli_skill.is_file() or reference.read_text(encoding="utf-8") != skill_body(cli_skill):
         fail(f"reference {reference_name} drifted from CLI Skill {cli_skill_name}")
 
-runtime_installer = ROOT / "scripts" / "install.sh"
-if not runtime_installer.is_file():
-    fail("independent Skill is missing scripts/install.sh")
-installer_text = runtime_installer.read_text(encoding="utf-8")
-for required in ("@getnote/cli", "--ensure", "--update", "getnote version"):
-    if required not in installer_text:
-        fail(f"runtime installer is missing {required!r}")
+if (ROOT / "scripts" / "install.sh").exists():
+    fail("uploadable Skill must not ship a self-install or self-update script")
 
 readme = (ROOT / "README.md").read_text(encoding="utf-8")
 if readme.count("### 方式") != 2:
@@ -195,8 +195,8 @@ for required in (
     "https://github.com/iswalle/getnote-openclaw",
     "https://github.com/iswalle/getnote-openclaw/releases/latest",
     "下载最新版 ZIP",
-    "不会清除已经保存的授权凭证",
-    "**v2.0.0**",
+    "Skill 本身不会执行下载脚本或自行覆盖文件",
+    "**v2.0.1**",
 ):
     if required not in readme:
         fail(f"README is missing user-facing installation information: {required}")

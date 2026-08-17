@@ -1,17 +1,31 @@
 ---
 name: getnote
-version: 2.0.0
-description: 把得到大脑连接到当前 AI，并通过官方 CLI 保存、查询、搜索和整理用户的真实笔记。用户说“安装/连接/更新得到大脑”“记一下/保存链接或图片”“最近有哪些笔记/帮我找笔记”“查看原文或录音转写”“整理到知识库或文件夹”“订阅抖音博主”或“管理标签”时使用。
+version: 2.0.1
+description: 通过官方 getnote CLI 连接得到大脑，完成浏览器授权、连接诊断、CLI 升级，以及保存、查询、搜索、整理和管理用户的真实笔记。用户明确要求登录、诊断或升级，或要保存链接/图片、查找和查看笔记、整理知识库/文件夹、订阅博主、管理标签时使用；不会自行安装或更新 Skill。
 metadata:
   openclaw:
     emoji: "🧠"
     requires:
-      bins: ["node", "npm"]
+      bins: ["getnote"]
+    install:
+      - id: "node-getnote"
+        kind: "node"
+        package: "@getnote/cli"
+        bins: ["getnote"]
+        label: "Install official GetNote CLI (npm)"
 ---
 
 # 得到大脑
 
-让用户在当前 AI 中直接保存、查找和整理自己的得到大脑内容。本 Skill 负责完成安装与连接、理解用户意图、加载对应领域参考，并交给官方 CLI 执行真实操作。
+让用户在当前 AI 中直接连接、诊断、升级 CLI，以及保存、查找和整理自己的得到大脑内容。本 Skill 理解用户意图、加载对应领域参考，并交给官方 `getnote` CLI 执行真实操作。
+
+## 能力与外部影响
+
+- 本 Skill 会按用户请求执行 `getnote` 命令，并通过得到大脑官方 API 读取或修改当前已授权账号的数据。
+- 登录会打开浏览器授权页，并由 CLI 把授权信息保存在其本机配置目录；Skill 不读取、展示或转发完整凭证。
+- 保存、更新、归档、分享和删除会修改远端笔记数据，并遵守下方的确认规则。
+- 只有用户明确要求升级时才执行 `getnote update`；不会自行运行 npm、安装其他软件、下载并覆盖本 Skill 或修改其他 Skill 文件。
+- `getnote` 缺失时停止任务并使用平台根据 frontmatter `install` 声明提供的官方安装流程，不绕过平台审批执行安装命令。
 
 ## 能力概览
 
@@ -26,12 +40,12 @@ metadata:
 
 不要要求用户记命令。用户用自然语言表达目标即可。
 
-## 首次使用
+## 首次连接
 
-1. 定位本 `SKILL.md` 同目录下的 `scripts/install.sh`，运行 `bash <该路径>/scripts/install.sh --ensure`。它会检查 Node.js、确保官方 `@getnote/cli` 可执行；缺失时由 Agent 安装，不把依赖安装甩给用户手工完成。不要假设当前工作目录就是 Skill 目录。
-2. 执行 `getnote version` 和 `getnote auth status`。尚未授权时运行 `getnote auth login` 并让用户只在浏览器确认；不得索要 API Key、Cookie 或 Authorization。
+1. 执行 `getnote version` 和 `getnote auth status`。如果 `getnote` 不可执行，停止并提示通过平台声明的官方 npm 安装项安装依赖，不直接运行 npm 或本地安装脚本。
+2. 尚未授权时运行 `getnote auth login` 并让用户只在浏览器确认；不得索要 API Key、Cookie 或 Authorization。
 3. 执行 `getnote doctor -o json`。只有 `success=true` 且 `cli`、`auth`、`api` 三项通过，才能说已经连接。
-4. 独立 Skill 包已经包含 5 份领域参考，当前平台直接使用它们，不再运行 `getnote setup` 重复安装 CLI 内置 Skill。只有用户单独安装 CLI、没有导入本 Skill 包时，才由 CLI 的 `setup` 为本机 Agent 安装同源的领域 Skill。
+4. 独立 Skill 包已经包含 5 份领域参考，当前平台直接使用它们，不运行 `getnote setup` 改写本机 Skill。只有用户明确要求为其他本机 Agent 同步 CLI 内置 Skill 时，才按 `references/auth.md` 执行。
 5. 先运行 `getnote notes --limit 1 -o json` 做无写入验收。只有用户同意时才保存测试笔记，而且必须返回真实标题、字符串笔记 ID 和可打开的 `note_url` 才算完成。
 
 ## 每次任务的执行闭环
@@ -87,4 +101,8 @@ metadata:
 
 ## 用户要求更新
 
-用户说“帮我更新得到大脑”已经构成更新授权。定位本 `SKILL.md` 同目录下的安装器并运行 `bash <该路径>/scripts/install.sh --update`，它会升级 CLI 并刷新当前独立 Skill 包；随后运行诊断并验证读取能力。重复安装不得删除 `~/.getnote` 中的授权凭证。只有平台必须人工确认时才让用户完成唯一必要的点击。
+区分两种更新，不扩大用户授权：
+
+- 用户要求“升级得到大脑 CLI”时，按 `references/auth.md` 先检查再执行 `getnote update`，随后运行诊断并验证读取能力。
+- 用户要求“更新这个 Skill”时，使用 ClawHub/OpenClaw 的 Skill 更新流程；本 Skill 不下载或覆盖自身文件。
+- 用户只说“更新得到大脑”而无法从上下文判断对象时，先说明 CLI 与 Skill 是两个独立组件并询问要更新哪一个。
