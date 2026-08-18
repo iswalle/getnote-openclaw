@@ -145,8 +145,8 @@ for alias, canonical in aliases.items():
         fail(f"alias {alias!r} points to unknown command {canonical!r}")
 
 main_text = MAIN_SKILL.read_text(encoding="utf-8")
-if "version: 2.0.1" not in main_text:
-    fail("main Skill must expose version 2.0.1")
+if "version: 2.0.2" not in main_text:
+    fail("main Skill must expose version 2.0.2")
 if "/open/api/" in main_text:
     fail("main Skill must not contain OpenAPI paths")
 for required in (
@@ -196,7 +196,7 @@ for required in (
     "https://github.com/iswalle/getnote-openclaw/releases/latest",
     "下载最新版 ZIP",
     "Skill 本身不会执行下载脚本或自行覆盖文件",
-    "**v2.0.1**",
+    "**v2.0.2**",
 ):
     if required not in readme:
         fail(f"README is missing user-facing installation information: {required}")

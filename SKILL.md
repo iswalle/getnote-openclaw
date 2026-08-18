@@ -1,6 +1,6 @@
 ---
 name: getnote
-version: 2.0.1
+version: 2.0.2
 description: 通过官方 getnote CLI 连接得到大脑，完成浏览器授权、连接诊断、CLI 升级，以及保存、查询、搜索、整理和管理用户的真实笔记。用户明确要求登录、诊断或升级，或要保存链接/图片、查找和查看笔记、整理知识库/文件夹、订阅博主、管理标签时使用；不会自行安装或更新 Skill。
 metadata:
   openclaw:
@@ -15,7 +15,7 @@ metadata:
         label: "Install official GetNote CLI (npm)"
 ---
 
-# 得到大脑
+# 得到大脑（原 Get 笔记）
 
 让用户在当前 AI 中直接连接、诊断、升级 CLI，以及保存、查找和整理自己的得到大脑内容。本 Skill 理解用户意图、加载对应领域参考，并交给官方 `getnote` CLI 执行真实操作。
 
