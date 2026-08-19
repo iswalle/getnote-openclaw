@@ -1,6 +1,6 @@
 ---
 name: getnote
-version: 2.0.2
+version: 2.0.3
 description: 通过官方 getnote CLI 连接得到大脑，完成浏览器授权、连接诊断、CLI 升级，以及保存、查询、搜索、整理和管理用户的真实笔记。用户明确要求登录、诊断或升级，或要保存链接/图片、查找和查看笔记、整理知识库/文件夹、订阅博主、管理标签时使用；不会自行安装或更新 Skill。
 metadata:
   openclaw:
