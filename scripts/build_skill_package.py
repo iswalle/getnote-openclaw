@@ -9,21 +9,23 @@ approval flow; no executable installer ships in the archive.
 from __future__ import annotations
 
 import shutil
+import re
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
 STAGE = DIST / "getnote-skill"
-VERSION = "2.0.1"
+SKILL_TEXT = (ROOT / "SKILL.md").read_text(encoding="utf-8")
+VERSION_MATCH = re.search(r"(?m)^version:\s*([^\s]+)\s*$", SKILL_TEXT)
+if VERSION_MATCH is None:
+    raise RuntimeError("SKILL.md is missing a version")
+VERSION = VERSION_MATCH.group(1)
 ARCHIVE = DIST / f"getnote-skill-{VERSION}.zip"
 LEGACY_ARCHIVE = DIST / "getnote-skill.zip"
 
 
 def main() -> int:
-    skill_text = (ROOT / "SKILL.md").read_text(encoding="utf-8")
-    if f"version: {VERSION}" not in skill_text:
-        raise RuntimeError("Skill version and package version are inconsistent")
     if STAGE.exists():
         shutil.rmtree(STAGE)
     STAGE.mkdir(parents=True)

@@ -56,8 +56,18 @@ try:
 except json.JSONDecodeError as exc:
     fail(f"capabilities is not JSON: {exc}")
 
-if capabilities.get("contract_version") != "2.1":
-    fail(f"expected contract 2.1, got {capabilities.get('contract_version')!r}")
+contract_version = capabilities.get("contract_version")
+if contract_version not in {"2.1", "2.2"}:
+    fail(f"expected compatible contract 2.1 or 2.2, got {contract_version!r}")
+if contract_version == "2.2":
+    install_contract = capabilities.get("install", {})
+    for key in ("detect_cli", "terminal", "platform_managed_cli", "verify", "success_condition", "managed_skill_boundary"):
+        if not install_contract.get(key):
+            fail(f"CLI install contract is missing {key}")
+    upgrade_contract = capabilities.get("upgrade", {})
+    for key in ("full", "verify", "managed_skill_boundary"):
+        if not upgrade_contract.get(key):
+            fail(f"CLI upgrade contract is missing {key}")
 
 result_contracts = capabilities.get("result_contracts", {})
 for key in (
@@ -145,8 +155,8 @@ for alias, canonical in aliases.items():
         fail(f"alias {alias!r} points to unknown command {canonical!r}")
 
 main_text = MAIN_SKILL.read_text(encoding="utf-8")
-if "version: 2.0.1" not in main_text:
-    fail("main Skill must expose version 2.0.1")
+if "version: 2.0.3" not in main_text:
+    fail("main Skill must expose version 2.0.3")
 if "/open/api/" in main_text:
     fail("main Skill must not contain OpenAPI paths")
 for required in (
@@ -196,7 +206,7 @@ for required in (
     "https://github.com/iswalle/getnote-openclaw/releases/latest",
     "下载最新版 ZIP",
     "Skill 本身不会执行下载脚本或自行覆盖文件",
-    "**v2.0.1**",
+    "**v2.0.3**",
 ):
     if required not in readme:
         fail(f"README is missing user-facing installation information: {required}")
@@ -256,5 +266,5 @@ for command in sorted(mentioned):
         fail(f"{command} has incomplete help")
 
 print(
-    f"contract 2.1 verified: {len(mentioned)} documented command paths, result contracts and help all exist"
+    f"contract {contract_version} verified: {len(mentioned)} documented command paths, result contracts and help all exist"
 )
