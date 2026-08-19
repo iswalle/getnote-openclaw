@@ -182,7 +182,7 @@ AI 会先读取真实知识库、文件夹和权限，再执行操作，不会�
 
 > 帮我把得到大脑更新到最新版，并检查是否能正常读取和保存笔记。
 
-AI 会先确认你要更新的是官方 CLI 还是 Skill：CLI 使用 `getnote update`，Skill 使用 ClawHub/OpenClaw 的更新流程；两者不会互相覆盖。
+AI 会直接完成更新闭环：运行 `getnote update` 升级 CLI、同步五个领域 Skill 并诊断连接，然后通过 ClawHub/OpenClaw 检查独立 Skill 更新。需要平台确认时只提示一个必要动作，不要求你理解或选择内部组件；两者不会互相覆盖。
 
 ---
 

@@ -56,8 +56,18 @@ try:
 except json.JSONDecodeError as exc:
     fail(f"capabilities is not JSON: {exc}")
 
-if capabilities.get("contract_version") != "2.1":
-    fail(f"expected contract 2.1, got {capabilities.get('contract_version')!r}")
+contract_version = capabilities.get("contract_version")
+if contract_version not in {"2.1", "2.2"}:
+    fail(f"expected compatible contract 2.1 or 2.2, got {contract_version!r}")
+if contract_version == "2.2":
+    install_contract = capabilities.get("install", {})
+    for key in ("detect_cli", "terminal", "platform_managed_cli", "verify", "success_condition", "managed_skill_boundary"):
+        if not install_contract.get(key):
+            fail(f"CLI install contract is missing {key}")
+    upgrade_contract = capabilities.get("upgrade", {})
+    for key in ("full", "verify", "managed_skill_boundary"):
+        if not upgrade_contract.get(key):
+            fail(f"CLI upgrade contract is missing {key}")
 
 result_contracts = capabilities.get("result_contracts", {})
 for key in (
@@ -256,5 +266,5 @@ for command in sorted(mentioned):
         fail(f"{command} has incomplete help")
 
 print(
-    f"contract 2.1 verified: {len(mentioned)} documented command paths, result contracts and help all exist"
+    f"contract {contract_version} verified: {len(mentioned)} documented command paths, result contracts and help all exist"
 )
