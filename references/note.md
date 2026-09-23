@@ -29,6 +29,9 @@
 | 录音、会议或课堂转写 | `getnote note transcript` |
 | 图片、音频和文件附件 | `getnote note attachments` |
 | 录音或会议时间线 | `getnote note timeline` |
+| 独立读取录音标记 | `getnote marks <note_id>` |
+| 按月份列出发芽 | `getnote sprouts <YYYY-MM>` |
+| 发芽报告正文 | `getnote sprout <id>` |
 | 录音快捷笔记 | `gnote note quick`，旧版回退 `getnote note quick-note` |
 | 会议总结中的派生待办 | `getnote note todos` |
 | 修改笔记 | `getnote note update` |
@@ -77,6 +80,7 @@
    - 用户现场快捷记录：`quick-note`；
    - 会议待办：`todos`，必须保留 `source`，不得把规则解析结果说成上游原生待办。
 5. 不拿 `content` 中的 AI 摘要冒充原文。
+6. 标记从 `data.marks[]` 读取，与 Timeline 独立；不能依据时间线条数推断标记。发芽先按月列出报告，再读取对应报告正文，不能把标记或总结当作发芽报告。
 
 ## 修改、删除和分享
 

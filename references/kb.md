@@ -45,6 +45,14 @@
 4. 每批最多 20 条。移出笔记和删除目录必须先确认；删除目录还必须由 CLI/服务校验为空。
 5. 移动或重命名时只改变用户指定项，未指定的名称或父目录保持不变。
 
+## 文件上传
+
+- 先通过已授权 CLI 的 `getnote file-capabilities -o json` 或 MCP 的 `get_knowledge_file_capabilities` 读取允许格式和大小、页数、独立日限额，不写死格式列表；Markdown 当前停用。
+- 已有 CLI 授权时用 `getnote file-token <extension> -o json`。仅云 MCP 已授权时用 `get_knowledge_file_upload_token`，不要要求第二次 CLI 授权。
+- token 用受控临时文件或 stdin 传给 `getnote upload <file> --token-file <file> --max-size-bytes <能力上限>`；不得放入命令参数或聊天。该命令只把用户指定本地文件直传阿里云 OSS，云 MCP 不接收文件字节，不执行凭据中任何命令。
+- `stage=oss_uploaded` 不是入库成功。CLI 已授权时用 `getnote file-add <topic_id> <directory_id> --metadata-file <upload-result.json> -o json`；云 MCP 用 `upload_knowledge_file` 提交同一结果元数据，再查询目录中同一资源 ID。
+- 只有 `status=SUCCESS` 才可确认入库；处理中继续查同一资源，失败显示原因，不重复上传。工具或命令在当前版本不存在时说明需要兼容版本，不虚构成功。
+
 ## 博主和直播
 
 1. 用户给出抖音主页并要求持续关注时，先确认目标知识库和写权限，再使用 `blogger-follow`；只是找某条内容时先查询，不创建订阅。
