@@ -1,7 +1,7 @@
 ---
 name: getnote
-version: 2.0.4
-description: 通过官方 getnote CLI 连接得到大脑，完成浏览器授权、连接诊断、CLI 升级，以及保存、查询、搜索、整理和管理用户的真实笔记。用户明确要求登录、诊断或升级，或要保存链接/图片、查找和查看笔记、整理知识库/文件夹、订阅博主、管理标签时使用；不会自行安装或更新 Skill。
+version: 2.1.0
+description: 通过官方 getnote CLI 连接得到大脑，完成浏览器授权、连接诊断、CLI 升级，以及保存、查询、搜索和管理真实笔记。用户要保存链接/图片、上传文件到知识库、查询文件限制、读取标记/发芽报告/时间线、整理知识库/文件夹、订阅博主、管理标签，或明确要求登录、诊断或升级时使用；不会自行安装或更新 Skill。
 metadata:
   openclaw:
     emoji: "🧠"
@@ -42,6 +42,10 @@ metadata:
 
 ## 首次连接
 
+文件上传、标记、发芽报告和章节时间线需要官方 CLI 1.6.0 或更新版本；缺少命令时告知用户升级，不以其它数据代替。
+
+例外：用户已授权云 MCP、只需要本地上传文件时，安装 CLI 后仅执行 `getnote upload`，不运行 `setup`、`auth login` 或要求第二次身份授权。按 `references/kb.md` 的直传流程完成；无需上传文件时继续使用云 MCP。
+
 1. 执行 `command -v getnote`。如果 CLI 不存在，调用平台根据 frontmatter `install` 声明提供的 `@getnote/cli` 安装流程；不要让用户选择安装方式，也不要查找本地安装脚本。
 2. 执行 `getnote setup`，让 CLI 检测本机 AI、同步五个领域 Skill 并引导授权。当前独立 Skill 仍由平台管理，CLI 不覆盖它。
 3. 尚未授权时运行 `getnote auth login` 并让用户只在浏览器确认；不得索要 API Key、Cookie 或 Authorization。
@@ -65,7 +69,7 @@ metadata:
 - 登录、连接、配额、诊断和更新：[`references/auth.md`](references/auth.md)
 - 保存、查看、修改、分享和深层内容：[`references/note.md`](references/note.md)
 - 按主题或自然语言查找笔记：[`references/search.md`](references/search.md)
-- 知识库、文件夹、博主订阅和直播：[`references/kb.md`](references/kb.md)
+- 知识库、文件上传、文件夹、博主订阅和直播：[`references/kb.md`](references/kb.md)
 - 查看、添加和删除标签：[`references/tag.md`](references/tag.md)
 
 一个任务涉及多个领域时，按实际步骤依次读取对应参考。例如“找到最近的客户反馈并放进客户档案”先读搜索，再读知识库。

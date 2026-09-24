@@ -155,8 +155,8 @@ for alias, canonical in aliases.items():
         fail(f"alias {alias!r} points to unknown command {canonical!r}")
 
 main_text = MAIN_SKILL.read_text(encoding="utf-8")
-if "version: 2.0.4" not in main_text:
-    fail("main Skill must expose version 2.0.4")
+if "version: 2.1.0" not in main_text:
+    fail("main Skill must expose version 2.1.0")
 if "/open/api/" in main_text:
     fail("main Skill must not contain OpenAPI paths")
 for required in (
