@@ -68,7 +68,8 @@ metadata:
 
 - 登录、连接、配额、诊断和更新：[`references/auth.md`](references/auth.md)
 - 保存、查看、修改、分享和深层内容：[`references/note.md`](references/note.md)
-- 按主题或自然语言查找笔记：[`references/search.md`](references/search.md)
+- 按明确书名/作者查全部划线：先读 [`references/kb.md`](references/kb.md)，定位与消歧后按全部分页读取；文章/课节无知识库时读 [`references/note.md`](references/note.md) 的引用来源筛选。
+- 按模糊主题或自然语言查找候选笔记：[`references/search.md`](references/search.md)
 - 知识库、文件上传、文件夹、博主订阅和直播：[`references/kb.md`](references/kb.md)
 - 查看、添加和删除标签：[`references/tag.md`](references/tag.md)
 
@@ -77,7 +78,7 @@ metadata:
 ## 结果呈现标准
 
 - **保存成功**：回复标题、字符串 `note_id` 和真实 `note_url`。链接或图片仍在生成时持续等待；超时则明确说仍在处理，不伪造完成。
-- **笔记列表与搜索**：每条至少包含标题和真实链接；有摘要时简短展示。相同 `note_id` 的多个命中片段按领域参考去重。
+- **笔记列表与搜索**：优先展示 display_title 和真实链接；summary/preview 用于定位，不能冒充全文。相同 note_id 的多个搜索片段去重，Top-K 不代表全量；全量以领域参考中的遍历完成证据为准。
 - **笔记详情**：按用户点名的视图展示标题、总结、原文、录音转写、附件、时间线、快捷笔记或会议待办，不用其他字段冒充。
 - **知识库与目录**：展示真实名称、Scope 和字符串 ID；归档完成后说明笔记进入了哪个知识库及目录。
 - **更新、分享与删除**：明确最终状态和影响范围。取消或权限不足不能回复成功。
