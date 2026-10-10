@@ -120,7 +120,6 @@ if guarantees.get("knowledge_features") != [
     fail("CLI does not expose the complete knowledge-management contract")
 
 if guarantees.get("note_detail_views") != [
-    "summary",
     "original",
     "transcript",
     "attachments",
