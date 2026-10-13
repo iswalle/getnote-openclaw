@@ -1,6 +1,6 @@
 ---
 name: getnote
-version: 2.2.0
+version: 2.2.1
 description: 通过官方 getnote CLI 连接得到大脑，完成浏览器授权、连接诊断、CLI 升级，以及保存、查询、搜索和管理真实笔记。用户要保存链接/图片、上传文件到知识库、查询文件限制、读取标记/发芽报告/时间线、整理知识库/文件夹、订阅博主、管理标签，或明确要求登录、诊断或升级时使用；不会自行安装或更新 Skill。
 metadata:
   openclaw:
@@ -42,7 +42,7 @@ metadata:
 
 ## 首次连接
 
-书籍身份查找、引用来源筛选和完整分页需要官方 CLI 1.7.0 或更新版本；文件上传、标记、发芽报告和章节时间线需要 CLI 1.6.0 或更新版本。缺少命令时告知用户升级，不以其它数据代替。
+书籍身份查找、引用来源筛选和完整分页需要官方 CLI 1.7.1 或更新版本；文件上传、标记、发芽报告和章节时间线需要 CLI 1.6.0 或更新版本。缺少命令时告知用户升级，不以其它数据代替。
 
 例外：用户已授权云 MCP、只需要本地上传文件时，安装 CLI 后仅执行 `getnote upload`，不运行 `setup`、`auth login` 或要求第二次身份授权。按 `references/kb.md` 的直传流程完成；无需上传文件时继续使用云 MCP。
 
@@ -68,7 +68,8 @@ metadata:
 
 - 登录、连接、配额、诊断和更新：[`references/auth.md`](references/auth.md)
 - 保存、查看、修改、分享和深层内容：[`references/note.md`](references/note.md)
-- 按明确书名/作者查全部划线：先读 [`references/kb.md`](references/kb.md)，定位与消歧后按全部分页读取；文章/课节无知识库时读 [`references/note.md`](references/note.md) 的引用来源筛选。
+- 按书名或书籍作者查笔记：先读 [`references/kb.md`](references/kb.md)，区分书名 query 与作者 author，按用户要全部笔记还是划线选择筛选，并按完整分页读取。
+- 按课程名、文稿标题、授课人或评论找划线：先读 [`references/search.md`](references/search.md) 的课程定位流程；有精确来源 ID/文章链接时读 [`references/note.md`](references/note.md)。搜索未命中不能跳过同一来源范围内的补查。
 - 按模糊主题或自然语言查找候选笔记：[`references/search.md`](references/search.md)
 - 知识库、文件上传、文件夹、博主订阅和直播：[`references/kb.md`](references/kb.md)
 - 查看、添加和删除标签：[`references/tag.md`](references/tag.md)

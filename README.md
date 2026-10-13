@@ -1,5 +1,9 @@
 # 得到大脑（原 Get 笔记）Skill
 
+## 2.2.1 自然语言查找修复
+
+明确按作者、书名、课程、文稿和个人评论查找的步骤；搜索未命中时在相同来源范围内补查，区分全部笔记与划线。配合 CLI 1.7.1 使用；来源补查不会改变服务端语义搜索算法。
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 让 AI 成为你的第二大脑。随时记录，需要时召回。
