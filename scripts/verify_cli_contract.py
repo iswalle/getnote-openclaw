@@ -120,7 +120,6 @@ if guarantees.get("knowledge_features") != [
     fail("CLI does not expose the complete knowledge-management contract")
 
 if guarantees.get("note_detail_views") != [
-    "summary",
     "original",
     "transcript",
     "attachments",
@@ -155,8 +154,8 @@ for alias, canonical in aliases.items():
         fail(f"alias {alias!r} points to unknown command {canonical!r}")
 
 main_text = MAIN_SKILL.read_text(encoding="utf-8")
-if "version: 2.1.0" not in main_text:
-    fail("main Skill must expose version 2.1.0")
+if "version: 2.2.0" not in main_text:
+    fail("main Skill must expose version 2.2.0")
 if "/open/api/" in main_text:
     fail("main Skill must not contain OpenAPI paths")
 for required in (
