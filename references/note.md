@@ -42,6 +42,21 @@
 
 不确定参数时先运行目标命令 `--help`。
 
+## 录音台与录音卡来源定位
+
+设备来源与笔记类型是两个独立条件。用户明确说“录音台”“AI录音台”“墨案/MOAN录音台”时使用 `--source vendor_moan`；“录音卡”“GetSeed录音卡”使用 `--source getseed`。查设备全部笔记时只限定来源，不额外加 `--note-type audio` 或 `meeting`，避免漏掉其他实际类型；录音卡长录音和闪念也由同一个 getseed 来源覆盖。用户明确只要长录音/闪念时，才分别叠加 `recorder_audio` / `recorder_flash_audio`。
+
+```bash
+getnote notes --source vendor_moan --page-size 20 --all -o json
+getnote notes --source getseed --page-size 20 --all -o json
+```
+
+“昨天/上周的录音台笔记”同时保留对应 `--created-from/to`，按用户时区换算为 RFC3339，from 包含、to 不包含；明确修改时间才改用 edited 或 record-updated。翻页始终保留 source、时间、知识库等原条件，核对 `applied_filters.source` 和每条笔记的 `source`，按真实游标继续并按字符串 note_id 去重。仅在遍历结束、没有未解决的 partial/warnings 或错误时，才能说当前授权范围已遍历；旧 total 不是设备范围的总条数。
+
+结果只涵盖已经同步成笔记且当前账号有权读取的主笔记，不代表设备端未同步、尚未形成笔记的全部会议记录。空结果不能改查其他来源后声称完成，不能用“AI录音台”标签或标题猜来源。只说“录音笔记”而未限定设备时不加 vendor_moan/getseed；按已知录音模式核对真实类型，模式不明时保留不同类型候选并说明范围。
+
+来源内有正文主题时，先在该来源和时间范围列出候选，再按需读取目标正文核实；`search` 不提供设备来源筛选，不能把全局 Top-K 后过滤当作该设备完整搜索。录音台/录音卡转写使用 `getnote note transcript '<note_id>' -o json`，不把 AI 总结、preview 或缺失转写当作原文。
+
 ## 来源筛选、轻量定位与原文
 
 列表接口只返回定位信息，再用详情接口读取完整笔记。`display_title` 是展示标题，不覆盖原始 `title`；引用笔记空标题很正常。`preview` 是带来源和截断标记的定位片段，不是全文。
