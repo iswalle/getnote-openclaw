@@ -1,7 +1,7 @@
 ---
 name: getnote
-version: 2.3.0
-description: 通过官方 getnote CLI 连接得到大脑，完成浏览器授权、连接诊断、CLI 升级，以及保存、查询、搜索和管理真实笔记。用户要保存链接/图片、上传文件到知识库、查询文件限制、读取标记/发芽报告/时间线、整理知识库/文件夹、订阅博主、管理标签，或明确要求登录、诊断或升级时使用；不会自行安装或更新 Skill。
+version: 2.3.1
+description: 通过官方 getnote CLI 连接得到大脑，完成浏览器授权、连接诊断、CLI 升级，以及保存、查询、搜索和管理真实笔记。用户要按录音台或录音卡来源找笔记、保存链接/图片、上传文件到知识库、查询文件限制、读取标记/发芽报告/时间线、整理知识库/文件夹、订阅博主、管理标签，或明确要求登录、诊断或升级时使用；不会自行安装或更新 Skill。
 metadata:
   openclaw:
     emoji: "🧠"
@@ -72,7 +72,7 @@ metadata:
 - 保存、查看、修改、分享和深层内容：[`references/note.md`](references/note.md)
 - 按书名或书籍作者查笔记：先读 [`references/kb.md`](references/kb.md)，区分书名 query 与作者 author，按用户要全部笔记还是划线选择筛选，并按完整分页读取。
 - 按课程名、文稿标题、授课人或评论找划线：先读 [`references/search.md`](references/search.md)。已知课程名/老师先定位课程容器，再按真实容器身份列笔记；少量个人笔记按预算批读原文/评论。有精确来源 ID/文章链接时读 [`references/note.md`](references/note.md)，无需先语义搜索。保留目录不完整警告，翻页结束不代表目录缺失已解决。
-- 查即时录音、上传音频或自己录制的课堂笔记：读 [`references/note.md`](references/note.md) 的真实类型映射，不默认限定得到课程引用。
+- 查录音台、录音卡、即时录音、上传音频或自己录制的课堂笔记：读 [`references/note.md`](references/note.md) 的真实类型映射，不默认限定得到课程引用。
 - 按模糊主题或自然语言查找候选笔记：[`references/search.md`](references/search.md)
 - 知识库、文件上传、文件夹、博主订阅和直播：[`references/kb.md`](references/kb.md)
 - 查看、添加和删除标签：[`references/tag.md`](references/tag.md)
