@@ -105,8 +105,9 @@ metadata:
 - `forbidden`：说明当前账号或团队角色没有权限，不绕过权限或换 ID 猜测。
 - `not_found`：重新解析真实笔记、知识库或目录 ID；环境不同的链接和 ID 不能混用。
 - `conflict`：先读取当前版本或既有目录，避免覆盖和重复创建。
-- `rate_limited`：按返回的重试提示等待，不高频循环调用。
-- 网络中断或结果不确定：只做查询核验，不自动重复写入。
+- `rate_limited`：先读 `references/auth.md` 的“限流与同一操作恢复”，按 `error.rate_limit_detail.request_execution/retry_action` 决定复用同一步、等待重置、完成已有上传或联系管理员。客户端负责最多额外 2 次、累计等待不超过 5 秒的安全重试；Agent 不叠加循环或并行 CLI/MCP 重试。跨进程、token 和工具的同一账号任务由 Agent 排队，不能把进程内队列当全局队列，也不硬编码 1 QPS。
+- 图片/文件签发结果未确认：读取失败 `data.upload_recovery`，保留原 `operation_id`，按 note/kb 参考查询原状态；已有 `data.uploaded_image` 时保留原笔记键和对象，通过受控文件续接保存，不重领凭证或重传。先核对 runtime 是否启用，旧服务不强塞凭证幂等头。
+- 网络中断或结果不确定：先查原操作、原任务或既有结果；`retryable=true` 不能独立作为重复写入许可。凭证、签名和上传私有 URL 不贴聊天。
 
 ## 用户要求更新
 
