@@ -1,6 +1,6 @@
 ---
 name: getnote
-version: 2.3.1
+version: 2.4.0
 description: 通过官方 getnote CLI 连接得到大脑，完成浏览器授权、连接诊断、CLI 升级，以及保存、查询、搜索和管理真实笔记。用户要按录音台或录音卡来源找笔记、保存链接/图片、上传文件到知识库、查询文件限制、读取标记/发芽报告/时间线、整理知识库/文件夹、订阅博主、管理标签，或明确要求登录、诊断或升级时使用；不会自行安装或更新 Skill。
 metadata:
   openclaw:
@@ -45,6 +45,8 @@ metadata:
 书籍身份查找、引用来源筛选和完整分页需要官方 CLI 1.7.1 或更新版本；文件上传、标记、发芽报告和章节时间线需要 CLI 1.6.0 或更新版本。缺少命令时告知用户升级，不以其它数据代替。
 
 课程容器定位、按课程筛选和预算批读还需当前 CLI 提供 `references list`、`notes batch`，且真实服务声明 `reference.resources.v1`、`note.course_filter.v1`、`note.batch_detail.v1`。以帮助、capabilities 和真实接口返回核验，不凭版本号假定能力已发布；旧参数用法保持兼容。
+
+限流决策、原上传凭证查询和完整图片保存续接需要 CLI 1.9.0 或更新版本；同时核对命令帮助、capabilities 和服务端 runtime，不以客户端版本代替服务能力检查。
 
 例外：用户已授权云 MCP、只需要本地上传文件时，安装 CLI 后仅执行 `getnote upload`，不运行 `setup`、`auth login` 或要求第二次身份授权。按 `references/kb.md` 的直传流程完成；无需上传文件时继续使用云 MCP。
 
@@ -105,8 +107,9 @@ metadata:
 - `forbidden`：说明当前账号或团队角色没有权限，不绕过权限或换 ID 猜测。
 - `not_found`：重新解析真实笔记、知识库或目录 ID；环境不同的链接和 ID 不能混用。
 - `conflict`：先读取当前版本或既有目录，避免覆盖和重复创建。
-- `rate_limited`：按返回的重试提示等待，不高频循环调用。
-- 网络中断或结果不确定：只做查询核验，不自动重复写入。
+- `rate_limited`：先读 `references/auth.md` 的“限流与同一操作恢复”，按 `error.rate_limit_detail.request_execution/retry_action` 决定复用同一步、等待重置、完成已有上传或联系管理员。客户端负责最多额外 2 次、累计等待不超过 5 秒的安全重试；Agent 不叠加循环或并行 CLI/MCP 重试。跨进程、token 和工具的同一账号任务由 Agent 排队，不能把进程内队列当全局队列，也不硬编码 1 QPS。
+- 图片/文件签发结果未确认：读取失败 `data.upload_recovery`，保留原 `operation_id`，按 note/kb 参考查询原状态；已有 `data.uploaded_image` 时保留原笔记键和对象，通过受控文件续接保存，不重领凭证或重传。先核对 runtime 是否启用，旧服务不强塞凭证幂等头。
+- 网络中断或结果不确定：先查原操作、原任务或既有结果；`retryable=true` 不能独立作为重复写入许可。凭证、签名和上传私有 URL 不贴聊天。
 
 ## 用户要求更新
 

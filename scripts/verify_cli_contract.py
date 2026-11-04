@@ -86,11 +86,13 @@ for key in (
 
 guarantees = capabilities.get("guarantees", {})
 for key in (
-    "ids_as_strings",
     "structured_business_errors",
     "final_async_save_result",
     "environment_note_url",
     "image_format_validation",
+    "same_identity_request_queue",
+    "safe_not_started_retries",
+    "upload_operation_recovery",
 ):
     if guarantees.get(key) is not True:
         fail(f"CLI does not guarantee {key}")
@@ -124,6 +126,7 @@ if guarantees.get("note_detail_views") != [
     "transcript",
     "attachments",
     "timeline",
+    "chapter_timeline",
     "quick_note",
     "meeting_todos",
 ]:
@@ -143,6 +146,38 @@ for command in sorted(available - {"auth", "tag"}):
     result = command_results.get(command)
     if not isinstance(result, dict) or not result.get("success_fields"):
         fail(f"CLI does not expose per-command result contract for {command!r}")
+
+# Some historical results retain numeric ID fields. Agents must use each
+# command's exact-ID field rather than assume every JSON number is a string.
+if guarantees.get("ids_as_strings") is not False:
+    fail("CLI must declare the legacy mixed-ID boundary with ids_as_strings=false")
+exact_id_fields = {
+    "save": {"data.note.note_id"},
+    "note": {"data.note.note_id"},
+    "notes": {"data.notes[].note_id"},
+    "kbs": {"data.topics[].topic_id"},
+    "kbs-sub": {"data.topics[].topic_id"},
+    "kb": {"data.notes[].note_id"},
+    "file-add": {"data.id_str", "data.topic_id_str", "data.directory_id_str"},
+    "kb bloggers": {"data.bloggers[].follow_id_str"},
+    "kb blogger-follow": {"data.follow_id_str"},
+    "kb live-follow": {"data.follow_id_str"},
+}
+for command, required in exact_id_fields.items():
+    fields = set(command_results.get(command, {}).get("success_fields", []))
+    if not required.issubset(fields):
+        fail(f"CLI is missing exact-ID fields for {command}: {', '.join(sorted(required - fields))}")
+
+upload_fields = {
+    "image-config": {"data.runtime"},
+    "image-token": {"data.access_url"},
+    "image-operation": {"data.operation_id", "data.state"},
+    "file-operation": {"data.operation_id", "data.state"},
+}
+for command, required in upload_fields.items():
+    fields = set(command_results.get(command, {}).get("success_fields", []))
+    if command not in available or not required.issubset(fields):
+        fail(f"CLI does not expose the upload recovery contract for {command}")
 aliases = capabilities.get("command_aliases", {})
 if aliases.get("gnote") != "getnote" or aliases.get("kb dir") != "kb directories":
     fail("CLI does not expose the compact gnote / kb dir aliases")
@@ -154,8 +189,8 @@ for alias, canonical in aliases.items():
         fail(f"alias {alias!r} points to unknown command {canonical!r}")
 
 main_text = MAIN_SKILL.read_text(encoding="utf-8")
-if "version: 2.3.1" not in main_text:
-    fail("main Skill must expose version 2.3.1")
+if "version: 2.4.0" not in main_text:
+    fail("main Skill must expose version 2.4.0")
 if "/open/api/" in main_text:
     fail("main Skill must not contain OpenAPI paths")
 for required in (
