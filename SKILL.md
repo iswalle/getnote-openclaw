@@ -1,6 +1,6 @@
 ---
 name: getnote
-version: 2.4.0
+version: 2.4.1
 description: 通过官方 getnote CLI 连接得到大脑，完成浏览器授权、连接诊断、CLI 升级，以及保存、查询、搜索和管理真实笔记。用户要按录音台或录音卡来源找笔记、保存链接/图片、上传文件到知识库、查询文件限制、读取标记/发芽报告/时间线、整理知识库/文件夹、订阅博主、管理标签，或明确要求登录、诊断或升级时使用；不会自行安装或更新 Skill。
 metadata:
   openclaw:
@@ -94,7 +94,7 @@ metadata:
 ## 统一规则
 
 - 所有真实操作由官方 `getnote` CLI 完成；参数不确定时读取对应命令 `--help`，机器调用统一加 `-o json`。
-- 退出码非 0 一律是失败。成功结果读取 `success=true` 和领域 Skill 指定的 `data` 字段；失败结果读取 `error.code/message/reason/retryable` 和可选 `request_id`，不能根据自然语言猜成功。
+- 退出码非 0 表示命令未全部完成；批量添加/移出仍须报告已成功数量和失败 ID，不整批盲重试。成功结果读取 `success=true` 和领域 Skill 指定的 `data` 字段；失败结果读取 `error.code/message/reason/retryable` 和可选 `request_id`，不能根据自然语言猜成功。
 - ID 始终按字符串原样传递；链接只使用真实返回值，不自行拼接域名。
 - 写操作结果不确定时先查询原任务或最近结果，禁止盲目重复创建。
 - 删除、覆盖、替换全部标签、公开分享和批量移出必须先确认。
