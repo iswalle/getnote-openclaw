@@ -36,9 +36,9 @@
 
 ---
 
-## 免费账号也能用
+## 调用额度
 
-免费账号完成授权即可保存、搜索和读取笔记，也可上传图片与文件，无需先开会员。免费和会员额度不同；让 AI 查看当前额度，或运行 `getnote quota -o json`，以服务端实际返回为准。专项配额和企业代授权保持原规则。
+所有得到大脑用户授权后都可以调用，会员享有更高额度。想看当前额度，让 AI 查一下，或运行 `getnote quota -o json`。
 
 ## 🔑 授权登录
 
@@ -238,7 +238,7 @@ AI 会直接完成更新闭环：运行 `getnote update` 升级 CLI、同步五�
 - [Get笔记官网](https://biji.com)
 - [开放平台](https://www.biji.com/openapi)
 - [ClawHub](https://clawhub.ai/iswalle/getnote)
-- [开通会员](https://www.biji.com/checkout?product_alias=9Ab36BB3ZD&spm=openapi_skill)
+- [了解会员](https://www.biji.com/checkout?product_alias=9Ab36BB3ZD&spm=openapi_skill)
 
 ---
 
